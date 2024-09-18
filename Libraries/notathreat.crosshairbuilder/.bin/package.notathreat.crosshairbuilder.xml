@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>package.notathreat.crosshairbuilder</name>
+    </assembly>
+    <members>
+        <member name="M:CrosshairBuilder.BuildHash">
+            <summary>
+            the hash determines if the system should be rebuilt. If it changes, it will be rebuilt
+            </summary>
+        </member>
+    </members>
+</doc>

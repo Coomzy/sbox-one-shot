@@ -1,0 +1,26 @@
+{
+  "RootObject": {
+    "__guid": "3e023e10-0d92-49f9-b58f-da5b81f35849",
+    "Flags": 0,
+    "Name": "os_playerinfo",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "NetworkOrphaned": 1,
+    "Components": [
+      {
+        "__type": "OSPlayerInfo",
+        "__guid": "1d82eccc-349b-4fc3-af41-240183bf276e",
+        "isDead": false,
+        "isKnifer": false
+      }
+    ],
+    "Children": [],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

@@ -1,0 +1,172 @@
+{
+  "RootObject": {
+    "__guid": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+    "Flags": 0,
+    "Name": "os_character",
+    "Tags": "player",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "OwnerTransfer": 2,
+    "Components": [
+      {
+        "__type": "OSCharacter",
+        "__guid": "b540c380-c41f-4189-8859-f443b00c8411",
+        "capsuleCollider": {
+          "_type": "component",
+          "component_id": "440d3460-54a9-477d-b50b-d4be60d6c062",
+          "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+          "component_type": "CapsuleCollider"
+        },
+        "controller": {
+          "_type": "component",
+          "component_id": "1331eb0d-a641-411d-97da-b4a89610db43",
+          "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+          "component_type": "CharacterController"
+        },
+        "eyeHolder": {
+          "_type": "gameobject",
+          "go": "facbb7a7-ba57-4a2a-8931-d2bb15ba7a9b"
+        },
+        "firstPersonArmsHolder": {
+          "_type": "gameobject",
+          "go": "45b79a21-4bf3-4e7b-ae95-20639e2c409b"
+        },
+        "gunHolder": {
+          "_type": "gameobject",
+          "go": "ed9c1999-efd0-457c-aff5-ee31c66507b7"
+        },
+        "harpoonGunPrefab": {
+          "_type": "gameobject",
+          "prefab": "prefabs/harpoon_gun.prefab"
+        },
+        "isDead": false,
+        "movement": {
+          "_type": "component",
+          "component_id": "d50d36e4-86c5-40ac-a72b-9ad64977057e",
+          "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+          "component_type": "CharacterMovement"
+        },
+        "playerBodyPrefab": {
+          "_type": "gameobject",
+          "prefab": "prefabs/os_character_body.prefab"
+        },
+        "spherePrefab": {
+          "_type": "gameobject",
+          "prefab": "prefabs/sphere.prefab"
+        }
+      },
+      {
+        "__type": "Sandbox.CharacterController",
+        "__guid": "1331eb0d-a641-411d-97da-b4a89610db43",
+        "Acceleration": 10,
+        "Bounciness": 0.3,
+        "GroundAngle": 45,
+        "Height": 64,
+        "IgnoreLayers": "",
+        "Radius": 16,
+        "StepHeight": 18,
+        "UseCollisionRules": false
+      },
+      {
+        "__type": "CharacterMovement",
+        "__guid": "d50d36e4-86c5-40ac-a72b-9ad64977057e",
+        "characterController": {
+          "_type": "component",
+          "component_id": "1331eb0d-a641-411d-97da-b4a89610db43",
+          "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+          "component_type": "CharacterController"
+        },
+        "eyeHeight": 64,
+        "isCrouching": false,
+        "isGrounded": false,
+        "isSliding": false,
+        "lastGrounded": {
+          "Relative": 8277.085
+        },
+        "lastJump": {
+          "Relative": 8277.085
+        },
+        "lastUngrounded": {
+          "Relative": 8277.085
+        },
+        "owner": {
+          "_type": "component",
+          "component_id": "b540c380-c41f-4189-8859-f443b00c8411",
+          "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+          "component_type": "OSCharacter"
+        },
+        "slideStart": {
+          "Relative": 8277.085
+        },
+        "slideVelocity": "0,0,0",
+        "wishCrouch": false,
+        "wishVelocity": "0,0,0"
+      },
+      {
+        "__type": "Sandbox.CapsuleCollider",
+        "__guid": "440d3460-54a9-477d-b50b-d4be60d6c062",
+        "End": "0,0,60",
+        "IsTrigger": true,
+        "Radius": 10,
+        "Start": "0,0,0",
+        "Static": false
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "56b6e01c-3108-4952-a90d-98cce884d816",
+        "Flags": 0,
+        "Name": "Player Pusher",
+        "Position": "0,0,32",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "PlayerPusher",
+            "__guid": "af3c068e-923e-4720-8ffd-2c5adb4d4419",
+            "Radius": 32
+          }
+        ]
+      },
+      {
+        "__guid": "45b79a21-4bf3-4e7b-ae95-20639e2c409b",
+        "Flags": 0,
+        "Name": "Arms",
+        "Position": "0,0,61.5",
+        "Enabled": true,
+        "Children": [
+          {
+            "__guid": "ed9c1999-efd0-457c-aff5-ee31c66507b7",
+            "Flags": 0,
+            "Name": "Gun Holder",
+            "Position": "16.71873,-13.30685,-10.95753",
+            "Enabled": true
+          }
+        ]
+      },
+      {
+        "__guid": "a0c57706-61a5-4d7a-a701-1114b252d0a8",
+        "Flags": 0,
+        "Name": "camera",
+        "Position": "5.003239,0.00001530641,61.5",
+        "Rotation": "-0.0000002682208,-0.00000004470348,0.000002950429,1",
+        "Enabled": true
+      },
+      {
+        "__guid": "facbb7a7-ba57-4a2a-8931-d2bb15ba7a9b",
+        "Flags": 0,
+        "Name": "EyeHolder",
+        "Enabled": true,
+        "NetworkMode": 1,
+        "NetworkOrphaned": 1,
+        "OwnerTransfer": 2
+      }
+    ],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

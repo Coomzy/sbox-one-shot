@@ -1,0 +1,24 @@
+RoundState {
+	display: flex;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	justify-content: center;
+
+	.title {
+		font-size: 7.5em;
+		font-family: Poppins;
+		color: #fff;
+		text-shadow: 3.0em 3.0em 0.1em black;
+	}
+
+	.title label {
+		margin: -1.5em;
+	}
+}

@@ -1,0 +1,98 @@
+{
+  "RootObject": {
+    "__guid": "e9d4351e-5f7d-4409-adff-c46167a2bf47",
+    "Flags": 0,
+    "Name": "harpoon_gun_proxy",
+    "Enabled": true,
+    "Components": [
+      {
+        "__type": "HarpoonGun_Proxy",
+        "__guid": "3df05aac-4291-482d-8bbd-8fac8d8cde82",
+        "harpoonSpear": {
+          "_type": "component",
+          "component_id": "4ecc14d8-63cc-4ecd-8134-7ca12108b2bd",
+          "go": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "model": {
+          "_type": "component",
+          "component_id": "d322430f-3a52-47f6-be39-f868776e2cc1",
+          "go": "5d09a53d-728e-41ce-942d-d2105167a569",
+          "component_type": "SkinnedModelRenderer"
+        }
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "c7c868e8-0718-4918-b98f-c7dc1164df9c",
+        "Flags": 0,
+        "Name": "Offset",
+        "Position": "2.991621,1.922705,2.022014",
+        "Enabled": true,
+        "Children": [
+          {
+            "__guid": "5d09a53d-728e-41ce-942d-d2105167a569",
+            "Flags": 0,
+            "Name": "Gun",
+            "Position": "20.18945,-2.587158,8.205322",
+            "Enabled": true,
+            "Components": [
+              {
+                "__type": "Sandbox.SkinnedModelRenderer",
+                "__guid": "d322430f-3a52-47f6-be39-f868776e2cc1",
+                "BodyGroups": 18446744073709551615,
+                "CreateBoneObjects": false,
+                "Model": "equipment/harpoon/source/harpoon_gun_low.vmdl",
+                "Morphs": {},
+                "RenderOptions": {
+                  "GameLayer": true,
+                  "OverlayLayer": false,
+                  "BloomLayer": false,
+                  "AfterUILayer": false
+                },
+                "RenderType": "ShadowsOnly",
+                "Tint": "1,1,1,1",
+                "UseAnimGraph": false
+              }
+            ],
+            "Children": [
+              {
+                "__guid": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
+                "Flags": 0,
+                "Name": "Spear",
+                "Position": "0,0,0",
+                "Enabled": true,
+                "Components": [
+                  {
+                    "__type": "Sandbox.SkinnedModelRenderer",
+                    "__guid": "4ecc14d8-63cc-4ecd-8134-7ca12108b2bd",
+                    "BodyGroups": 18446744073709551615,
+                    "CreateBoneObjects": false,
+                    "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                    "Morphs": {},
+                    "RenderOptions": {
+                      "GameLayer": true,
+                      "OverlayLayer": false,
+                      "BloomLayer": false,
+                      "AfterUILayer": false
+                    },
+                    "RenderType": "ShadowsOnly",
+                    "Tint": "1,1,1,1",
+                    "UseAnimGraph": false
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

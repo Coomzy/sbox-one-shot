@@ -1,0 +1,455 @@
+{
+  "RootObject": {
+    "__guid": "e9d4351e-5f7d-4409-adff-c46167a2bf47",
+    "Flags": 0,
+    "Name": "harpoon_gun",
+    "Tags": "equipment",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "NetworkOrphaned": 3,
+    "OwnerTransfer": 2,
+    "Components": [
+      {
+        "__type": "HarpoonGun",
+        "__guid": "804a12b5-1008-4316-8e91-c5d1bb9e490f",
+        "attackCooldownTime": 0.25,
+        "collisionChild": {
+          "_type": "gameobject",
+          "go": "45b2e4fa-e8b7-4a9e-b2d5-0eaf29e47cf4"
+        },
+        "equipmentProxyPrefab": {
+          "_type": "gameobject",
+          "prefab": "prefabs/harpoon_gun_proxy.prefab"
+        },
+        "gunCombinedModel": {
+          "_type": "component",
+          "component_id": "6e59eec5-6dbd-49f5-9515-5656480c8783",
+          "go": "af5d8181-3dec-4d4c-883b-e6003e53ae2e",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "gunModel": {
+          "_type": "component",
+          "component_id": "d322430f-3a52-47f6-be39-f868776e2cc1",
+          "go": "5d09a53d-728e-41ce-942d-d2105167a569",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "hasFireAltInputDown": false,
+        "hasFireInputDown": false,
+        "hip": "16.5,-13,-11",
+        "ironSights": "15,0,-8.25",
+        "lastFire": {
+          "Relative": 8066.3145
+        },
+        "lastFireAlt": {
+          "Relative": 8066.3145
+        },
+        "model": {
+          "_type": "component",
+          "component_id": "6e59eec5-6dbd-49f5-9515-5656480c8783",
+          "go": "af5d8181-3dec-4d4c-883b-e6003e53ae2e",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "procAnim": {
+          "_type": "component",
+          "component_id": "57101117-7b80-4f1f-8288-9cffa9f6308b",
+          "go": "e9d4351e-5f7d-4409-adff-c46167a2bf47",
+          "component_type": "ProceduralAnimation"
+        },
+        "rigidbody": {
+          "_type": "component",
+          "component_id": "8fe9564d-21de-4052-a1fb-c714d88a6d04",
+          "go": "e9d4351e-5f7d-4409-adff-c46167a2bf47",
+          "component_type": "Rigidbody"
+        },
+        "spearModel": {
+          "_type": "component",
+          "component_id": "4ecc14d8-63cc-4ecd-8134-7ca12108b2bd",
+          "go": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "spearPrefab": {
+          "_type": "gameobject",
+          "prefab": "prefabs/harpoon_spear.prefab"
+        },
+        "spearSpawnPoint": {
+          "_type": "gameobject",
+          "go": "4c3488ad-b510-4cd3-8a42-a9378e128238"
+        }
+      },
+      {
+        "__type": "ProceduralAnimation",
+        "__guid": "57101117-7b80-4f1f-8288-9cffa9f6308b",
+        "bobRate": 0,
+        "isDownBob": true
+      },
+      {
+        "__type": "Sandbox.Rigidbody",
+        "__guid": "8fe9564d-21de-4052-a1fb-c714d88a6d04",
+        "__enabled": false,
+        "AngularDamping": 0,
+        "Gravity": true,
+        "LinearDamping": 0,
+        "Locking": {},
+        "MassCenterOverride": "0,0,0",
+        "MassOverride": 0,
+        "MotionEnabled": true,
+        "OverrideMassCenter": false,
+        "RigidbodyFlags": 0,
+        "StartAsleep": false
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "661066ed-672b-424b-aaca-e349fb4fb863",
+        "Flags": 0,
+        "Name": "Spear",
+        "Position": "20.18945,-2.587158,8.205322",
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "9f8508f0-c44c-43bd-b88f-9d8b8e06194c",
+            "BodyGroups": 18446744073709551615,
+            "CreateBoneObjects": false,
+            "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+            "Morphs": {},
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          }
+        ]
+      },
+      {
+        "__guid": "5d09a53d-728e-41ce-942d-d2105167a569",
+        "Flags": 0,
+        "Name": "Gun",
+        "Position": "20.18945,-2.587158,8.205322",
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "d322430f-3a52-47f6-be39-f868776e2cc1",
+            "BodyGroups": 18446744073709551615,
+            "CreateBoneObjects": false,
+            "Model": "equipment/harpoon/source/harpoon_gun_low.vmdl",
+            "Morphs": {},
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          }
+        ],
+        "Children": [
+          {
+            "__guid": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
+            "Flags": 0,
+            "Name": "Spear",
+            "Position": "0,0,0",
+            "Enabled": true,
+            "Components": [
+              {
+                "__type": "Sandbox.SkinnedModelRenderer",
+                "__guid": "4ecc14d8-63cc-4ecd-8134-7ca12108b2bd",
+                "BodyGroups": 18446744073709551615,
+                "CreateBoneObjects": false,
+                "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                "Morphs": {},
+                "RenderOptions": {
+                  "GameLayer": true,
+                  "OverlayLayer": false,
+                  "BloomLayer": false,
+                  "AfterUILayer": false
+                },
+                "RenderType": "On",
+                "Tint": "1,1,1,1",
+                "UseAnimGraph": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "__guid": "af5d8181-3dec-4d4c-883b-e6003e53ae2e",
+        "Flags": 0,
+        "Name": "Gun \u002B Spear",
+        "Position": "20.18945,-2.587158,8.205322",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "6e59eec5-6dbd-49f5-9515-5656480c8783",
+            "BodyGroups": 18446744073709551615,
+            "CreateBoneObjects": false,
+            "MaterialGroup": "default",
+            "Model": "equipment/harpoon/source/harpoon_combined_low.vmdl",
+            "Morphs": {},
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          }
+        ]
+      },
+      {
+        "__guid": "4c3488ad-b510-4cd3-8a42-a9378e128238",
+        "Flags": 0,
+        "Name": "Spear Slot",
+        "Position": "58.023,-0,3.705",
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "a0336bb2-6f26-4299-8aa4-4d13a2c860c7",
+            "__enabled": false,
+            "BodyGroups": 18446744073709551615,
+            "CreateBoneObjects": false,
+            "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+            "Morphs": {},
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          }
+        ],
+        "Children": [
+          {
+            "__guid": "8cbb354b-5e33-4435-b730-ae1440571439",
+            "Flags": 0,
+            "Name": "Harpoon Spear",
+            "Position": "0,0,0",
+            "Enabled": true,
+            "Components": [
+              {
+                "__type": "HarpoonSpear",
+                "__guid": "407aeddf-e1d3-40d4-ad90-5b47735688bc",
+                "isInFlight": true,
+                "launchForce": 1000,
+                "traceDistance": 500
+              },
+              {
+                "__type": "Sandbox.Rigidbody",
+                "__guid": "c1ebe40f-6242-468f-aec1-a4058f1a211b",
+                "__enabled": false,
+                "AngularDamping": 0,
+                "Gravity": true,
+                "LinearDamping": 0,
+                "Locking": {},
+                "MassCenterOverride": "0,0,0",
+                "MassOverride": 0,
+                "MotionEnabled": true,
+                "OverrideMassCenter": false,
+                "RigidbodyFlags": 0,
+                "StartAsleep": false
+              }
+            ],
+            "Children": [
+              {
+                "__guid": "d81d51d8-8683-4870-a674-f02704c509d8",
+                "Flags": 0,
+                "Name": "Spear",
+                "Position": "-37.82483,-2.587,4.490417",
+                "Enabled": true,
+                "Components": [
+                  {
+                    "__type": "Sandbox.SkinnedModelRenderer",
+                    "__guid": "01d8ef87-e092-4c83-832b-83768a4f0190",
+                    "BodyGroups": 18446744073709551615,
+                    "CreateBoneObjects": false,
+                    "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                    "Morphs": {},
+                    "RenderOptions": {
+                      "GameLayer": true,
+                      "OverlayLayer": false,
+                      "BloomLayer": false,
+                      "AfterUILayer": false
+                    },
+                    "RenderType": "On",
+                    "Tint": "1,1,1,1",
+                    "UseAnimGraph": true
+                  },
+                  {
+                    "__type": "Sandbox.ModelCollider",
+                    "__guid": "63de8415-83e2-483f-beab-d18bc278e618",
+                    "IsTrigger": false,
+                    "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                    "Static": false,
+                    "Surface": "surfaces/metal.weapon.surface"
+                  },
+                  {
+                    "__type": "Sandbox.CapsuleCollider",
+                    "__guid": "6a7e08a2-cd37-4e39-8fb5-797423f250d3",
+                    "End": "38.50006,2.587,-4.25",
+                    "IsTrigger": false,
+                    "Radius": 0.35,
+                    "Start": "2.5,2.587,-4.25",
+                    "Static": false,
+                    "Surface": "surfaces/metal.weapon.surface"
+                  }
+                ],
+                "Children": [
+                  {
+                    "__guid": "358d310f-fd8f-4339-962a-21bbfd26ffeb",
+                    "Flags": 0,
+                    "Name": "Prong",
+                    "Position": "39.04791,2.353088,-4.299423",
+                    "Enabled": true,
+                    "Components": [
+                      {
+                        "__type": "Sandbox.CapsuleCollider",
+                        "__guid": "9243b30b-b45f-420a-95ba-4a821e578483",
+                        "End": "-4,0,1.800007",
+                        "IsTrigger": false,
+                        "Radius": 0.35,
+                        "Start": "0,0,0",
+                        "Static": false,
+                        "Surface": "surfaces/metal.weapon.surface"
+                      },
+                      {
+                        "__type": "Sandbox.CapsuleCollider",
+                        "__guid": "4a3aae09-e136-4c5c-975a-c6d7827109b0",
+                        "End": "-4,0,-1.8",
+                        "IsTrigger": false,
+                        "Radius": 0.35,
+                        "Start": "0,0,0",
+                        "Static": false,
+                        "Surface": "surfaces/metal.weapon.surface"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "__guid": "14fbffe0-bc25-4c38-817a-e423479f5925",
+                "Flags": 0,
+                "Name": "Cube",
+                "Position": "0,0,0",
+                "Scale": "0.06481746,0.1829062,0.04894695",
+                "Components": [
+                  {
+                    "__type": "Sandbox.ModelRenderer",
+                    "__guid": "29ee74f4-0f29-499a-8fc0-b09369a487dc",
+                    "BodyGroups": 18446744073709551615,
+                    "Model": "models/dev/box.vmdl",
+                    "RenderOptions": {
+                      "GameLayer": true,
+                      "OverlayLayer": false,
+                      "BloomLayer": false,
+                      "AfterUILayer": false
+                    },
+                    "RenderType": "On",
+                    "Tint": "1,1,1,1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "__guid": "029926cc-1e7d-4ac2-bcd1-0634c9df92c8",
+        "Flags": 0,
+        "Name": "Cube",
+        "Scale": "0.06481746,0.1829062,0.04894695",
+        "Components": [
+          {
+            "__type": "Sandbox.ModelRenderer",
+            "__guid": "96683e3e-004e-44af-b2e5-94e8a9e317ab",
+            "BodyGroups": 18446744073709551615,
+            "Model": "models/dev/box.vmdl",
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1"
+          }
+        ]
+      },
+      {
+        "__guid": "45b2e4fa-e8b7-4a9e-b2d5-0eaf29e47cf4",
+        "Flags": 0,
+        "Name": "Collision",
+        "Components": [
+          {
+            "__type": "Sandbox.CapsuleCollider",
+            "__guid": "037ca9a7-2361-4fce-88fe-677b978140fa",
+            "End": "36.79994,0,4",
+            "IsTrigger": false,
+            "Radius": 1.2000027,
+            "Start": "47.1,0,4",
+            "Static": false,
+            "Surface": "surfaces/metal.weapon.surface"
+          },
+          {
+            "__type": "Sandbox.CapsuleCollider",
+            "__guid": "cc197f14-2855-4546-8fc9-c55089465280",
+            "End": "5.699862,0,3.35",
+            "IsTrigger": false,
+            "Radius": 2.7000027,
+            "Start": "35.10004,0,3.35",
+            "Static": false,
+            "Surface": "surfaces/metal.weapon.surface"
+          },
+          {
+            "__type": "Sandbox.CapsuleCollider",
+            "__guid": "4ae61a83-6047-410a-b210-7deedc9d533d",
+            "End": "6.399861,0,-2.45",
+            "IsTrigger": false,
+            "Radius": 2.6000028,
+            "Start": "34.10006,0,-2.45",
+            "Static": false,
+            "Surface": "surfaces/metal.weapon.surface"
+          }
+        ],
+        "Children": [
+          {
+            "__guid": "3aac8371-223c-43bc-b20a-3fc80a1e7450",
+            "Flags": 0,
+            "Name": "Collision - Handle",
+            "Position": "-8.882755,0,-1.618328",
+            "Rotation": "0,-0.1166707,0,0.9931707",
+            "Enabled": true,
+            "Components": [
+              {
+                "__type": "Sandbox.BoxCollider",
+                "__guid": "4bcd5fde-e011-4e51-a144-8cc57680ab8b",
+                "Center": "0,0,0",
+                "IsTrigger": false,
+                "Scale": "25.40007,5,8.299992",
+                "Static": false,
+                "Surface": "surfaces/wood.surface"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

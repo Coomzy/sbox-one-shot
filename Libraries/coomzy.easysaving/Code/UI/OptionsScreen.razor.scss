@@ -1,0 +1,314 @@
+OptionsScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	justify-content: flex-start;
+	align-items: flex-start;
+	flex-direction: column;
+	font-weight: bold;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	transform: scale( 1 );
+	transition: none;
+	pointer-events: all;
+	background-color: #111111;
+
+	.title {
+		color: white;
+		text-shadow: none;
+		box-shadow: none;
+		align-self: flex-end;
+		font-size: 75px;
+		text-shadow: 0px 0px 2px black;
+		flex-shrink: 0;
+		font-family: Consolas;
+		margin: 20px 0px;
+	}
+
+	.button {
+		//flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		flex-shrink: 0;
+		flex-grow: 0;
+		color: rgba(255,255,255, 0.9);
+		width: auto;
+		padding: 15px 32px;
+		text-align: center;
+		align-self: center;
+		font-size: 24px;
+		font-weight: 600;
+		margin: 20px;
+		gap: 0;
+		transition: all 50ms linear;
+		cursor: pointer;
+	}
+
+
+	> .container {
+		position: relative;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 100%;
+		height: 100%;
+
+		.title {
+			align-self: center;
+			font-size: 60px;
+			flex-shrink: 0;
+		}
+
+		> .buttons {
+			flex-direction: row;
+			justify-content: flex-start;
+			align-items: flex-start;
+			flex-shrink: 0;
+			// gap: 8px;
+		}
+
+		.content {
+			padding: 5px;
+			flex-grow: 1;
+			flex-direction: column;
+			align-self: center;
+			//border-radius: 20px;
+
+			&.bg {
+				//background-color: rgba(220,220,220,0.5);
+			}
+		}
+	}
+	// Buttons on the left side
+	.container .buttons {
+		.button-bg .button {
+			width: 100%;
+			min-width: 400px;
+			max-width: 600px;
+		}
+	}
+
+	.content {
+		height: auto;
+		// Buttons inside the content box
+		.buttons {
+			.button {
+				padding: 5px;
+				font-size: 30px;
+			}
+		}
+
+		&.tabs-container {
+			flex-grow: 0;
+			flex-shrink: 0;
+			overflow: hidden;
+		}
+
+		.tabs-group {
+			flex-direction: row;
+			align-items: center;
+			flex-grow: 0;
+
+			.button {
+				margin: 0 15px;
+				background-color: #242424;
+				// Can't remove this sound once it's set
+				// Use .inactive instead
+				&:hover {
+					//sound-in: ui.button.over;
+				}
+
+				&:hover {
+					background-color: #3B3B3B; //#EC594F;
+				}
+
+				&:active {
+					background-color: #6E6E6E33; //#D32F2F;
+				}
+
+				&.active {
+					background-color: #F44336;
+				}
+
+				&.inactive:hover {
+					sound-in: ui.button.over;
+				}
+			}
+		}
+	}
+
+	.content.tab-content {
+		// CONTENT ADD HERE
+
+		.button {
+			margin: 0;
+		}
+	}
+
+	.content.tab-content .button, .menu.buttons .button {
+
+		&:hover {
+			sound-in: ui.button.over;
+		}
+
+		&.green {
+			background-color: #4CAF50;
+
+			&:hover {
+				background-color: #57BB5A;
+			}
+
+			&:active {
+				background-color: #45A049;
+			}
+		}
+
+		&.red {
+			background-color: #F44336;
+
+			&:hover {
+				background-color: #EC594F;
+			}
+
+			&:active {
+				background-color: #D32F2F;
+			}
+		}
+
+		&.gray, &.grey {
+			background-color: #666;
+			color: white;
+
+			&:hover {
+				background-color: #777;
+			}
+
+			&:active {
+				background-color: #444;
+			}
+		}
+	}
+
+	.table {
+		position: relative;
+		flex-shrink: 1;
+		flex-grow: 0;
+		justify-content: center;
+		flex-wrap: wrap;
+		color: #9b9fa8;
+		align-self: center;
+		max-width: 1500px;
+		width: 85%;
+		font-size: 30px;
+		// TABLE ADD HERE
+		overflow-y: scroll;
+
+		.row {
+			flex-direction: row;
+			width: 100%;
+			align-items: center;
+			justify-content: center;
+			flex-grow: 0;
+			flex-shrink: 0;
+			font-weight: 600;
+			margin: 10px 0;
+		}
+
+		.row.title {
+			color: white;
+			margin-top: 20px;
+			padding: 5px 0;
+			justify-content: flex-start;
+			font-size: 32px;
+			font-weight: 800;
+			border-bottom: 0.2em solid rgb(30, 30, 30, 0.25);
+
+			&:first-child {
+				margin-top: 0;
+			}
+		}
+
+		.column {
+			flex-direction: column;
+			align-items: flex-start;
+			width: 100%;
+		}
+
+		.column:last-child {
+			align-items: flex-end;
+			justify-content: center;
+			//height: 100%;
+		}
+
+		.column.value {
+			.button {
+				width: 100px;
+				justify-content: center;
+			}
+		}
+
+		SliderControl {
+			width: 100%;
+		}
+	}
+
+	.cycling-selector {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%; /* Adjust width as needed */
+		max-width: 500px; /* Set max width */
+		background-color: #111; /* Dark background similar to your image */
+		padding: 10px;
+		border-radius: 5px;
+		color: white;
+		font-family: Arial, sans-serif;
+	}
+
+	.cycling-label {
+		text-align: center;
+		margin-bottom: 10px; /* Spacing between label and controls */
+		font-size: 14px;
+		width: 100%;
+	}
+
+	.cycling-controls {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+
+		.button {
+			width: auto;
+			padding: 5px;
+		}
+	}
+
+	.cycling-controls .value {
+		align-items: center;
+		font-weight: bold;
+		font-size: 22px;
+		padding: 5px;
+	}
+
+	.cycling-controls .arrow {
+		border: none;
+		color: white;
+		font-size: 40px;
+		line-height: 10px;
+		cursor: pointer;
+		padding: 5px;
+
+		&.left {
+			padding-left: 0;
+		}
+
+		&.right {
+			padding-right: 0;
+		}
+	}
+
+	.cycling-controls .arrow:hover {
+		color: #ccc;
+	}
+}

@@ -1,0 +1,46 @@
+{
+  "crouchMoveSpeed": 150,
+  "walkMoveSpeed": 100,
+  "runMoveSpeed": 190,
+  "sprintMoveSpeed": 320,
+  "characterHeight": 64,
+  "crouchHeight": 36,
+  "crouchDuckSpeed": 10,
+  "slideDuckSpeed": 10,
+  "groundFriction": 6,
+  "airFriction": 0.2,
+  "slideTime": 1.5,
+  "slideMinVelocity": 150,
+  "slideStartMinVelocity": 200,
+  "slideFalloffCurve": {
+    "rangey": "0,2",
+    "frames": [
+      {
+        "y": 0.5,
+        "in": -4.0799994,
+        "out": 4.0799994
+      },
+      {
+        "x": 0.20000002,
+        "y": 0.75,
+        "in": 0.10273968,
+        "out": -1.2556058,
+        "mode": "Split"
+      },
+      {
+        "x": 1,
+        "in": 0.7843138,
+        "out": -0.7843138
+      }
+    ]
+  },
+  "jumpHeight": 300,
+  "jumpCooldown": 0.3,
+  "jumpCoyoteTime": 0.2,
+  "eyeHeight": 64,
+  "eyeHeightSliding": 28,
+  "eyeHeightCrouching": 28,
+  "duckHeightOffset": 36,
+  "__references": [],
+  "__version": 0
+}

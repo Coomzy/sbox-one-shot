@@ -1,0 +1,326 @@
+@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+
+<root>
+    <div class="crosshair" style="
+		position: absolute;
+		left: @( IsPercentage ? $"{Position.x}%"  : Position.x );
+		top: @( IsPercentage ? $"{Position.y}%" : Position.y );
+		transform: translate(-50%, -50%);
+	">
+		<div class="center-dot-border-wrapper" style="
+			display: @(CenterDot ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+			z-index: 100;
+		">
+			<div class="center-dot" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(CenterDotOpacity));
+				padding: @(CenterDotThickness)px;
+			"></div>
+		</div>
+		<div class="inner-top-border-wrapper" style="
+			position: absolute;
+    		top: -@(InnerLinesOffset)px;
+    		left: 50%;
+    		transform: translateX(-50%);
+			display:@(ShowInnerLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="inner-line top" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(InnerLineOpacity));
+				padding-left: @(InnerLineThickness)px;
+    			padding-top: @(InnerLineLenght)px;
+			"></div>
+		</div>
+		<div class="inner-bottom-border-wrapper" style="
+			position: absolute;
+    		bottom: -@(InnerLinesOffset)px;
+    		left: 50%;
+    		transform: translateX(-50%);
+			display:@(ShowInnerLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="inner-line bottom" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(InnerLineOpacity));
+				padding-left: @(InnerLineThickness)px;
+    			padding-bottom: @(InnerLineLenght)px;
+			"></div>
+		</div>
+		<div class="inner-left-border-wrapper" style="
+			position: absolute;
+			left: -@(InnerLinesOffset)px;
+			top: 50%;
+			transform: translateY(-50%);
+			display:@(ShowInnerLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="inner-line left" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(InnerLineOpacity));
+				padding-top: @(InnerLineThickness)px;
+				padding-left: @(InnerLineLenght)px;
+			"></div>
+		</div>
+		<div class="inner-right-border-wrapper" style="
+			position: absolute;
+			right: -@(InnerLinesOffset)px;
+			top: 50%;
+			transform: translateY(-50%);
+			display: @(ShowInnerLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="inner-line right" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(InnerLineOpacity));
+				padding-top: @(InnerLineThickness)px;
+				padding-right: @(InnerLineLenght)px;
+			"></div>
+		</div>
+		<div class="outer-top-border-wrapper" style="
+			position: absolute;
+			top: -@(OuterLineOffset)px;
+			left: 50%;
+			transform: translateX(-50%);
+			display: @(ShowOuterLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="outer-line top" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(OuterLineOpacity));
+				padding-left: @(OuterLineThickness)px;
+				padding-top: @(OuterLineLenght)px;
+			"></div>
+		</div>
+		<div class="outer-bottom-border-wrapper" style="
+			position: absolute;
+			bottom: -@(OuterLineOffset)px;
+			left: 50%;
+			transform: translateX(-50%);
+			display: @(ShowOuterLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="outer-line bottom" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(OuterLineOpacity));
+				padding-left: @(OuterLineThickness)px;
+				padding-bottom: @(OuterLineLenght)px;
+			"></div>
+		</div>
+		<div class="outer-left-border-wrapper" style="
+			position: absolute;
+			left: -@(OuterLineOffset)px;
+			top: 50%;
+			transform: translateY(-50%);
+			display: @(ShowOuterLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="outer-line left" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(OuterLineOpacity));
+				padding-top: @(OuterLineThickness)px;
+				padding-left: @(OuterLineLenght)px;
+			"></div>
+		</div>
+		<div class="outer-right-border-wrapper" style="
+			position: absolute;
+			right: -@(OuterLineOffset)px;
+			top: 50%;
+			transform: translateY(-50%);
+			display: @(ShowOuterLines ? "flex" : "none");
+			border: @(Outline ? $"{OutlineThickness}px solid rgba(0, 0, 0, {OutlineOpacity})" : "none");
+		">
+			<div class="outer-line right" style="
+				background-color: rgba(@(Color.r * 255), @(Color.g * 255), @(Color.b * 255), @(OuterLineOpacity));
+				padding-top: @(OuterLineThickness)px;
+				padding-right: @(OuterLineLenght)px;
+			"></div>
+		</div>
+    </div>
+</root>
+
+@code
+{
+	// Position properties
+	[Property] 
+	[Category("Position")] public bool IsPercentage { get; set; } = true;
+	[Property]
+	[Category("Position")] public Vector2 Position { get; set; } = new Vector2(50, 50);
+
+	// Crosshair properties
+	[Property]
+	[Category("Crosshair")] public Color Color { get; set; } = Color.FromRgb(0x2EFF00);
+	[Property]
+	[Category("Crosshair")] public bool Outline { get; set; } = true;
+	[Property]
+	[Range(0f, 1f, 0.001f)]
+	[Category("Crosshair")] public float OutlineOpacity { get; set; } = 1f;
+	[Property]
+	[Range(1, 10, 1)]
+	[Category("Crosshair")] public int OutlineThickness { get; set; } = 2;
+	[Property]
+	[Category("Crosshair")] public bool CenterDot { get; set; } = true;
+	[Property]
+	[Range(0f, 1f, 0.001f)]
+	[Category("Crosshair")] public float CenterDotOpacity { get; set; } = 1f;
+	[Property]
+	[Range(1, 10, 1)]
+	[Category("Crosshair")] public int CenterDotThickness { get; set; } = 1;
+
+	// Inner Lines properties
+	[Property]
+	[Category("Inner Lines")] public bool ShowInnerLines { get; set; } = true;
+	[Property]
+	[Range(0f, 1f, 0.001f)]
+	[Category("Inner Lines")] public float InnerLineOpacity { get; set; } = 1f;
+	[Property]
+	[Range(0, 20, 1)]
+	[Category("Inner Lines")] public int InnerLineLenght { get; set; } = 10;
+	[Property]
+	[Range(0, 10, 1)]
+	[Category("Inner Lines")] public int InnerLineThickness { get; set; } = 1;
+	[Property]
+	[Range(0, 20, 1)]
+	[Category("Inner Lines")] public int InnerLinesOffset { get; set; } = 2;
+
+	// Outer Lines properties
+	[Property]
+	[Category("Outer Lines")] public bool ShowOuterLines { get; set; } = false;
+	[Property]
+	[Range(0f, 1f, 0.001f)]
+	[Category("Outer Lines")] public float OuterLineOpacity { get; set; } = 0.5f;
+	[Property]
+	[Range(0, 20, 1)]
+	[Category("Outer Lines")] public int OuterLineLenght { get; set; }
+	[Property]
+	[Range(0, 10, 1)]
+	[Category("Outer Lines")] public int OuterLineThickness { get; set; }
+	[Property]
+	[Range(0, 20, 1)]
+	[Category("Outer Lines")] public int OuterLineOffset { get; set; }
+
+	// Code properties
+	[Property]
+	[Category("Code")] public string Code { get; set; }
+
+	// Member variables
+	private string _cachedCode = null;
+
+	public string EncodeCrosshairParameters()
+	{
+		// Convert boolean values to 1 or 0
+		string EncodeBool(bool value) => value ? "1" : "0";
+		// Convert float values to a shortened string representation (up to 2 decimal places)
+		string EncodeFloat(float value) => Math.Round(value, 2).ToString("0.##");
+		// Convert integers directly to string
+		string EncodeInt(int value) => value.ToString();
+
+		// Concatenate all parameters into a shortened format
+		var parameters = $"{EncodeBool(IsPercentage)}," +
+							$"{EncodeFloat(Position.x)},{EncodeFloat(Position.y)}," +
+							$"{EncodeFloat(Color.r)},{EncodeFloat(Color.g)},{EncodeFloat(Color.b)}," +
+							$"{EncodeBool(Outline)},{EncodeFloat(OutlineOpacity)},{EncodeInt(OutlineThickness)}," +
+							$"{EncodeBool(CenterDot)},{EncodeFloat(CenterDotOpacity)},{EncodeInt(CenterDotThickness)}," +
+							$"{EncodeBool(ShowInnerLines)},{EncodeFloat(InnerLineOpacity)},{EncodeInt(InnerLineLenght)}," +
+							$"{EncodeInt(InnerLineThickness)},{EncodeInt(InnerLinesOffset)}," +
+							$"{EncodeBool(ShowOuterLines)},{EncodeFloat(OuterLineOpacity)},{EncodeInt(OuterLineLenght)}," +
+							$"{EncodeInt(OuterLineThickness)},{EncodeInt(OuterLineOffset)}";
+		return parameters;
+	}
+
+	public void DecodeCrosshairParameters(string encodedString)
+	{
+		var parameters = encodedString.Split(',');
+
+		// Convert "1" or "0" back to boolean
+		bool DecodeBool(string value) => value == "1";
+		// Convert string back to float
+		float DecodeFloat(string value) => float.Parse(value);
+		// Convert string back to int
+		int DecodeInt(string value) => int.Parse(value);
+
+		// Assign the decoded values back to the properties
+		IsPercentage = DecodeBool(parameters[0]);
+		Position = new Vector2(DecodeFloat(parameters[1]), DecodeFloat(parameters[2]));
+		Color = new Color(DecodeFloat(parameters[3]), DecodeFloat(parameters[4]), DecodeFloat(parameters[5]));
+		Outline = DecodeBool(parameters[6]);
+		OutlineOpacity = DecodeFloat(parameters[7]);
+		OutlineThickness = DecodeInt(parameters[8]);
+		CenterDot = DecodeBool(parameters[9]);
+		CenterDotOpacity = DecodeFloat(parameters[10]);
+		CenterDotThickness = DecodeInt(parameters[11]);
+		ShowInnerLines = DecodeBool(parameters[12]);
+		InnerLineOpacity = DecodeFloat(parameters[13]);
+		InnerLineLenght = DecodeInt(parameters[14]);
+		InnerLineThickness = DecodeInt(parameters[15]);
+		InnerLinesOffset = DecodeInt(parameters[16]);
+		ShowOuterLines = DecodeBool(parameters[17]);
+		OuterLineOpacity = DecodeFloat(parameters[18]);
+		OuterLineLenght = DecodeInt(parameters[19]);
+		OuterLineThickness = DecodeInt(parameters[20]);
+		OuterLineOffset = DecodeInt(parameters[21]);
+	}
+
+	protected override void OnStart()
+	{
+		if (Code == null)
+		{
+			Code = EncodeCrosshairParameters();
+		}
+		DecodeCrosshairParameters(Code);
+		_cachedCode = Code;
+	}
+
+	protected override void OnUpdate()
+	{
+		if (Code != _cachedCode)
+		{
+			DecodeCrosshairParameters(Code);
+		}
+		Code = EncodeCrosshairParameters();
+		_cachedCode = Code;
+	}
+
+	/// <summary>
+	/// the hash determines if the system should be rebuilt. If it changes, it will be rebuilt
+	/// </summary>
+	protected override int BuildHash()
+	{
+		var positionHash = System.HashCode.Combine( 
+			IsPercentage,
+			Position
+		);
+
+		var crosshairHash = System.HashCode.Combine( 
+			Color,
+			Outline,
+			OutlineOpacity,
+			OutlineThickness,
+			CenterDot,
+			CenterDotOpacity,
+			CenterDotThickness
+		);
+
+		var innerLinesHash = System.HashCode.Combine(
+			ShowInnerLines,
+			InnerLineOpacity,
+			InnerLineLenght,
+			InnerLineThickness,
+			InnerLinesOffset
+		);
+
+		var outerLinesHash = System.HashCode.Combine(
+			ShowOuterLines,
+			OuterLineOpacity,
+			OuterLineLenght,
+			OuterLineThickness,
+			OuterLineOffset
+		);
+
+		var codeHash = Code.GetHashCode();
+		
+		return System.HashCode.Combine(
+			positionHash,
+			crosshairHash,
+			innerLinesHash,
+			outerLinesHash,
+			codeHash
+		);
+	}
+}

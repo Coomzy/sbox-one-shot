@@ -1,0 +1,12 @@
+{
+  "crouchMoveSpeed": 64,
+  "walkMoveSpeed": 190,
+  "runMoveSpeed": 190,
+  "sprintMoveSpeed": 320,
+  "slideFalloffCurve": {
+    "rangex": "0,0",
+    "rangey": "0,0"
+  },
+  "__references": [],
+  "__version": 0
+}

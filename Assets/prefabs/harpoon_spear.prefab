@@ -1,0 +1,189 @@
+{
+  "RootObject": {
+    "__guid": "267b2442-d483-4c54-b0be-e4dad8c625f2",
+    "Flags": 0,
+    "Name": "harpoon_spear",
+    "Tags": "projectile",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "Components": [
+      {
+        "__type": "HarpoonSpear",
+        "__guid": "b30f385b-5468-4dcd-b0bb-c7a030893f78",
+        "capsuleCollider": {
+          "_type": "component",
+          "component_id": "23c4c615-29f0-4b93-b660-fed8a521d6f8",
+          "go": "267b2442-d483-4c54-b0be-e4dad8c625f2",
+          "component_type": "CapsuleCollider"
+        },
+        "isInFlight": true,
+        "lastPos": "0,0,0",
+        "lastRot": "0,0,0,0",
+        "launchForce": 3500,
+        "model": {
+          "_type": "component",
+          "component_id": "f402c951-01d5-4dea-a562-e569223963fd",
+          "go": "7ef6034a-8804-4aef-8dd6-4cf17afdeee9",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "outline": {
+          "_type": "component",
+          "component_id": "a1d0572b-fe0f-4360-84e9-93b4dfa106a2",
+          "go": "267b2442-d483-4c54-b0be-e4dad8c625f2",
+          "component_type": "HighlightOutline"
+        },
+        "rigidbody": {
+          "_type": "component",
+          "component_id": "fd446997-d37b-4542-aa6b-f4437080f8bf",
+          "go": "267b2442-d483-4c54-b0be-e4dad8c625f2",
+          "component_type": "Rigidbody"
+        },
+        "traceDistance": 500
+      },
+      {
+        "__type": "Sandbox.Rigidbody",
+        "__guid": "fd446997-d37b-4542-aa6b-f4437080f8bf",
+        "AngularDamping": 0,
+        "Gravity": false,
+        "LinearDamping": 0,
+        "Locking": {
+          "Pitch": true,
+          "Yaw": true,
+          "Roll": true
+        },
+        "MassCenterOverride": "0,0,0",
+        "MassOverride": 0,
+        "MotionEnabled": true,
+        "OverrideMassCenter": false,
+        "RigidbodyFlags": 0,
+        "StartAsleep": false
+      },
+      {
+        "__type": "Sandbox.CapsuleCollider",
+        "__guid": "23c4c615-29f0-4b93-b660-fed8a521d6f8",
+        "End": "1.1,0,0",
+        "IsTrigger": false,
+        "Radius": 0.35,
+        "Start": "-35.20003,0,0",
+        "Static": false,
+        "Surface": "surfaces/metal.weapon.surface"
+      },
+      {
+        "__type": "Sandbox.HighlightOutline",
+        "__guid": "a1d0572b-fe0f-4360-84e9-93b4dfa106a2",
+        "__enabled": false,
+        "Color": "0,0,0,0",
+        "InsideColor": "0,0,0,0",
+        "InsideObscuredColor": "0,0,0,0",
+        "ObscuredColor": "1,1,1,1",
+        "Width": 0.25
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "4c08c173-a98e-4d6d-b6fa-af8585c8bce9",
+        "Flags": 0,
+        "Name": "Spear Holder",
+        "Enabled": true,
+        "Children": [
+          {
+            "__guid": "7ef6034a-8804-4aef-8dd6-4cf17afdeee9",
+            "Flags": 0,
+            "Name": "Spear",
+            "Position": "-37.82483,-2.45,4.3",
+            "Enabled": true,
+            "Components": [
+              {
+                "__type": "Sandbox.SkinnedModelRenderer",
+                "__guid": "f402c951-01d5-4dea-a562-e569223963fd",
+                "BodyGroups": 18446744073709551615,
+                "CreateBoneObjects": false,
+                "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                "Morphs": {},
+                "RenderOptions": {
+                  "GameLayer": true,
+                  "OverlayLayer": false,
+                  "BloomLayer": false,
+                  "AfterUILayer": false
+                },
+                "RenderType": "On",
+                "Tint": "1,1,1,1",
+                "UseAnimGraph": true
+              },
+              {
+                "__type": "Sandbox.CapsuleCollider",
+                "__guid": "84598842-001a-4735-b7c9-6b9b472e7a27",
+                "__enabled": false,
+                "End": "38.50006,2.587,-4.25",
+                "IsTrigger": false,
+                "Radius": 0.35,
+                "Start": "2.5,2.587,-4.25",
+                "Static": false,
+                "Surface": "surfaces/metal.weapon.surface"
+              }
+            ],
+            "Children": [
+              {
+                "__guid": "57e350ba-1c94-49f6-8b8a-288da86f6a6a",
+                "Flags": 0,
+                "Name": "Prong",
+                "Position": "39.04791,2.353088,-4.299423",
+                "Components": [
+                  {
+                    "__type": "Sandbox.CapsuleCollider",
+                    "__guid": "3c29903d-520e-4229-bf3b-17a7edad7f5f",
+                    "End": "-4,0,1.800007",
+                    "IsTrigger": false,
+                    "Radius": 0.35,
+                    "Start": "0,0,0",
+                    "Static": false,
+                    "Surface": "surfaces/metal.weapon.surface"
+                  },
+                  {
+                    "__type": "Sandbox.CapsuleCollider",
+                    "__guid": "395b3ecb-d919-4094-bbdc-c814a5a414dc",
+                    "End": "-4,0,-1.8",
+                    "IsTrigger": false,
+                    "Radius": 0.35,
+                    "Start": "0,0,0",
+                    "Static": false,
+                    "Surface": "surfaces/metal.weapon.surface"
+                  }
+                ]
+              },
+              {
+                "__guid": "f3657711-5751-421f-aab6-088f8cf85291",
+                "Flags": 0,
+                "Name": "Player Collision",
+                "Position": "39.04791,2.353088,-4.299423",
+                "Tags": "projectile_player",
+                "Components": [
+                  {
+                    "__type": "Sandbox.CapsuleCollider",
+                    "__guid": "b037afb1-9ecf-4457-98db-b1a2fda1da09",
+                    "End": "-7.5,0,0",
+                    "IsTrigger": false,
+                    "Radius": 5,
+                    "Start": "-2.5,0,0",
+                    "Static": false
+                  },
+                  {
+                    "__type": "HarpoonSpearPlayerCollision",
+                    "__guid": "4fc283e5-523c-43b7-8575-83a9a7c0dc3e"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

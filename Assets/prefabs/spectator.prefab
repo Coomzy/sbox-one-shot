@@ -1,0 +1,25 @@
+{
+  "RootObject": {
+    "__guid": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
+    "Flags": 0,
+    "Name": "spectator",
+    "Enabled": true,
+    "NetworkMode": 0,
+    "Components": [
+      {
+        "__type": "Spectator",
+        "__guid": "41b0c516-7729-4f4d-830f-22af9116cfc2",
+        "flyMoveSpeed": 190,
+        "sprintMoveSpeed": 320
+      }
+    ],
+    "Children": [],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

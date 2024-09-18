@@ -1,0 +1,14 @@
+{
+  "Title": "CrosshairBuilder",
+  "Type": "library",
+  "Org": "notathreat",
+  "Ident": "crosshairbuilder",
+  "Schema": 1,
+  "IncludeSourceFiles": true,
+  "Resources": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "Metadata": {
+    "CsProjName": ""
+  }
+}

@@ -1,0 +1,37 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+
+<root>
+	<div class="title">@GetGameState()</div>
+</root>
+
+@code
+{
+	string GetGameState()
+	{
+		if (OSGameMode.instance == null)
+		{
+			return "";
+		}
+
+		if (OSGameMode.instance.modeState == ModeState.PreGame)
+		{
+			return "Pre Game";
+		}
+
+		if (OSGameMode.instance.modeState == ModeState.PreRound)
+		{
+			return "Pre Round";
+		}
+
+		if (OSGameMode.instance.modeState == ModeState.PostRound)
+		{
+			return "Post Round";
+		}
+
+		return "";
+	}
+
+	protected override int BuildHash() => System.HashCode.Combine(GetGameState());
+}

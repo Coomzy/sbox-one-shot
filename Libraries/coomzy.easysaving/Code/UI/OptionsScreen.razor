@@ -1,0 +1,184 @@
+﻿@using Sandbox;
+@using Sandbox.Audio;
+@using Sandbox.UI;
+@using Sandbox.Services;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@inherits PanelComponent
+
+<root class="menu">
+    <div class="container">
+        <div class="title">
+            <span>Options</span>
+        </div>
+        @if (activeTab != null)
+        {
+            <div class="content tabs-container">
+                <div class="tabs-group">
+                    @foreach (var tab in tabs)
+                    {
+                        if (tab == null)
+                            continue;
+
+                        <div class="button red @(tab == activeTab ? "active" : "inactive")" onclick="@(() => activeTab = tab)">
+                            @tab.tabName
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="content tab-content" CanDragScroll="false">
+                <div class="table">
+                    @foreach (var group in activeTab.groups)
+                    {
+                        <div class="row title">
+                            <div class="label">@group.groupName</div>
+                        </div>
+
+                        foreach (var element in group.elements)
+                        {
+                            var elementType = element.GetType();
+
+                            <div class="row setting">
+                                <div class="column key">
+                                    <div class="label">@element.displayName:</div>
+                                </div>
+
+                                @if (element is UIToggle)
+                                {
+                                    var toggleElement = (UIToggle)element;
+                                    <div class="column value">
+                                        <div class="buttons">
+                                            <div class="button @GetToggleColor(true, toggleElement.getter())" onclick="@(() => toggleElement.setter(false))">Off</div>
+                                            <div class="button @GetToggleColor(false, toggleElement.getter())" onclick="@(() => toggleElement.setter(true))">On</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (element is UISlider)
+                                {
+                                    var sliderElement = (UISlider)element;
+                                    <div class="column value">
+                                        <div class="slider">
+                                            <SliderControl Value="@(sliderElement.getter())" OnValueChanged="@(sliderElement.setter)" Min="@(sliderElement.min)" Max="@(sliderElement.max)" Step="@(sliderElement.step)"></SliderControl>
+                                        </div>
+                                    </div>
+                                }
+                                @if (element is UICyclerBase)
+                                {
+                                    var cyclerElement = (UICyclerBase)element;
+                                    <div class="column value">
+                                        <div class="cycling-selector">
+                                            <div class="cycling-controls">
+                                                <button class="arrow left" onclick="@(() => cyclerElement.CycleLeft())">&#8249;</button>
+                                                <span class="value" id="current-value">@cyclerElement.onGet()</span>
+                                                <button class="arrow right" onclick="@(() => cyclerElement.CycleRight())">&#8250;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        <div class="menu buttons">
+            <div class="button red" onclick="@(() => ButtonClose())">
+                Close
+            </div>
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static string GetToggleColor(bool isOff, bool value)
+    {
+        if (isOff)
+        {
+            return value ? "gray" : "red";
+        }
+        return value ? "green" : "gray";
+    }
+
+
+    public List<UITab> tabs { get; set; } = new List<UITab>();
+    public UITab activeTab { get; set; }
+
+    protected override void OnAwake()
+    {
+        base.OnAwake();
+
+        var sortedValues = EasySaveNonGenericBase.typeToInst.Values.OrderBy(v => (v.uiTab != null) ? v.uiTab.order : 99999).ToList();
+
+        foreach (var sortedValue in sortedValues)
+        {
+            if (sortedValue == null)
+                continue;
+
+            tabs.Add(sortedValue.uiTab);
+        }
+
+        if (tabs != null && tabs.Count() > 0)
+        {
+            activeTab = tabs[0];
+        }
+    }
+
+    protected override void OnUpdate()
+    {
+        base.OnUpdate();
+
+        if (Input.EscapePressed)
+        {
+            Input.EscapePressed = false;
+            ButtonClose();
+        }
+    }
+
+    [ConCmd("open_options")]
+    public static void OpenOptions()
+    {
+        var inst = Game.ActiveScene.Components.Get<OptionsScreen>(true);
+        if (inst != null)
+        {
+            inst.Enabled = true;
+        }
+        else
+        {
+            var optionsScreenGO = Game.ActiveScene.CreateObject();
+            var screenPanel = optionsScreenGO.Components.Create<ScreenPanel>();
+            var optionsScreen = optionsScreenGO.Components.Create<OptionsScreen>();
+        }
+    }
+
+    void ButtonClose()
+    {
+        var soundHandle = Sound.Play("ui.navigate.back");
+        soundHandle.TargetMixer = Mixer.FindMixerByName("UI");
+        Close();
+    }
+
+    public void Close()
+    {
+        this.Enabled = false;
+    }
+
+    public bool wasMouseVisible { get; set; } = false;
+    protected override void OnEnabled()
+    {
+        wasMouseVisible = Mouse.Visible;
+        Mouse.Visible = true;
+    }
+
+    protected override void OnDisabled()
+    {
+        EasySaveNonGenericBase.SaveAll();
+        Mouse.Visible = wasMouseVisible;
+    }
+
+    /// <summary>
+    /// update every second
+    /// </summary>
+    protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt());
+}

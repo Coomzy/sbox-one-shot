@@ -1,0 +1,15 @@
+{
+  "Title": "Easy Saving",
+  "Type": "library",
+  "Org": "coomzy",
+  "Ident": "easysaving",
+  "Schema": 1,
+  "IncludeSourceFiles": true,
+  "Resources": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "IsWhitelistDisabled": false,
+  "Metadata": {
+    "CsProjName": ""
+  }
+}

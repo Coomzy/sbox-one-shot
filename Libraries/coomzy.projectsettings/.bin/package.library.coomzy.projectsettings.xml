@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>package.library.coomzy.projectsettings</name>
+    </assembly>
+    <members>
+        <member name="M:ProjectSetting`1.OnLoad">
+            <summary>
+            This currently only gets called once in editor
+            </summary>
+        </member>
+        <member name="M:ProjectSetting`1.Clear">
+            <summary>
+            This clears the instance, you probably don't want to do this unless you're doing editor code
+            </summary>
+        </member>
+        <member name="T:ProjectSettingNonGenericBase">
+            <summary>
+            Generic workaround for ProjectSetting&lt;&gt;, use that not this!
+            </summary>
+        </member>
+    </members>
+</doc>
