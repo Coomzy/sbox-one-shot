@@ -1,5 +1,5 @@
 
-public sealed class JumpPad : Component, Component.ITriggerListener
+public class JumpPad : Component, Component.ITriggerListener
 {
 	[Property] public BoxCollider boxCollider { get; set; }
 

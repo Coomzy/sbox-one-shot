@@ -5,17 +5,29 @@ using Sandbox.Network;
 using System;
 using static Sandbox.Gizmo;
 
-public class WorldSettings : SingletonComponent<WorldSettings>, Component.INetworkListener
+public class WorldSettings : Component, Component.INetworkListener
 {
+	public static WorldSettings instance { get; private set; }
+
 	[Property] public GameObject playerInfoPrefab { get; set; }
 	[Property] public GameObject spectatorPrefab { get; set; }
 	[Property] public GameObject spectatorVRPrefab { get; set; }
+	[Property] public GameObject gameModePrefab { get; set; }
+	[Property] public MapInstance mapInstance { get; set; }
 	[Property] public MapCollider mapCollider { get; set; }
 
 	[Property] public float killZ { get; set; } = -500.0f;
 
-	[Property, Range(0,1)] public float sliderRange { get; set; }
-	[Property] public float sliderValue => PlayerSettings.instance.characterMovementConfig.slideFalloffCurve.Evaluate(sliderRange);
+	protected override void OnAwake()
+	{
+		instance = this;
+	}
+
+	protected override void OnDestroy()
+	{
+		instance = null;
+		base.OnDestroy();
+	}
 
 	protected override void OnStart()
 	{

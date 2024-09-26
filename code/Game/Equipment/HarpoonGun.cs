@@ -2,112 +2,83 @@
 using Sandbox;
 using Sandbox.Utility;
 using System;
-using System.Numerics;
+using System.Threading.Tasks;
+using static Sandbox.SerializedProperty;
+
+[GameResource("HarpoonGunConfig", "hgc", "HarpoonGunConfig")]
+public class HarpoonGunConfig : GameResource
+{
+	[Group("Reload"), Order(-1), Property] public float reloadTime { get; set; } = 0.35f;
+	[Group("Reload"), Order(-1), Property] public Curve reloadXAxisCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f), new Curve.Frame(1.0f, 1.0f));
+	[Group("Reload"), Order(-1), Property] public Curve reloadYAxisCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f), new Curve.Frame(1.0f, 1.0f));
+	[Group("Reload"), Order(-1), Property] public Curve reloadZAxisCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f), new Curve.Frame(1.0f, 1.0f));
+}
 
 [Group("GMF")]
 public class HarpoonGun : Equipment
 {
-	[Group("Setup"), Order(-1), Property] public GameObject spearSpawnPoint {  get; set; }
 	[Group("Setup"), Order(-1), Property] public GameObject spearPrefab {  get; set; }
 	[Group("Setup"), Order(-1), Property] public GameObject spearHolder {  get; set; }
 
-	[Group("Setup"), Order(-1), Property] public SkinnedModelRenderer gunCombinedModel {  get; set; }
 	[Group("Setup"), Order(-1), Property] public SkinnedModelRenderer gunModel {  get; set; }
 	[Group("Setup"), Order(-1), Property] public SkinnedModelRenderer spearModel {  get; set; }
 
-	protected async override void OnStart()
+	[Group("Config"), Order(0), Property] public HarpoonGunConfig config {  get; set; }
+
+	[Group("Runtime"), Order(100), Property, Sync, Change("OnRep_hasAmmo")] public bool hasAmmo {  get; set; } = true;
+	[Group("Runtime"), Order(100), Property] public bool isReloading {  get; set; } = false;
+
+	protected override void OnStart()
 	{
 		base.OnStart();
-		while (instigator == null)
-			await Task.Frame();
 
-		//Log.Info($"HarpoonGun::OnStart() OwnerConnection: {GameObject.Network.OwnerConnection}, IsProxy: {IsProxy}");
+		procAnim.config = GameSettings.instance.harpoonProceduralAnimationConfig;
+		config = GameSettings.instance.harpoonGunConfig;
 
-		gunCombinedModel.GameObject.Enabled = true;
-		gunModel.GameObject.Enabled = true;
-		spearModel.GameObject.Enabled = true;
-
-		gunCombinedModel.RenderOptions.Overlay = !IsProxy;
-		gunModel.RenderOptions.Overlay = !IsProxy;
-		spearModel.RenderOptions.Overlay = !IsProxy;
-
-		var renderType = IsProxy ? ModelRenderer.ShadowRenderType.On : ModelRenderer.ShadowRenderType.Off;
-		gunCombinedModel.RenderType = renderType;
-		gunModel.RenderType = renderType;
-		spearModel.RenderType = renderType;
-
-		GameObject.Network.DisableInterpolation();
-
-		gunCombinedModel.GameObject.Enabled = !IsProxy;
-		gunModel.GameObject.Enabled = IsProxy;
-		spearModel.GameObject.Enabled = IsProxy;
-
-		procAnim.Enabled = !IsProxy;
-
-		if (IsProxy)
+		// TODO: This should be done in equipment, but isn't needed because...
+		// ... OSCharacter can ONLY have this gun so it's on the prefab instead of spawning at runtime
+		/*if (IsProxy)
 		{
-			while (instigator?.body == null)
-				await Task.Frame();
-
-			GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-			Transform.LocalPosition = Vector3.Zero;
-			Transform.LocalRotation = Quaternion.Identity;
 			return;
 		}
+
+		while (instigator?.body == null)
+			await Task.Frame();
+
+		GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
+		Transform.LocalPosition = Vector3.Zero;
+		Transform.LocalRotation = Quaternion.Identity;*/
 	}
-	
+
+	public override void SetFirstPersonMode(bool isFirstPerson)
+	{
+		base.SetFirstPersonMode(isFirstPerson);
+
+		gunModel.GameObject.Enabled = false;
+		spearModel.GameObject.Enabled = false;
+
+		gunModel.RenderType = ModelRenderer.ShadowRenderType.Off;
+		spearModel.RenderType = ModelRenderer.ShadowRenderType.Off;
+
+		gunModel.RenderOptions.Overlay = isFirstPerson;
+		spearModel.RenderOptions.Overlay = isFirstPerson;
+	}
+
 	protected override void OnUpdate()
 	{
 		base.OnUpdate();
-		//string parameter = "castShadows";
-		//Log.Info($"gunCombinedModel castShadows: {gunCombinedModel.Parameters.GetBool(parameter)} gunModel castShadows: {gunModel.Parameters.GetBool(parameter)}");
 
-		/*var velocity = owner.characterController.Velocity.WithZ(0);
-		var localVelocity = owner.characterController.Transform.World.NormalToLocal(velocity);
-
-		var lerp = MathX.LerpInverse(velocity.Length, 0.0f, 320.0f);
-		var lerpWalkToSprint = MathX.LerpInverse(velocity.Length, 190.0f, 320.0f);
-		var easedLerp = Easing.QuadraticIn(lerpWalkToSprint);
-
-		var bobAmount = 2.5f;
-		var bobTarget = MathX.Lerp(0.0f, bobAmount, lerp);
-		var desiredBobRate = MathX.Lerp(7.5f, 20.0f, lerpWalkToSprint);
-		bobRate = MathY.MoveTowards(bobRate, desiredBobRate, Time.Delta * 75.0f);
-
-		if (isDownBob)
+		if (IsProxy)
 		{
-			bobTarget = -bobTarget;
+			return;
 		}
 
-		bool hasExceededTarget = Transform.LocalPosition.z >= bobTarget;
+		//Debuggin.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
 
-		if (isDownBob)
+		if (Input.Pressed("debug"))
 		{
-			hasExceededTarget = Transform.LocalPosition.z <= bobTarget;
+			Reload();
 		}
-
-		if (hasExceededTarget)
-		{
-			isDownBob = !isDownBob;
-		}
-
-		if (velocity.IsNearZeroLength)
-		{
-			isDownBob = false;
-		}
-
-		Vector3 localPos = Transform.LocalPosition;
-		localPos.z = MathY.MoveTowards(localPos.z, bobTarget, Time.Delta * bobRate);
-		Transform.LocalPosition = localPos;*/
-
-		//Gizmo.Draw.ScreenText($"bobTarget: {bobTarget}", new Vector2(10, 10));
-		//Gizmo.Draw.ScreenText($"bobRate: {bobRate}", new Vector2(10, 25));
-		//Gizmo.Draw.ScreenText($"isDownBob: {isDownBob}", new Vector2(10, 40));
-		//Gizmo.Draw.ScreenText($"velocity: {velocity.Length}", new Vector2(10, 55));
-
-		//float smooth = 10.0f;
-		//Rotation newRotation = Quaternion.Identity;
-		//Transform.LocalRotation = Quaternion.Lerp(Transform.LocalRotation, newRotation, (Time.Delta * smooth));
 	}
 
 	/*public async override void OnNetworkSpawn(Connection connection)
@@ -129,11 +100,24 @@ public class HarpoonGun : Equipment
 		shadowProxy.Transform.LocalRotation = Quaternion.Identity;
 	}*/
 
-	public async override void FireStart()
+	public override bool CanFire()
+	{
+		if (!hasAmmo)
+		{
+			return false;
+		}
+		return base.CanFire();
+	}
+
+	public override void FireStart()
 	{
 		base.FireStart();
 
-		await Task.FixedUpdate();
+		if (!hasAmmo)
+		{
+			return;
+		}
+		hasAmmo = false;		
 
 		var spawnPoint = PlayerCamera.instance.GetPointInFront(70.0f);
 		var spawnRot = PlayerCamera.instance.Transform.Rotation;
@@ -141,18 +125,20 @@ public class HarpoonGun : Equipment
 		var spearInst = spearPrefab.Clone(spawnPoint, spawnRot);
 		if (spearInst != null)
 		{
-			spearInst.NetworkSpawn(GameObject.Network.OwnerConnection);
+			spearInst.NetworkSpawn(GameObject.Network.Owner);
 
 			var spear = spearInst.Components.Get<HarpoonSpear>();			
 			if (spear != null)
 			{
 				spear.owner = this;
-				spear.Launch(instigator.controller.Velocity);
 			}
-			Test(spear);
 		}
 
-		var handle = Sound.Play("harpoon.fire", spearSpawnPoint.Transform.Position);		
+		model.GameObject.Enabled = false;
+		gunModel.GameObject.Enabled = true;
+		spearModel.GameObject.Enabled = false;
+
+		var handle = Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);		
 		if (handle != null)
 		{
 			handle.Occlusion = false;
@@ -162,107 +148,91 @@ public class HarpoonGun : Equipment
 		Fire_Remote();
 	}
 
-	async void Test(HarpoonSpear spear)
-	{
-		gunCombinedModel.GameObject.Enabled = false;
-		gunModel.GameObject.Enabled = true;
-		spearModel.GameObject.Enabled = true;
-		spearModel.Transform.LocalPosition = new Vector3(0, 0, 0);
-
-		gunModel.SceneModel.Flags.CastShadows = false;
-		spearModel.SceneModel.Flags.CastShadows = false;
-
-		spear.model.Enabled = false;
-		var proxy = (HarpoonGun_Proxy)equipmentProxy;
-		proxy.SetState(false);
-
-		var preCheckDistance = 350.0f;
-		var height = 5.0f;
-		var radius = 5.0f;
-
-		var start = PlayerCamera.instance.GetPointInFront(0.0f);
-		var end = PlayerCamera.instance.GetPointInFront(preCheckDistance);
-
-		var capsule = Capsule.FromHeightAndRadius(height, radius);
-		var trace = Scene.Trace.Capsule(capsule, start, end)
-			.IgnoreGameObjectHierarchy(GameObject)
-			.IgnoreGameObjectHierarchy(instigator?.GameObject)
-			.IgnoreGameObjectHierarchy(spear.GameObject);
-		var result = trace.Run();
-
-		var endResult = result.Hit ? result.HitPosition : end;
-		var moveDist = Vector3.DistanceBetween(start, endResult);		
-
-		TimeUntil reachSpear = 0.25f;
-		float forwardOnlyTime = 0.15f;
-		Vector3 startPos = spearModel.Transform.Position;
-
-		if (result.Hit)
-		{
-			var lerp = MathX.LerpInverse(moveDist, 0.0f, preCheckDistance);
-			reachSpear = MathX.Lerp(0.01f, 0.25f, lerp);
-			Log.Info($"reachSpear: {reachSpear.Absolute}, lerp: {lerp}, hit: {result.GameObject}");
-		}
-
-		//Gizmo.Draw.LineCapsule(capsule);
-		//ExtraDebug.draw.Capsule(capsule, 3.5f);
-		ExtraDebug.draw.Capsule(start, end, radius, 3.5f);
-
-		while (!reachSpear)
-		{
-			var destination = spear.Transform.Position;
-			var localPoint = spearModel.Transform.World.PointToLocal(destination).WithY(0).WithZ(0);		
-			var destinationForwardOnly = spearModel.Transform.World.PointToWorld(localPoint);
-
-			if (reachSpear.Passed < forwardOnlyTime)
-			{
-				//destination = destinationForwardOnly;
-			}
-			else
-			{
-				var lerp = MathX.LerpInverse(reachSpear.Passed, forwardOnlyTime, reachSpear.Absolute);
-				//destination = Vector3.Lerp(destinationForwardOnly, destination, lerp);
-			}
-
-			/*Gizmo.Transform = Game.ActiveScene.Transform.World;
-			Gizmo.Draw.Color = Color.Green;
-			Gizmo.Draw.Line(spearSpawnPoint.Transform.Position, destination);
-			Gizmo.Draw.Color = Color.Yellow;
-			Gizmo.Draw.Line(spearSpawnPoint.Transform.Position, destinationForwardOnly);*/
-
-			spearModel.Transform.Position = Vector3.Lerp(startPos, destination, reachSpear.Fraction);
-			await Task.Frame();
-		}
-
-		/*await Task.Frame();
-		spearModel.Transform.LocalPosition = new Vector3(25, 0, 0);
-
-		await Task.Frame();
-		spearModel.Transform.LocalPosition = new Vector3(50, 0, 0);*/
-		await Task.Frame();
-		spearModel.GameObject.Enabled = false;
-		spear.model.Enabled = true;
-
-		// TEMP: while there is no reloading
-		await Task.DelaySeconds(1.0f);
-
-		gunCombinedModel.GameObject.Enabled = true;
-		gunModel.GameObject.Enabled = false;
-		spearModel.GameObject.Enabled = false;
-
-		gunCombinedModel.SceneModel.Flags.CastShadows = false;
-
-		proxy.SetState(true);
-
-	}
-
 	[Broadcast]
 	public void Fire_Remote()
 	{
 		if (!IsProxy)
 			return;
 
-		Sound.Play("harpoon.fire", spearSpawnPoint.Transform.Position);
+		Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
 		instigator.body.Shoot();
+	}
+
+	public async void Reload()
+	{
+		if (isReloading)
+			return;
+
+		if (IsProxy)
+		{
+			return;
+		}
+		isReloading = true;
+
+		Sound.Play("harpoon.reload");
+
+		model.GameObject.Enabled = false;
+		gunModel.GameObject.Enabled = true;
+		spearModel.GameObject.Enabled = true;
+		HarpoonGun_Proxy proxy = equipmentProxy as HarpoonGun_Proxy;
+		if (proxy != null)
+		{
+			proxy.SetState(true);
+			var _ = ReloadAnimation(proxy.spearModel.Transform);
+		}
+
+		RemoteReloadAnim();
+
+		await ReloadAnimation(spearModel.Transform);
+		hasAmmo = true;
+		isReloading = false;
+
+		model.GameObject.Enabled = true;
+		gunModel.GameObject.Enabled = false;
+		spearModel.GameObject.Enabled = false;
+		Log.Info($"Reload!");
+	}
+
+	public async Task ReloadAnimation(GameTransform target)
+	{
+		TimeUntil reloadFinish = config.reloadTime;
+
+		Vector3 scale = Vector3.Zero;
+		while (!reloadFinish)
+		{
+			scale.x = config.reloadXAxisCurve.Evaluate(reloadFinish.Fraction);
+			scale.y = config.reloadYAxisCurve.Evaluate(reloadFinish.Fraction);
+			scale.z = config.reloadZAxisCurve.Evaluate(reloadFinish.Fraction);
+
+			target.LocalScale = scale;
+			await Task.Frame();
+		}
+	}
+
+	[Broadcast]
+	void RemoteReloadAnim()
+	{
+		if (!IsProxy)
+		{
+			return;
+		}
+
+		var handle = Sound.Play("harpoon.reload", muzzleSocket.Transform.Position);
+		handle.SpacialBlend = 1.0f;
+
+		HarpoonGun_Proxy proxy = equipmentProxy as HarpoonGun_Proxy;
+		if (proxy != null)
+		{
+			proxy.SetState(true);
+			var _ = ReloadAnimation(proxy.spearModel.Transform);
+		}
+	}
+
+	public void OnRep_hasAmmo(bool oldValue, bool newValue)
+	{
+		if (equipmentProxy is HarpoonGun_Proxy proxy)
+		{
+			proxy.SetState(newValue);
+		}
 	}
 }

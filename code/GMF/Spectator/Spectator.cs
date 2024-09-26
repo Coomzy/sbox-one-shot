@@ -1,36 +1,80 @@
 
+using System;
+using System.Numerics;
+using System.Reflection.PortableExecutable;
+
 [Group("GMF")]
 public class Spectator : Component
 {
 	public static Spectator instance;
 
-	[Property] public float flyMoveSpeed { get; set; } = 190.0f;
-	[Property] public float sprintMoveSpeed { get; set; } = 320.0f;
+	[Property] public float flyMoveSpeed { get; set; } = 500.0f;
+	[Property] public float sprintMoveSpeed { get; set; } = 750.0f;
 
-	protected void Awake()
+	Vector3 lastVelocity = Vector3.Zero;
+
+	float currentMoveSpeed
 	{
-		if (instance != null)
+		get
 		{
-			instance.Destroy();
-		}
+			if (Input.Down("run")) return sprintMoveSpeed;
 
+			return flyMoveSpeed;
+		}
+	}
+
+	public static bool TryCreate()
+	{
+		GetStartingPosAndRot(out var spawnPos, out var spawnRot);
+		return TryCreate(spawnPos, spawnRot);
+	}
+
+	public static bool TryCreate(Vector3 spawnPos, Rotation spawnRot)
+	{
+		if (Check.IsFullyValid(instance))
+		{
+			return false;
+		}
+		var spectatorPrefab = Game.IsRunningInVR ? WorldSettings.instance.spectatorVRPrefab : WorldSettings.instance.spectatorPrefab;
+		var spectatorInst = spectatorPrefab.Clone(spawnPos, spawnRot).BreakPrefab().Components.Get<Spectator>();
+		spectatorInst.GameObject.Name = $"Spectator Pawn";
+		return true;
+	}
+
+	protected override void OnAwake()
+	{
 		instance = this;
+	}
+
+	protected override void OnDestroy()
+	{
+		instance = null;
+		base.OnDestroy();
 	}
 
 	protected override void OnUpdate()
 	{
-		if (!IsUsingSpectatorCamera()) 
+		if (!IsUsingSpectatorCamera())
+		{
+			if (Check.IsFullyValid(PlayerCamera.cam))
+			{
+				Transform.Position = PlayerCamera.cam.Transform.Position;
+				Transform.Rotation = PlayerCamera.cam.Transform.Rotation;
+			}
+			return;
+		}
+
+		if (!AllowedMove())
 			return;
 
 		MouseInput();
+		MovementInput();
 	}
 
 	protected override void OnFixedUpdate()
 	{
 		if (!IsUsingSpectatorCamera())
 			return;
-
-		MovementInput();
 	}
 
 	void MouseInput()
@@ -42,46 +86,40 @@ public class Spectator : Component
 		Transform.Rotation = e.ToRotation();
 	}
 
-	float currentMoveSpeed
-	{
-		get
-		{
-			if (Input.Down("run")) return sprintMoveSpeed;
-
-			return sprintMoveSpeed;
-		}
-	}
-
 	void MovementInput()
 	{
-		Vector3 halfGravity = Scene.PhysicsWorld.Gravity * Time.Delta * 0.5f;
-
 		var wishVelocity = Input.AnalogMove;
 
-		float verticalInput = 0.0f;
+		wishVelocity *= Transform.Rotation;
+
 		if (Input.Down("jump"))
 		{
-			verticalInput += 1.0f;
+			wishVelocity.z = 1.0f;
 		}
-		if (Input.Down("duck"))
+		else if (Input.Down("duck"))
 		{
-			verticalInput -= 1.0f;
+			wishVelocity.z = -1.0f;
 		}
-		wishVelocity.z = verticalInput;
+		wishVelocity = wishVelocity.ClampLength(1);
 
-		if ( !wishVelocity.IsNearlyZero() )
+		/*if (!wishVelocity.IsNearlyZero())
 		{
 			wishVelocity = new Angles( 0, Transform.Rotation.Angles().yaw, 0 ).ToRotation() * wishVelocity;
 			wishVelocity = wishVelocity.ClampLength( 1 );
 			wishVelocity *= currentMoveSpeed;
-		}
+		}*/
+		wishVelocity *= currentMoveSpeed;
 
-		Transform.Position += wishVelocity * Time.Delta;
+		float moveToRate = wishVelocity.IsNearZeroLength ? 2500.0f : 4500.0f;
+		var newVelocity = MathY.MoveTowards(lastVelocity, wishVelocity, Time.Delta * moveToRate);
+		lastVelocity = newVelocity;
+		Transform.Position += lastVelocity * Time.Delta;
 	}
 
 	void UpdateCamera()
 	{
-		if (PlayerCamera.cam is null ) return;
+		if (!Check.IsFullyValid(PlayerCamera.cam))
+			return;
 
 		PlayerCamera.cam.Transform.Position = Transform.Position;
 		PlayerCamera.cam.Transform.Rotation = Transform.Rotation;
@@ -96,11 +134,69 @@ public class Spectator : Component
 		UpdateCamera();
 	}
 
-	public bool IsUsingSpectatorCamera()
+	public virtual bool AllowedMove()
 	{
-		if (PlayerInfo.local?.character != null )
+		if (!Check.IsFullyValid(GameMode.instance) ||
+			GameMode.instance.modeState == ModeState.PreGame ||
+			GameMode.instance.modeState == ModeState.PreRound)
+			return false;
+
+		if (Check.IsFullyValid(PlayerInfo.local?.character))
+			return false;
+
+		if (PlayerInfo.local.deadTime < 3.0f)
 			return false;
 
 		return true;
+	}
+
+	public virtual bool IsUsingSpectatorCamera()
+	{
+		if (!Check.IsFullyValid(PlayerInfo.local?.character))
+			return true;
+
+		return false;
+	}
+
+	public static void Teleport(Vector3 pos, Quaternion? rot = null)
+	{
+		if (!Check.IsFullyValid(instance))
+			return;
+
+		instance.Transform.Position = pos;
+		if (rot.HasValue) instance.Transform.Rotation = rot.Value;
+
+		if (!Check.IsFullyValid(PlayerCamera.cam))
+			return;
+
+		PlayerCamera.cam.Transform.Position = instance.Transform.Position;
+		PlayerCamera.cam.Transform.Rotation = instance.Transform.Rotation;
+	}
+
+	public static void TeleportToStartingPoint()
+	{
+		GetStartingPosAndRot(out var spawnPos, out var spawnRot);
+		Teleport(spawnPos, spawnRot);
+	}
+
+	public static void GetStartingPosAndRot(out Vector3 spawnPos, out Rotation spawnRot)
+	{
+		spawnPos = Vector3.Zero;
+		spawnRot = Rotation.Identity;
+
+		var spectateStartSpot = Game.ActiveScene.Components.GetInDescendantsOrSelf<SpectateStartSpot>();
+		if (spectateStartSpot != null)
+		{
+			spawnPos = spectateStartSpot.Transform.Position;
+			spawnRot = spectateStartSpot.Transform.Rotation;
+			return;
+		}
+
+		var spawnPoints = Game.ActiveScene.GetAllComponents<SpawnPoint>().ToArray();
+		if (spawnPoints.Length > 0)
+		{
+			spawnPos = spawnPoints[0].Transform.Position + (Vector3.Up * 50.0f);
+			spawnRot = spawnPoints[0].Transform.Rotation;
+		}
 	}
 }

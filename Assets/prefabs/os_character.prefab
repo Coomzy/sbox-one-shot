@@ -23,6 +23,7 @@
           "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
           "component_type": "CharacterController"
         },
+        "counter": 0,
         "eyeHolder": {
           "_type": "gameobject",
           "go": "facbb7a7-ba57-4a2a-8931-d2bb15ba7a9b"
@@ -59,7 +60,7 @@
         "__type": "Sandbox.CharacterController",
         "__guid": "1331eb0d-a641-411d-97da-b4a89610db43",
         "Acceleration": 10,
-        "Bounciness": 0.3,
+        "Bounciness": 0,
         "GroundAngle": 45,
         "Height": 64,
         "IgnoreLayers": "",
@@ -79,15 +80,26 @@
         "eyeHeight": 64,
         "isCrouching": false,
         "isGrounded": false,
+        "isMantling": false,
         "isSliding": false,
         "lastGrounded": {
-          "Relative": 8277.085
+          "Relative": 505.9343
         },
         "lastJump": {
-          "Relative": 8277.085
+          "Relative": 505.9343
+        },
+        "lastMantleInput": {
+          "Relative": 505.9343
         },
         "lastUngrounded": {
-          "Relative": 8277.085
+          "Relative": 505.9343
+        },
+        "mantleEnd": "0,0,0",
+        "mantleStart": "0,0,0",
+        "mantleStartTime": {
+          "Relative": -505.9343,
+          "Passed": 505.9343,
+          "Fraction": 1
         },
         "owner": {
           "_type": "component",
@@ -96,7 +108,7 @@
           "component_type": "OSCharacter"
         },
         "slideStart": {
-          "Relative": 8277.085
+          "Relative": 505.9343
         },
         "slideVelocity": "0,0,0",
         "wishCrouch": false,
@@ -118,11 +130,11 @@
         "Flags": 0,
         "Name": "Player Pusher",
         "Position": "0,0,32",
-        "Enabled": true,
         "Components": [
           {
             "__type": "PlayerPusher",
             "__guid": "af3c068e-923e-4720-8ffd-2c5adb4d4419",
+            "__enabled": false,
             "Radius": 32
           }
         ]
@@ -166,6 +178,7 @@
   "ShowInMenu": false,
   "MenuPath": null,
   "MenuIcon": null,
+  "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
   "__version": 1

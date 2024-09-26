@@ -1,0 +1,66 @@
+@using System
+@using System.Threading.Tasks
+@using Sandbox
+@using Sandbox.UI
+@inherits WebPanel
+
+<style>
+	/* .scss files don't work in libraries. https://github.com/Facepunch/sbox-issues/issues/4813 */
+	prompt {
+		width: 100%;
+		pointer-events: all;
+	}
+</style>
+
+@code {
+	public readonly TaskCompletionSource<bool> Purchased;
+	
+	public Prompt( string URL )
+	{
+		Url = URL;
+		Purchased = new TaskCompletionSource<bool>();
+
+		if ( !Game.ActiveScene.Components.TryGet( out ScreenPanel panel ) )
+		{
+			panel = Game.ActiveScene.Components.Create<ScreenPanel>();
+			panel.GetPanel().ElementName = "monetization";
+			panel.ZIndex = int.MaxValue;
+		}
+
+		Parent = panel.GetPanel();
+	}
+	
+	public override void OnDeleted()
+	{
+		if ( !Game.ActiveScene.Components.TryGet( out ScreenPanel panel ) )
+		{
+			return;
+		}
+		
+		if ( panel.GetPanel().HasChildren )
+		{
+			return;
+		}
+		
+		panel.Destroy();
+	}
+
+	protected override void OnAfterTreeRender( bool firstTime )
+	{
+		// This was the only way I could think of to get the
+		// Steam browser to send data back data to the game.
+		// If you have a better way let me know.
+		
+		switch ( Surface.PageTitle )
+		{
+			case "finished": Delete();
+				break;
+			case "purchased": Purchased.TrySetResult( true );
+				break;
+			case "cancelled": Purchased.TrySetResult( false );
+				break;
+		}
+	}
+	
+	protected override int BuildHash() => HashCode.Combine( Surface.PageTitle );
+}

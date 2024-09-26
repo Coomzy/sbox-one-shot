@@ -1,37 +1,65 @@
-@using Sandbox;
+﻿@using Sandbox;
 @using Sandbox.UI;
 @inherits PanelComponent
 
 <root>
-	<div class="title">@GetGameState()</div>
+    <div class="container">
+        <div class="title">
+            <div class="title">@GetGameState()</div>
+		</div>
+		<div class="content tabs-container">
+            @foreach (Connection entry in Connection.All)
+            {
+				var playerInfo = PlayerInfo.FromConnection(entry);
+				if (playerInfo == null)
+					continue;
+
+				var borderColor = "#FFA500";
+				var friend = new Friend((long)entry.SteamId);				
+				if (friend.IsFriend)
+				{
+					borderColor = "#006600";
+				}
+				if (entry.PartyId != 0 && entry.PartyId == Connection.Local.PartyId)
+				{
+					borderColor = "#6600cc";
+				}
+				if (entry == Connection.Local)
+				{
+					borderColor = "#0099cc";
+				}
+				if (playerInfo.isDead)
+				{
+					borderColor = "red";
+				}
+				<div class="card" style="background-color: @borderColor;">
+                    <div class="avatar" style="background-image: url(avatar:@entry.SteamId)"></div>
+                </div>
+            }
+		</div>
+		<!-- Lol I need this to push the cards to the top, IDK what I'm doing-->
+		<div class="content tab-content" CanDragScroll="false">
+		</div>
+    </div>
+
 </root>
 
 @code
 {
 	string GetGameState()
 	{
-		if (OSGameMode.instance == null)
+		if (GameMode.instance == null)
 		{
 			return "";
 		}
 
-		if (OSGameMode.instance.modeState == ModeState.PreGame)
+		if (GameMode.instance.modeState == ModeState.WaitingForPlayers)
 		{
-			return "Pre Game";
-		}
-
-		if (OSGameMode.instance.modeState == ModeState.PreRound)
-		{
-			return "Pre Round";
-		}
-
-		if (OSGameMode.instance.modeState == ModeState.PostRound)
-		{
-			return "Post Round";
+			return "Waiting For Players";
 		}
 
 		return "";
 	}
 
-	protected override int BuildHash() => System.HashCode.Combine(GetGameState());
+	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt());
 }

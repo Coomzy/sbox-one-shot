@@ -1,14 +1,68 @@
 {
   "crouchMoveSpeed": 150,
   "walkMoveSpeed": 100,
-  "runMoveSpeed": 190,
-  "sprintMoveSpeed": 320,
+  "runMoveSpeed": 200,
+  "sprintMoveSpeed": 350,
   "characterHeight": 64,
   "crouchHeight": 36,
   "crouchDuckSpeed": 10,
   "slideDuckSpeed": 10,
   "groundFriction": 6,
   "airFriction": 0.2,
+  "mantleInputBuffer": 0.15,
+  "mantleMoveDistanceRemap": {
+    "fromRange": "1,100",
+    "toRange": "0.15,0.5",
+    "remapCurve": [
+      {
+        "out": 1
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "in": -1
+      }
+    ]
+  },
+  "mantleHorizontalCurve": [
+    {},
+    {
+      "x": 0.5
+    },
+    {
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "mantleVerticalCurve": {
+    "rangey": "0,2",
+    "frames": [
+      {
+        "in": -1.6888889,
+        "out": 1.6888889
+      },
+      {
+        "x": 0.5,
+        "y": 0.5,
+        "in": -1.190476,
+        "out": 1.2558137,
+        "mode": "Split"
+      },
+      {
+        "x": 0.65,
+        "y": 0.575,
+        "in": -0.065789334,
+        "out": -0.116731666,
+        "mode": "Split"
+      },
+      {
+        "x": 1,
+        "y": 0.5,
+        "in": 0.11538479,
+        "out": -0.11538479
+      }
+    ]
+  },
   "slideTime": 1.5,
   "slideMinVelocity": 150,
   "slideStartMinVelocity": 200,

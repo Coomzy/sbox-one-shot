@@ -10,7 +10,7 @@
   "EditorReferences": null,
   "IsWhitelistDisabled": false,
   "Metadata": {
-    "MaxPlayers": 64,
+    "MaxPlayers": 8,
     "MinPlayers": 1,
     "TickRate": 50,
     "GameNetworkType": "Multiplayer",
@@ -22,7 +22,7 @@
     "PerMapRanking": false,
     "LeaderboardType": "None",
     "CsProjName": "",
-    "StartupScene": "scenes/minimal.scene",
+    "StartupScene": "scenes/game.scene",
     "ControlModes": {},
     "InputSettings": {
       "Actions": [
@@ -87,94 +87,10 @@
           "GroupName": "Actions"
         },
         {
-          "Name": "reload",
+          "Name": "debug",
           "KeyboardCode": "r",
           "GamepadCode": "X",
-          "GroupName": "Actions"
-        },
-        {
-          "Name": "use",
-          "KeyboardCode": "e",
-          "GamepadCode": "Y",
-          "GroupName": "Actions"
-        },
-        {
-          "Name": "Slot1",
-          "KeyboardCode": "1",
-          "GamepadCode": "DpadWest",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot2",
-          "KeyboardCode": "2",
-          "GamepadCode": "DpadEast",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot3",
-          "KeyboardCode": "3",
-          "GamepadCode": "DpadSouth",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot4",
-          "KeyboardCode": "4",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot5",
-          "KeyboardCode": "5",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot6",
-          "KeyboardCode": "6",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot7",
-          "KeyboardCode": "7",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot8",
-          "KeyboardCode": "8",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot9",
-          "KeyboardCode": "9",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "Slot0",
-          "KeyboardCode": "0",
-          "GamepadCode": "None",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "SlotPrev",
-          "KeyboardCode": "mouse4",
-          "GamepadCode": "SwitchLeftBumper",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "SlotNext",
-          "KeyboardCode": "mouse5",
-          "GamepadCode": "SwitchRightBumper",
-          "GroupName": "Inventory"
-        },
-        {
-          "Name": "View",
-          "KeyboardCode": "C",
-          "GamepadCode": "RightJoystickButton",
-          "GroupName": "Other"
+          "GroupName": "Debug"
         },
         {
           "Name": "Voice",
@@ -186,12 +102,6 @@
           "Name": "Drop",
           "KeyboardCode": "g",
           "GamepadCode": "None",
-          "GroupName": "Other"
-        },
-        {
-          "Name": "Flashlight",
-          "KeyboardCode": "f",
-          "GamepadCode": "DpadNorth",
           "GroupName": "Other"
         },
         {
@@ -217,9 +127,17 @@
           "KeyboardCode": "mouse4",
           "GamepadCode": "None",
           "GroupName": "Movement"
+        },
+        {
+          "Name": "Pay_To_Win",
+          "KeyboardCode": "P",
+          "GamepadCode": "None",
+          "GroupName": "Game"
         }
       ],
       "__guid": "7495c57a-5b4a-44a8-9506-8f95a88d0b32"
-    }
+    },
+    "LaunchMode": "Normal",
+    "MapStartupScene": "scenes/game.scene"
   }
 }

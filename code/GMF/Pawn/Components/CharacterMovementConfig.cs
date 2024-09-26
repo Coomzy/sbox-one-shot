@@ -19,6 +19,11 @@ public class CharacterMovementConfig : GameResource
 	[Group("Friction"), Property] public float groundFriction { get; set; } = 6.0f;
 	[Group("Friction"), Property] public float airFriction { get; set; } = 0.2f;
 
+	[Group("Mantling"), Property] public float mantleInputBuffer { get; set; } = 0.15f;
+	[Group("Mantling"), Property] public Remap mantleMoveDistanceRemap { get; set; } = new Remap(1.00f, 100.0f, 0.15f, 0.5f);
+	[Group("Mantling"), Property] public Curve mantleHorizontalCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f, 0.0f, 1.0f), new Curve.Frame(1.0f, 1.0f, -1.0f, 0.0f));
+	[Group("Mantling"), Property] public Curve mantleVerticalCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f, 0.0f, 1.0f), new Curve.Frame(1.0f, 1.0f, -1.0f, 0.0f));
+
 	[Group("Sliding"), Property] public float slideTime { get; set; } = 1.5f;
 	[Group("Sliding"), Property] public float slideMinVelocity { get; set; } = 50.0f;
 	[Group("Sliding"), Property] public float slideStartMinVelocity { get; set; } = 200.0f;

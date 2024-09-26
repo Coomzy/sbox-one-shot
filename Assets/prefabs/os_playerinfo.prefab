@@ -5,13 +5,13 @@
     "Name": "os_playerinfo",
     "Enabled": true,
     "NetworkMode": 1,
-    "NetworkOrphaned": 1,
+    "NetworkOrphaned": 3,
+    "OwnerTransfer": 0,
     "Components": [
       {
         "__type": "OSPlayerInfo",
         "__guid": "1d82eccc-349b-4fc3-af41-240183bf276e",
-        "isDead": false,
-        "isKnifer": false
+        "isDead": false
       }
     ],
     "Children": [],
@@ -20,6 +20,7 @@
   "ShowInMenu": false,
   "MenuPath": null,
   "MenuIcon": null,
+  "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
   "__version": 1

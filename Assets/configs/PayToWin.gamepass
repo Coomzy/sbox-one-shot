@@ -1,0 +1,8 @@
+{
+  "Ident": "paytowin",
+  "Cost": 1000,
+  "Title": "Pay to Win",
+  "Icon": "https://i.imgur.com/AOJbixf.gif",
+  "__references": [],
+  "__version": 0
+}

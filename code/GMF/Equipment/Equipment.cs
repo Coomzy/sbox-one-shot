@@ -4,20 +4,22 @@ using System;
 using System.Numerics;
 
 [Group("GMF")]
-public class Equipment : Component, Component.INetworkSpawn
+public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 {
 	[Group("Setup"), Property] public SkinnedModelRenderer model { get; set; }
 	[Group("Setup"), Property] public ProceduralAnimation procAnim { get; set; }
 	[Group("Setup"), Property] public GameObject equipmentProxyPrefab { get; set; }
 	[Group("Setup"), Property] public GameObject collisionChild { get; set; }
 	[Group("Setup"), Property] public Rigidbody rigidbody { get; set; }
+	[Group("Setup"), Property] public GameObject muzzleSocket { get; set; }
+	[Group("Setup"), Property] public GameObject twoHandedGrip { get; set; }
 
 	[Group("Config"), Property] public float attackCooldownTime { get; set; } = 0.25f;
 
 	[Group("Config"), Property] public Vector3 hip { get; set; } = new Vector3(16.5f, -13.0f, -11.0f);
 	[Group("Config"), Property] public Vector3 ironSights { get; set; } = new Vector3(15.0f, 0.0f, -8.25f);
 
-	[Group("Runtime"), Order(100), Property, Sync] public Character instigator { get; set; }
+	[Group("Runtime"), Order(100), Property, Sync, Change("OnRep_instigator")] public Character instigator { get; set; }
 	[Group("Runtime"), Order(100), Property] public EquipmentProxy equipmentProxy { get; set; }
 
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireInputDown { get; set; }
@@ -26,31 +28,92 @@ public class Equipment : Component, Component.INetworkSpawn
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireAltInputDown { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince lastFireAlt { get; set; }
 
+	protected override void OnAwake()
+	{
+		model.GameObject.Enabled = true;
+		procAnim.equipment = this;
+
+		var clone = equipmentProxyPrefab.Clone();
+		equipmentProxy = clone.Components.Get<EquipmentProxy>();
+		equipmentProxy.equipment = this;
+		clone.NetworkMode = NetworkMode.Never;
+	}
+
 	protected async override void OnStart()
 	{
+		SetFirstPersonMode(!IsProxy);
+
+		if (instigator != null)
+		{
+			OnRep_instigator(null, instigator);
+		}
+
 		while (instigator == null)
 			await Task.Frame();
 
-		if (procAnim != null)
-		{
-			procAnim.Enabled = !IsProxy;
-			procAnim.owner = instigator;
-		}
+		OnRep_instigator(null, instigator);
+	}
 
-		var proxyInst = equipmentProxyPrefab.Clone();
-		equipmentProxy = proxyInst.Components.Get<EquipmentProxy>();
-		
-		equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-		equipmentProxy.Transform.LocalPosition = Vector3.Zero;
-		equipmentProxy.Transform.LocalRotation = Quaternion.Identity;
+	public virtual void SetFirstPersonMode(bool isFirstPerson)
+	{
+		model.Enabled = isFirstPerson;
+		model.RenderType = ModelRenderer.ShadowRenderType.Off;
+		model.RenderOptions.Overlay = isFirstPerson;
+
+		procAnim.Enabled = isFirstPerson;
+
+		Log.Info($"");
+	}
+
+	public virtual void OnRep_instigator(Character oldValue, Character newValue)
+	{
+		return;
+		if (Check.IsFullyValid(equipmentProxy, instigator?.body?.thirdPersonEquipmentAttachPoint))
+		{
+			Log.Info($"OninstigatorChanged() attempted valid attach! Yay");
+			equipmentProxy.AttachTo(instigator.body.thirdPersonEquipmentAttachPoint);
+		}
+		else if (Check.IsFullyValid(newValue))
+		{
+			Log.Error($"OninstigatorChanged() and have an instigator '{newValue}' but something is null equipmentProxy '{equipmentProxy}' body '{newValue?.body}' thirdPersonEquipmentAttachPoint '{newValue?.body?.thirdPersonEquipmentAttachPoint}'");
+		}
 
 		if (IsProxy)
 		{
+			//equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
+			//equipmentProxy.Transform.LocalPosition = Vector3.Zero;
+			//equipmentProxy.Transform.LocalRotation = Quaternion.Identity;
 			return;
 		}
 
+		/*var proxyInst = equipmentProxyPrefab.Clone();
+		equipmentProxy = proxyInst.Components.Get<EquipmentProxy>();
+		proxyInst.NetworkMode = NetworkMode.Never;
+
+		equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
+		equipmentProxy.Transform.LocalPosition = Vector3.Zero;
+		equipmentProxy.Transform.LocalRotation = Quaternion.Identity;*/
+
 		model.RenderOptions.Overlay = true;
-		equipmentProxy.ShadowOnly();
+		//equipmentProxy.ShadowOnly();
+		//Network.DisableInterpolation();
+	}
+
+	[ConCmd]
+	public static void LocalBroadcastAttach()
+	{
+		PlayerInfo.local.character.equippedItem.BroadcastAttach();
+	}
+
+	[Broadcast]
+	public void BroadcastAttach()
+	{
+		if(!IsProxy)
+			return;
+
+		GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
+		Transform.LocalPosition = Vector3.Zero;
+		Transform.LocalRotation = Quaternion.Identity;
 	}
 
 	public async virtual void OnNetworkSpawn(Connection connection)
@@ -72,7 +135,7 @@ public class Equipment : Component, Component.INetworkSpawn
 	{
 		//Vector3 targetPos = hasFireAltInputDown ? ironSights : hip;
 		//float adsSpeed = 200.0f;
-		//GameObject.Parent.Transform.LocalPosition = MathY.MoveTowards(GameObject.Parent.Transform.LocalPosition, targetPos, Time.Delta * adsSpeed);
+		//GameObject.Parent.Transform.LocalPosition = MathY.MoveTowards(GameObject.Parent.Transform.LocalPosition, targetPos, Time.Delta * adsSpeed);		
 	}
 
 	public virtual void FireStart()
@@ -131,6 +194,18 @@ public class Equipment : Component, Component.INetworkSpawn
 		rigidbody.ApplyTorque(Game.Random.Rotation().Forward * weaponRandomTorque);
 
 		model.RenderOptions.Overlay = false;
-		equipmentProxy.ShadowOnly();
+
+		if (equipmentProxy != null)
+		{
+			equipmentProxy.SetVisibility(false);
+		}
+	}
+
+	public void Cleanup()
+	{
+		if (IsProxy)
+			return;
+
+		GameObject.Destroy();
 	}
 }

@@ -1,0 +1,1852 @@
+{
+  "__guid": "325a4042-0696-43dd-a79d-dcc314299ba3",
+  "GameObjects": [
+    {
+      "__guid": "057fadc4-4176-4acb-a30d-564e16b382dd",
+      "Flags": 0,
+      "Name": "Network Manager",
+      "Position": "-126.4292,-187.5311,115.5769",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "NetworkManager",
+          "__guid": "1a12943a-67b4-449e-a329-025d1951dffc"
+        }
+      ]
+    },
+    {
+      "__guid": "92548d54-23de-494f-b00d-e54dec9be1aa",
+      "Flags": 0,
+      "Name": "World Settings",
+      "Position": "-126.4292,-187.5311,115.5769",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "WorldSettings",
+          "__guid": "5f32a1ae-7720-4d95-9448-b73fb06b301d",
+          "killZ": -500,
+          "mapInstance": {
+            "_type": "component",
+            "component_id": "f891cf93-9685-4516-ba86-bd6d82f843fc",
+            "go": "1e821a70-48eb-4b68-915c-f2ae3c05248d",
+            "component_type": "MapInstance"
+          },
+          "playerInfoPrefab": {
+            "_type": "gameobject",
+            "prefab": "prefabs/os_playerinfo.prefab"
+          },
+          "spectatorPrefab": {
+            "_type": "gameobject",
+            "prefab": "prefabs/spectator.prefab"
+          }
+        }
+      ]
+    },
+    {
+      "__guid": "3875643e-bc8f-4922-937f-5e4be6d0b14c",
+      "Flags": 0,
+      "Name": "GameMode",
+      "Enabled": true,
+      "NetworkMode": 1,
+      "NetworkInterpolation": false,
+      "NetworkOrphaned": 1,
+      "Components": [
+        {
+          "__type": "OSGameMode",
+          "__guid": "13af3a8f-bafc-4f98-9f26-54390157a0c1",
+          "defaultRespawnTime": 3,
+          "maxGameRounds": 10,
+          "metPlayerReqTime": {
+            "Relative": 4621.4497
+          },
+          "modeState": "PreGame",
+          "oneLifeOnly": true,
+          "pawnPrefab": {
+            "_type": "gameobject",
+            "prefab": "prefabs/os_character.prefab"
+          },
+          "postGameDelay": 3,
+          "postRoundDelay": 3,
+          "preGameDelay": 5,
+          "preRoundDelay": 3,
+          "requiredPlayerCount": 2,
+          "roundCount": 0,
+          "roundTime": 100,
+          "stateTime": {
+            "Relative": 4621.4497
+          },
+          "waitingForPlayersDelay": 3
+        }
+      ]
+    },
+    {
+      "__guid": "360e14d2-3b9e-4d6a-8a39-56ba8a94db1d",
+      "Flags": 0,
+      "Name": "Camera",
+      "Position": "212.8338,-1229.103,252.0507",
+      "Rotation": "0.006029047,0.05375014,-0.1113058,0.9923133",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PlayerCamera",
+          "__guid": "fcca228c-fa77-4e7d-8b15-3256a0310fa6",
+          "camera": {
+            "_type": "component",
+            "component_id": "3fd5495d-f1b8-425f-92bf-ece41815d57d",
+            "go": "360e14d2-3b9e-4d6a-8a39-56ba8a94db1d",
+            "component_type": "CameraComponent"
+          }
+        },
+        {
+          "__type": "Sandbox.CameraComponent",
+          "__guid": "3fd5495d-f1b8-425f-92bf-ece41815d57d",
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "FieldOfView": 60,
+          "IsMainCamera": true,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 5
+        },
+        {
+          "__type": "Sandbox.Bloom",
+          "__guid": "23fc0b78-6f19-42f7-8789-3f705134845c",
+          "BloomColor": {
+            "color": [
+              {
+                "c": "1,1,1,1"
+              },
+              {
+                "t": 1,
+                "c": "1,1,1,1"
+              }
+            ],
+            "alpha": []
+          },
+          "BloomCurve": [
+            {
+              "y": 0.5
+            },
+            {
+              "x": 1,
+              "y": 1
+            }
+          ],
+          "Mode": "Additive",
+          "Strength": 0.5,
+          "Threshold": 0.5,
+          "ThresholdWidth": 0.5
+        },
+        {
+          "__type": "Sandbox.Tonemapping",
+          "__guid": "49dc240c-465b-45f8-bfa2-61fb7fde1154",
+          "__version": 1,
+          "AutoExposureEnabled": true,
+          "ExposureBias": 2,
+          "ExposureCompensation": 0,
+          "ExposureMethod": "RGB",
+          "MaximumExposure": 2,
+          "MinimumExposure": 1,
+          "Mode": "Legacy",
+          "Rate": 1
+        },
+        {
+          "__type": "Sandbox.Sharpen",
+          "__guid": "911fe110-053e-4c59-a6d3-75306fc82efb",
+          "Scale": 0.2
+        },
+        {
+          "__type": "Sandbox.Highlight",
+          "__guid": "85a5092b-d6b6-4dea-b6fe-1280642fe4fc"
+        }
+      ]
+    },
+    {
+      "__guid": "c57666e2-eddf-4744-9da3-cab93ea9b985",
+      "Flags": 0,
+      "Name": "UI - Screen",
+      "Position": "-152.4304,-314.6475,49.18045",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ScreenPanel",
+          "__guid": "b511057d-fca5-4290-aed1-9b515a1a7826",
+          "AutoScreenScale": true,
+          "Opacity": 1,
+          "Scale": 1,
+          "ScaleStrategy": "ConsistentHeight",
+          "ZIndex": 100
+        },
+        {
+          "__type": "UIManager",
+          "__guid": "60f64b7b-e76d-4e40-b028-63c7177333e2",
+          "crosshairBuilder": {
+            "_type": "component",
+            "component_id": "47e29fe6-e1f1-453b-aa6c-d4e63f5ffb87",
+            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
+            "component_type": "CrosshairBuilder"
+          },
+          "roundState": {
+            "_type": "component",
+            "component_id": "c243def4-5382-40d2-8dca-b7d0b6f07f58",
+            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
+            "component_type": "RoundState"
+          },
+          "scoreboard": {
+            "_type": "component",
+            "component_id": "b49095c6-7f4a-47ae-99eb-45900c6f27aa",
+            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
+            "component_type": "Scoreboard"
+          }
+        },
+        {
+          "__type": "RoundState",
+          "__guid": "c243def4-5382-40d2-8dca-b7d0b6f07f58"
+        },
+        {
+          "__type": "Scoreboard",
+          "__guid": "b49095c6-7f4a-47ae-99eb-45900c6f27aa"
+        },
+        {
+          "__type": "CrosshairBuilder",
+          "__guid": "47e29fe6-e1f1-453b-aa6c-d4e63f5ffb87",
+          "__enabled": false,
+          "CenterDot": false,
+          "CenterDotOpacity": 1,
+          "CenterDotThickness": 1,
+          "Code": "1,50,50,1,1,1,1,1,2,0,1,1,1,1,7,1,20,0,0.5,0,0,0",
+          "Color": "1,1,1,1",
+          "InnerLineLenght": 7,
+          "InnerLineOpacity": 1,
+          "InnerLinesOffset": 20,
+          "InnerLineThickness": 1,
+          "IsPercentage": true,
+          "OuterLineLenght": 0,
+          "OuterLineOffset": 0,
+          "OuterLineOpacity": 0.5,
+          "OuterLineThickness": 0,
+          "Outline": true,
+          "OutlineOpacity": 1,
+          "OutlineThickness": 2,
+          "Position": "50,50",
+          "ShowInnerLines": true,
+          "ShowOuterLines": false
+        }
+      ]
+    },
+    {
+      "__guid": "1e821a70-48eb-4b68-915c-f2ae3c05248d",
+      "Flags": 0,
+      "Name": "Map - Dockyard",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.MapInstance",
+          "__guid": "f891cf93-9685-4516-ba86-bd6d82f843fc",
+          "__version": 1,
+          "EnableCollision": true,
+          "MapName": "facepunch.bm_dockyard",
+          "NoOrigin": false,
+          "OnMapLoaded": null,
+          "OnMapUnloaded": null,
+          "UseMapFromLaunch": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "a9be5c46-b7b6-421d-a83f-8e5f3c7e4e3f",
+      "Flags": 0,
+      "Name": "Pickup",
+      "Position": "805,-705,165",
+      "Tags": "light_spot,light,light_point",
+      "Enabled": true,
+      "NetworkMode": 1,
+      "NetworkOrphaned": 1,
+      "Components": [
+        {
+          "__type": "Pickup",
+          "__guid": "9a965536-8355-4e6d-b26b-9937d7f9938d",
+          "activeColor": "0,1,0,1",
+          "boxCollider": {
+            "_type": "component",
+            "component_id": "e813c1c6-02bd-46a5-9b59-e2d7cd4ba0d7",
+            "go": "a9be5c46-b7b6-421d-a83f-8e5f3c7e4e3f",
+            "component_type": "BoxCollider"
+          },
+          "cooldownTime": 10,
+          "decalRenderer": {
+            "_type": "component",
+            "component_id": "fa2c3059-31a0-4e37-bc14-72212d131ff8",
+            "go": "7697e083-dfae-4c01-830f-cae723434a04",
+            "component_type": "DecalRenderer"
+          },
+          "inactiveColor": "1,0,0,1",
+          "visualHolder": {
+            "_type": "gameobject",
+            "go": "321fed18-ea01-4884-a983-5b2ae9056249"
+          }
+        },
+        {
+          "__type": "Sandbox.BoxCollider",
+          "__guid": "e813c1c6-02bd-46a5-9b59-e2d7cd4ba0d7",
+          "Center": "0,0,0",
+          "IsTrigger": true,
+          "Scale": "50,50,50",
+          "Static": false
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "321fed18-ea01-4884-a983-5b2ae9056249",
+          "Flags": 0,
+          "Name": "Spear Holder",
+          "Position": "0,0,0",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "042daaab-7275-4a0b-aabe-56f8554d5fa6",
+              "Flags": 0,
+              "Name": "Spear",
+              "Position": "-20.75928,-2.578857,4.186325",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "d3afd54e-6384-4ccd-8f58-faae442ff92c",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "1,1,1,1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__guid": "7697e083-dfae-4c01-830f-cae723434a04",
+          "Flags": 0,
+          "Name": "Decal",
+          "Position": "0.00006103516,0,-20.314",
+          "Rotation": "0,0.7071068,0,0.7071068",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.DecalRenderer",
+              "__guid": "fa2c3059-31a0-4e37-bc14-72212d131ff8",
+              "CutoffAngle": 0,
+              "CutoffAngleSoftness": 13.92,
+              "Material": "materials/pickup.vmat",
+              "Mod2XBlending": false,
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "Size": "128,128,256",
+              "TintColor": "0,1,0,1",
+              "TriPlanar": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "26966307-941e-4e84-98d5-ca0000121f06",
+      "Flags": 0,
+      "Name": "Achievements",
+      "Enabled": true,
+      "Children": [
+        {
+          "__guid": "6c545019-93d4-4f33-a189-48429445717f",
+          "Flags": 0,
+          "Name": "Up_There_Volume 1",
+          "Position": "128,-700,825",
+          "Scale": "4.7,12,2.2",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.BoxCollider",
+              "__guid": "91558355-8189-42c9-9934-607eae7d75ed",
+              "Center": "0,0,0",
+              "IsTrigger": true,
+              "Scale": "50,50,50",
+              "Static": false
+            },
+            {
+              "__type": "UpThereAchievementVolume",
+              "__guid": "16344a0e-fedc-42ab-b096-f00a64a6fbea",
+              "boxCollider": {
+                "_type": "component",
+                "component_id": "91558355-8189-42c9-9934-607eae7d75ed",
+                "go": "6c545019-93d4-4f33-a189-48429445717f",
+                "component_type": "BoxCollider"
+              }
+            }
+          ]
+        },
+        {
+          "__guid": "63f53bfc-d87f-400f-9955-2196a4f74af8",
+          "Flags": 0,
+          "Name": "Up_There_Volume 2",
+          "Position": "-638.3349,-1345.236,825",
+          "Scale": "4.7,6.999993,2.2",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.BoxCollider",
+              "__guid": "675b787c-db64-4b38-8a3a-801be8d8667e",
+              "Center": "0,0,0",
+              "IsTrigger": true,
+              "Scale": "50,50,50",
+              "Static": false
+            },
+            {
+              "__type": "UpThereAchievementVolume",
+              "__guid": "919b5bcb-c2e0-4b9d-9238-ebc3ec078bab",
+              "boxCollider": {
+                "_type": "component",
+                "component_id": "675b787c-db64-4b38-8a3a-801be8d8667e",
+                "go": "63f53bfc-d87f-400f-9955-2196a4f74af8",
+                "component_type": "BoxCollider"
+              }
+            }
+          ]
+        },
+        {
+          "__guid": "d909a991-d821-4aed-98c1-dacd0cfc360d",
+          "Flags": 0,
+          "Name": "Up_There_Volume 3",
+          "Position": "-1407.35,-1408.977,825",
+          "Rotation": "0,0,0.7071067,0.7071068",
+          "Scale": "4.7,9.75,2.2",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.BoxCollider",
+              "__guid": "87a39a49-5e4c-4b32-93fc-90ac62488bdb",
+              "Center": "0,0,0",
+              "IsTrigger": true,
+              "Scale": "50,50,50",
+              "Static": false
+            },
+            {
+              "__type": "UpThereAchievementVolume",
+              "__guid": "271591df-c368-4684-9184-cbecaeb83c9e",
+              "boxCollider": {
+                "_type": "component",
+                "component_id": "87a39a49-5e4c-4b32-93fc-90ac62488bdb",
+                "go": "d909a991-d821-4aed-98c1-dacd0cfc360d",
+                "component_type": "BoxCollider"
+              }
+            }
+          ]
+        },
+        {
+          "__guid": "8c1ae53e-f31f-4855-86f3-29b43efdce33",
+          "Flags": 0,
+          "Name": "Up_There_Volume 4",
+          "Position": "-1407.35,-1920,825",
+          "Rotation": "0,0,0.7071067,0.7071068",
+          "Scale": "4.7,9.75,2.2",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.BoxCollider",
+              "__guid": "cd3c74b9-d3db-48b0-8d20-21c649659fd5",
+              "Center": "0,0,0",
+              "IsTrigger": true,
+              "Scale": "50,50,50",
+              "Static": false
+            },
+            {
+              "__type": "UpThereAchievementVolume",
+              "__guid": "d824e5f3-87c1-43a2-8b0a-190b179a0471",
+              "boxCollider": {
+                "_type": "component",
+                "component_id": "cd3c74b9-d3db-48b0-8d20-21c649659fd5",
+                "go": "8c1ae53e-f31f-4855-86f3-29b43efdce33",
+                "component_type": "BoxCollider"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "2f907fa6-67a2-445b-aa33-a5c2e25dfd22",
+      "Flags": 0,
+      "Name": "Spectator Start Point",
+      "Position": "1133.095,1489.618,1364.033",
+      "Rotation": "0.176745,0.08475487,-0.8841956,0.4240001",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "SpectateStartSpot",
+          "__guid": "f9ac8b25-95cd-4999-a5a8-29f00a3989b2"
+        }
+      ]
+    },
+    {
+      "__guid": "afada0bf-2fa5-41c7-ba10-01de2da53659",
+      "Flags": 0,
+      "Name": "Burst",
+      "Position": "-37.63688,247.2673,11.98845",
+      "Tags": "particles",
+      "Components": [
+        {
+          "__type": "Sandbox.ParticleEffect",
+          "__guid": "b21cfd84-87ce-4edc-938c-70f596a6e996",
+          "__version": 1,
+          "Alpha": {
+            "Type": "Curve",
+            "CurveA": [
+              {
+                "y": 1
+              },
+              {
+                "x": 1
+              }
+            ],
+            "Constants": "1,0,0,0"
+          },
+          "ApplyAlpha": false,
+          "ApplyColor": false,
+          "ApplyRotation": false,
+          "ApplyShape": true,
+          "Bounce": {
+            "Constants": "1,0,0,0"
+          },
+          "Brightness": {
+            "Constants": "1,0,0,0"
+          },
+          "Bumpiness": {},
+          "Collision": false,
+          "CollisionRadius": 1,
+          "Damping": {},
+          "DieOnCollisionChance": {},
+          "Force": false,
+          "ForceDirection": "0,0,-800",
+          "ForceScale": {
+            "Constants": "1,0,0,0"
+          },
+          "Friction": {
+            "Constants": "1,0,0,0"
+          },
+          "Gradient": {
+            "Evaluation": "Particle",
+            "GradientA": {
+              "color": [
+                {
+                  "t": 0.5,
+                  "c": "1,1,1,1"
+                }
+              ],
+              "alpha": []
+            },
+            "GradientB": {
+              "color": [
+                {
+                  "t": 0.5,
+                  "c": "1,1,1,1"
+                }
+              ],
+              "alpha": []
+            },
+            "ConstantA": "1,1,1,1",
+            "ConstantB": "1,1,1,1"
+          },
+          "Lifetime": {
+            "Type": "Range",
+            "Evaluation": "Particle",
+            "Constants": "1,2,0,0"
+          },
+          "MaxParticles": 5000,
+          "OrbitalForce": {},
+          "OrbitalPull": {},
+          "PerParticleTimeScale": {
+            "Constants": "1,0.4,0,0"
+          },
+          "Pitch": {},
+          "PreWarm": 0,
+          "PushStrength": {},
+          "Roll": {
+            "Type": "Range",
+            "Evaluation": "Particle",
+            "Constants": "0,360,0,0"
+          },
+          "Scale": {
+            "Type": "Curve",
+            "CurveA": [
+              {
+                "in": -9.333329,
+                "out": 9.333329
+              },
+              {
+                "x": 0.03325123,
+                "y": 1,
+                "in": -0.056075174,
+                "out": 0.056075174
+              },
+              {
+                "x": 1,
+                "in": 2.9152544,
+                "out": -2.9152544
+              }
+            ],
+            "Constants": "1,0,0,0"
+          },
+          "SequenceId": {},
+          "SequenceSpeed": {
+            "Constants": "1,0,0,0"
+          },
+          "SequenceTime": {
+            "Constants": "1,0,0,0"
+          },
+          "SheetSequence": false,
+          "Space": "World",
+          "StartDelay": {},
+          "StartVelocity": {
+            "Type": "Range",
+            "Evaluation": "Particle",
+            "Constants": "10,70,0,0"
+          },
+          "Stretch": {},
+          "TimeScale": 1,
+          "Tint": "1,1,1,1",
+          "Yaw": {}
+        },
+        {
+          "__type": "Sandbox.ParticleSpriteRenderer",
+          "__guid": "7644f7c6-1381-4448-80ae-de3cbe14d410",
+          "Additive": false,
+          "Alignment": "LookAtCamera",
+          "BlurAmount": 0.5,
+          "BlurOpacity": 0.91,
+          "BlurSpacing": 0.73,
+          "DepthFeather": 0,
+          "FaceVelocity": false,
+          "FogStrength": 1,
+          "LeadingTrail": true,
+          "Lighting": false,
+          "MotionBlur": false,
+          "Opaque": false,
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RotationOffset": 0,
+          "Scale": 1,
+          "Shadows": false,
+          "SortMode": "Unsorted",
+          "Texture": "materials/particles/shapes/circle1.vtex"
+        },
+        {
+          "__type": "Sandbox.ParticleSphereEmitter",
+          "__guid": "e7a75ff0-8c12-49a7-8f27-3fbaf7d5ba29",
+          "Burst": 1000,
+          "Delay": 0,
+          "DestroyOnEnd": false,
+          "Duration": 5,
+          "Loop": true,
+          "OnEdge": false,
+          "Radius": 10,
+          "Rate": 0,
+          "RateOverDistance": 0,
+          "Velocity": 100
+        }
+      ]
+    },
+    {
+      "__guid": "fbf4a2a5-525b-43d4-90ea-08f6ca2c16d3",
+      "Flags": 0,
+      "Name": "Test",
+      "Position": "501.8346,-911.399,233.0786",
+      "Scale": "0.35,0.35,0.35",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "DebugTest",
+          "__guid": "2faeaf2e-b4c1-4fd1-b784-e46d87dfa9de"
+        },
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "fb110e58-c24a-48c3-9f6b-083110fcdc69",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "3859d5c2-295a-44e2-adfc-f79a081e6f0b",
+          "Flags": 0,
+          "Name": "Face",
+          "Position": "0,0,0",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "0ce6aff6-7a98-4c08-a837-182e4bab9f20",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-0.3717913,-11.71805",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.4259535,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "125526d1-c8f6-4bb4-95e1-4810e335cb9c",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "1aef1b26-6ec0-45a1-966b-b90a34ffa97a",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,12.35543,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "42840736-1123-4329-acec-32b6aea72b5a",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "3e5dcd9b-488e-436e-88ef-edfc62650418",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-12.15297,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "30aef1cd-e159-4da1-a7ae-ec0d8edc7325",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "ad61ea49-3ba1-4137-9d4b-b9167e3a3e21",
+      "Flags": 0,
+      "Name": "Cam Pos",
+      "Position": "574.4072,-922.4026,217.6795",
+      "Rotation": "0,0,0.7071068,0.7071068",
+      "Scale": "0.35,0.35,0.35",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "9d87ab07-298c-40f0-8b94-73b75b9d28de",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "0.52941,1,0.17255,1"
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "4caf6842-27ff-4fe3-8436-299f8832b8be",
+          "Flags": 0,
+          "Name": "Face",
+          "Position": "0,0,0",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "cb702589-28f9-4213-9e56-20872c316f06",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-0.3717913,-11.71805",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.4259535,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "a7ce0248-0127-484b-8de2-2d90889cea2b",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "3919ed4a-0fde-4d62-b77d-ab9d3c9ad7c2",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,12.35543,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "0865de4b-de9a-4120-be16-757d254d55ce",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "0e742574-e258-43fa-994a-d4c34e8c87a1",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-12.15297,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "2c2b24c9-1bef-4393-9df1-22045c68caf9",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "8e79fd18-c601-4da6-a981-66e7b997c4d9",
+      "Flags": 0,
+      "Name": "Spear",
+      "Position": "572.6999,-925.5927,249.0876",
+      "Rotation": "0.09731738,-0.07857811,0.9887589,0.08192506",
+      "Scale": "0.35,0.35,0.35",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "8c6fa95c-9ec7-42b1-836c-262fb9d6429d",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "0.33008,0.30698,1,1"
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "a3e68e35-fb9c-4405-80ce-18bcd4935105",
+          "Flags": 0,
+          "Name": "Face",
+          "Position": "0,0,0",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "b359c0cf-c9bd-419e-8b72-7744db9ebb5c",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-0.3717913,-11.71805",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.4259535,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "1079030c-3ab5-48d8-bfcd-1e1857b570f3",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "522f65b5-940b-4f07-a6c0-8e7a7b07ec87",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,12.35543,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "29d6a1ee-1c85-47be-b4ef-5fe311440458",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "49803bec-26a3-46d0-befa-93134425c376",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-12.15297,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "9dd1c102-f47c-4334-afdd-d3eb4e439c19",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "5bf8c391-5dc1-4be4-9198-ffefb835ccdb",
+      "Flags": 0,
+      "Name": "Second Head",
+      "Position": "501.8346,-911.399,268.07",
+      "Rotation": "0.007758087,0.10292,-0.07476511,0.9918455",
+      "Scale": "0.35,0.35,0.35",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "b9301bbe-238c-4bcc-a45e-4b37495df9e2",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,0,0,1"
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "50261c86-064e-4e97-9750-e2efe098dd4f",
+          "Flags": 0,
+          "Name": "Face",
+          "Position": "0,0,0",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "a92ae064-b283-4274-a48c-85ef7bfbfb1c",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-0.3717913,-11.71805",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.4259535,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "60a98552-ed3c-4e8f-8d9c-c1f9fd01b919",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "7ff6fb85-e5e5-4097-bf6c-a679a7d34868",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,12.35543,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "3e1fce86-f40d-49fb-8495-3dfa75dafb9b",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "d16b7e9f-3870-4a46-b0be-e8bc149e77f6",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-12.15297,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "127138c9-25bd-40be-927f-a1138c793405",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "b9463034-fe2f-4bf9-b6f1-eda152d98c75",
+      "Flags": 0,
+      "Name": "Second Head (1)",
+      "Position": "649.4072,-795.3548,252.6795",
+      "Rotation": "0,0,0.2588188,0.9659259",
+      "Scale": "0.35,0.35,0.35",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "DebugRotation",
+          "__guid": "d4237a85-8984-4305-9a9d-515d533cd94b"
+        },
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "5c2e413a-4fa8-41b7-b66f-6fac16510c2c",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,0,0,1"
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "3c27da57-02c3-48e6-871f-8620965e4d73",
+          "Flags": 0,
+          "Name": "Face",
+          "Position": "0,0,0",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "32d8d5ba-ef51-42b0-82c2-118d7b9bcee8",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-0.3717913,-11.71805",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.4259535,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "0b62300c-f68a-4a1b-a8f5-b8eae0fb5648",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "f9dd0ced-3ae2-4d7f-905d-7635e1789fde",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,12.35543,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "350e1612-bb8a-4ddc-bd74-bb364078b1bc",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            },
+            {
+              "__guid": "5714bc45-0d8c-43a5-a07c-b4033223dd73",
+              "Flags": 0,
+              "Name": "Cube (1)",
+              "Position": "25.88902,-12.15297,13.01823",
+              "Rotation": "0,0,-0.7071068,0.7071068",
+              "Scale": "0.152224,0.152224,0.152224",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.ModelRenderer",
+                  "__guid": "4ed8e4a8-3e87-4093-8266-f4a28af9f944",
+                  "BodyGroups": 18446744073709551615,
+                  "Model": "models/dev/box.vmdl",
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "0,0,0,1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "f8c6863b-45bc-47a7-be21-6cde437a04a0",
+      "Flags": 0,
+      "Name": "harpoon_gun",
+      "Position": "172.6758,-1242.35,140",
+      "Tags": "equipment",
+      "NetworkMode": 1,
+      "NetworkOrphaned": 3,
+      "OwnerTransfer": 2,
+      "Components": [
+        {
+          "__type": "HarpoonGun",
+          "__guid": "8ae26ee3-bf47-4107-9718-5ad0b908c860",
+          "attackCooldownTime": 0.25,
+          "collisionChild": {
+            "_type": "gameobject",
+            "go": "5829767c-a962-42c5-8015-adc35a641d4e"
+          },
+          "config": "configs/harpoon.gun.config.hgc",
+          "equipmentProxyPrefab": {
+            "_type": "gameobject",
+            "prefab": "prefabs/harpoon_gun_proxy.prefab"
+          },
+          "gunCombinedModel": {
+            "_type": "component",
+            "component_id": "5470c959-f444-4c54-b2e0-c95ddbcc5e91",
+            "go": "a82322d4-71cc-4b57-a823-901639260b2f",
+            "component_type": "SkinnedModelRenderer"
+          },
+          "gunModel": {
+            "_type": "component",
+            "component_id": "e7921a7b-7ec9-4737-a238-00f135a07bbe",
+            "go": "eea03cc5-a2bf-4dd8-bb8f-7149e8d85e0e",
+            "component_type": "SkinnedModelRenderer"
+          },
+          "hasAmmo": true,
+          "hasFireAltInputDown": false,
+          "hasFireInputDown": false,
+          "hip": "16.5,-13,-11",
+          "ironSights": "15,0,-8.25",
+          "isReloading": false,
+          "lastFire": {
+            "Relative": 4621.4497
+          },
+          "lastFireAlt": {
+            "Relative": 4621.4497
+          },
+          "model": {
+            "_type": "component",
+            "component_id": "5470c959-f444-4c54-b2e0-c95ddbcc5e91",
+            "go": "a82322d4-71cc-4b57-a823-901639260b2f",
+            "component_type": "SkinnedModelRenderer"
+          },
+          "procAnim": {
+            "_type": "component",
+            "component_id": "b37cfd9b-4207-456a-ba02-dfbeabea7f88",
+            "go": "f8c6863b-45bc-47a7-be21-6cde437a04a0",
+            "component_type": "ProceduralAnimation"
+          },
+          "rigidbody": {
+            "_type": "component",
+            "component_id": "ec6a2132-363e-42b0-accf-ae3f02ee073a",
+            "go": "f8c6863b-45bc-47a7-be21-6cde437a04a0",
+            "component_type": "Rigidbody"
+          },
+          "spearHolder": {
+            "_type": "gameobject",
+            "go": "be9d0bd6-6dda-4b47-988b-52499869ab8e"
+          },
+          "spearModel": {
+            "_type": "component",
+            "component_id": "6c0dd7ad-9a45-4349-a9dc-f7ca8dee443a",
+            "go": "dfee27e6-09c1-4ba3-99ab-db13a622bf5a",
+            "component_type": "SkinnedModelRenderer"
+          },
+          "spearPrefab": {
+            "_type": "gameobject",
+            "prefab": "prefabs/harpoon_spear.prefab"
+          },
+          "twoHandedGrip": {
+            "_type": "gameobject",
+            "go": "2afe03ef-d387-447e-a09b-9fce66ca3148"
+          }
+        },
+        {
+          "__type": "ProceduralAnimation",
+          "__guid": "b37cfd9b-4207-456a-ba02-dfbeabea7f88",
+          "bobRate": 0,
+          "config": "configs/harpoon.gun.anim.pac",
+          "isDownBob": true
+        },
+        {
+          "__type": "Sandbox.Rigidbody",
+          "__guid": "ec6a2132-363e-42b0-accf-ae3f02ee073a",
+          "__enabled": false,
+          "AngularDamping": 0,
+          "Gravity": true,
+          "LinearDamping": 0,
+          "Locking": {},
+          "MassCenterOverride": "0,0,0",
+          "MassOverride": 0,
+          "MotionEnabled": true,
+          "OverrideMassCenter": false,
+          "RigidbodyFlags": 0,
+          "StartAsleep": false
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "be9d0bd6-6dda-4b47-988b-52499869ab8e",
+          "Flags": 0,
+          "Name": "Spear Slot",
+          "Position": "22.78719,0,3.705",
+          "Enabled": true,
+          "Children": [
+            {
+              "__guid": "8f4b7935-2329-4928-8c6e-533d76b2474e",
+              "Flags": 0,
+              "Name": "Harpoon Spear",
+              "Position": "35.23581,0,0",
+              "Enabled": true,
+              "Children": [
+                {
+                  "__guid": "dfee27e6-09c1-4ba3-99ab-db13a622bf5a",
+                  "Flags": 0,
+                  "Name": "Spear",
+                  "Position": "-37.82483,-2.587,4.490417",
+                  "Components": [
+                    {
+                      "__type": "Sandbox.SkinnedModelRenderer",
+                      "__guid": "6c0dd7ad-9a45-4349-a9dc-f7ca8dee443a",
+                      "BodyGroups": 18446744073709551615,
+                      "CreateBoneObjects": false,
+                      "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                      "Morphs": {},
+                      "RenderOptions": {
+                        "GameLayer": true,
+                        "OverlayLayer": false,
+                        "BloomLayer": false,
+                        "AfterUILayer": false
+                      },
+                      "RenderType": "On",
+                      "Tint": "1,1,1,1",
+                      "UseAnimGraph": true
+                    }
+                  ]
+                },
+                {
+                  "__guid": "2d37e9c4-3e41-4c02-ad37-d6d72b39a4d9",
+                  "Flags": 0,
+                  "Name": "Cube",
+                  "Position": "0,0,0",
+                  "Scale": "0.06481746,0.1829062,0.04894695",
+                  "Components": [
+                    {
+                      "__type": "Sandbox.ModelRenderer",
+                      "__guid": "f9f84a2e-83d5-4db7-906a-d842bc210248",
+                      "BodyGroups": 18446744073709551615,
+                      "Model": "models/dev/box.vmdl",
+                      "RenderOptions": {
+                        "GameLayer": true,
+                        "OverlayLayer": false,
+                        "BloomLayer": false,
+                        "AfterUILayer": false
+                      },
+                      "RenderType": "On",
+                      "Tint": "1,1,1,1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "__guid": "ffd1eae1-9687-46d3-8d63-e84bfc5dc71d",
+              "Flags": 0,
+              "Name": "Harpoon Spear",
+              "Position": "0,0,0",
+              "Children": [
+                {
+                  "__guid": "72cf75a8-4603-4e90-87b6-7bffbf9d9782",
+                  "Flags": 0,
+                  "Name": "Spear",
+                  "Position": "-37.82483,-2.587,4.490417",
+                  "Enabled": true,
+                  "Components": [
+                    {
+                      "__type": "Sandbox.SkinnedModelRenderer",
+                      "__guid": "10fa5928-d8c7-46c3-9380-0ca4f7f375a7",
+                      "BodyGroups": 18446744073709551615,
+                      "CreateBoneObjects": false,
+                      "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                      "Morphs": {},
+                      "RenderOptions": {
+                        "GameLayer": true,
+                        "OverlayLayer": false,
+                        "BloomLayer": false,
+                        "AfterUILayer": false
+                      },
+                      "RenderType": "On",
+                      "Tint": "1,1,1,1",
+                      "UseAnimGraph": true
+                    }
+                  ]
+                },
+                {
+                  "__guid": "07854866-a1a6-4af2-b5ad-7c99ddb5fc5e",
+                  "Flags": 0,
+                  "Name": "Cube",
+                  "Position": "0,0,0",
+                  "Scale": "0.06481746,0.1829062,0.04894695",
+                  "Components": [
+                    {
+                      "__type": "Sandbox.ModelRenderer",
+                      "__guid": "aa26687d-6ab5-4890-8af8-ceea15ee59be",
+                      "BodyGroups": 18446744073709551615,
+                      "Model": "models/dev/box.vmdl",
+                      "RenderOptions": {
+                        "GameLayer": true,
+                        "OverlayLayer": false,
+                        "BloomLayer": false,
+                        "AfterUILayer": false
+                      },
+                      "RenderType": "On",
+                      "Tint": "1,1,1,1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__guid": "d32018fb-ec79-4b5e-89f9-1143b283830f",
+          "Flags": 0,
+          "Name": "Spear",
+          "Position": "20.18945,-2.587158,8.205322",
+          "Components": [
+            {
+              "__type": "Sandbox.SkinnedModelRenderer",
+              "__guid": "2646461f-accd-489a-ae5e-87637e9b0dc3",
+              "BodyGroups": 18446744073709551615,
+              "CreateBoneObjects": false,
+              "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+              "Morphs": {},
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "RenderType": "On",
+              "Tint": "1,1,1,1",
+              "UseAnimGraph": true
+            }
+          ]
+        },
+        {
+          "__guid": "eea03cc5-a2bf-4dd8-bb8f-7149e8d85e0e",
+          "Flags": 0,
+          "Name": "Gun",
+          "Position": "20.18945,-2.587158,8.205322",
+          "Components": [
+            {
+              "__type": "Sandbox.SkinnedModelRenderer",
+              "__guid": "e7921a7b-7ec9-4737-a238-00f135a07bbe",
+              "BodyGroups": 18446744073709551615,
+              "CreateBoneObjects": false,
+              "Model": "equipment/harpoon/source/harpoon_gun_low.vmdl",
+              "Morphs": {},
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "RenderType": "On",
+              "Tint": "1,1,1,1",
+              "UseAnimGraph": true
+            }
+          ],
+          "Children": [
+            {
+              "__guid": "eef063d8-4af6-44cd-8aaf-213d2c065d76",
+              "Flags": 0,
+              "Name": "Spear",
+              "Position": "0,0,0",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.SkinnedModelRenderer",
+                  "__guid": "81ff60f1-9a61-4c03-ad2a-1fc8f8bc9343",
+                  "__enabled": false,
+                  "BodyGroups": 18446744073709551615,
+                  "CreateBoneObjects": false,
+                  "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                  "Morphs": {},
+                  "RenderOptions": {
+                    "GameLayer": true,
+                    "OverlayLayer": false,
+                    "BloomLayer": false,
+                    "AfterUILayer": false
+                  },
+                  "RenderType": "On",
+                  "Tint": "1,1,1,1",
+                  "UseAnimGraph": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__guid": "a82322d4-71cc-4b57-a823-901639260b2f",
+          "Flags": 0,
+          "Name": "Gun \u002B Spear",
+          "Position": "20.18945,-2.587158,8.205322",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "Sandbox.SkinnedModelRenderer",
+              "__guid": "5470c959-f444-4c54-b2e0-c95ddbcc5e91",
+              "BodyGroups": 18446744073709551615,
+              "CreateBoneObjects": false,
+              "MaterialGroup": "default",
+              "Model": "equipment/harpoon/source/harpoon_combined_low.vmdl",
+              "Morphs": {},
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "RenderType": "On",
+              "Tint": "1,1,1,1",
+              "UseAnimGraph": true
+            }
+          ]
+        },
+        {
+          "__guid": "41d52b21-3f4f-4f26-93d7-30203bed3936",
+          "Flags": 0,
+          "Name": "Spear Slot",
+          "Position": "58.023,-0,3.705",
+          "Components": [
+            {
+              "__type": "Sandbox.SkinnedModelRenderer",
+              "__guid": "20dfabe0-b98b-4521-ba3a-b9540f6bcdc5",
+              "__enabled": false,
+              "BodyGroups": 18446744073709551615,
+              "CreateBoneObjects": false,
+              "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+              "Morphs": {},
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "RenderType": "On",
+              "Tint": "1,1,1,1",
+              "UseAnimGraph": true
+            }
+          ],
+          "Children": [
+            {
+              "__guid": "588a2f56-500e-4668-85ff-3a5ba3690cfa",
+              "Flags": 0,
+              "Name": "Harpoon Spear",
+              "Position": "0,0,0",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "HarpoonSpear",
+                  "__guid": "8bdfaf1c-02c2-4b40-9b35-5c561cdecb0c",
+                  "isInFlight": true,
+                  "startPos": "0,0,0"
+                },
+                {
+                  "__type": "Sandbox.Rigidbody",
+                  "__guid": "b6eb8f7e-d086-48dd-b7f1-c447c3c829e1",
+                  "__enabled": false,
+                  "AngularDamping": 0,
+                  "Gravity": true,
+                  "LinearDamping": 0,
+                  "Locking": {},
+                  "MassCenterOverride": "0,0,0",
+                  "MassOverride": 0,
+                  "MotionEnabled": true,
+                  "OverrideMassCenter": false,
+                  "RigidbodyFlags": 0,
+                  "StartAsleep": false
+                }
+              ],
+              "Children": [
+                {
+                  "__guid": "fca84193-e693-44a8-b35c-f637eb8c5548",
+                  "Flags": 0,
+                  "Name": "Spear",
+                  "Position": "-37.82483,-2.587,4.490417",
+                  "Enabled": true,
+                  "Components": [
+                    {
+                      "__type": "Sandbox.SkinnedModelRenderer",
+                      "__guid": "bcb278a7-32de-4f04-8023-c5e77ce4761c",
+                      "BodyGroups": 18446744073709551615,
+                      "CreateBoneObjects": false,
+                      "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                      "Morphs": {},
+                      "RenderOptions": {
+                        "GameLayer": true,
+                        "OverlayLayer": false,
+                        "BloomLayer": false,
+                        "AfterUILayer": false
+                      },
+                      "RenderType": "On",
+                      "Tint": "1,1,1,1",
+                      "UseAnimGraph": true
+                    },
+                    {
+                      "__type": "Sandbox.ModelCollider",
+                      "__guid": "e83c7317-4b79-4cf0-b897-114be38728be",
+                      "IsTrigger": false,
+                      "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                      "Static": false,
+                      "Surface": "surfaces/metal.weapon.surface"
+                    },
+                    {
+                      "__type": "Sandbox.CapsuleCollider",
+                      "__guid": "de39389c-6d6e-43a5-8763-e26626790caa",
+                      "End": "38.50006,2.587,-4.25",
+                      "IsTrigger": false,
+                      "Radius": 0.35,
+                      "Start": "2.5,2.587,-4.25",
+                      "Static": false,
+                      "Surface": "surfaces/metal.weapon.surface"
+                    }
+                  ],
+                  "Children": [
+                    {
+                      "__guid": "ffc21607-5f9a-41fc-8827-24ab2c5f08d1",
+                      "Flags": 0,
+                      "Name": "Prong",
+                      "Position": "39.04791,2.353088,-4.299423",
+                      "Enabled": true,
+                      "Components": [
+                        {
+                          "__type": "Sandbox.CapsuleCollider",
+                          "__guid": "a22bb097-6d57-4a20-a450-a889aa554aef",
+                          "End": "-4,0,1.800007",
+                          "IsTrigger": false,
+                          "Radius": 0.35,
+                          "Start": "0,0,0",
+                          "Static": false,
+                          "Surface": "surfaces/metal.weapon.surface"
+                        },
+                        {
+                          "__type": "Sandbox.CapsuleCollider",
+                          "__guid": "07902397-9c80-400a-a6c6-70bedda30634",
+                          "End": "-4,0,-1.8",
+                          "IsTrigger": false,
+                          "Radius": 0.35,
+                          "Start": "0,0,0",
+                          "Static": false,
+                          "Surface": "surfaces/metal.weapon.surface"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "__guid": "f4fdd602-0ff1-4977-a954-91d8226666e4",
+                  "Flags": 0,
+                  "Name": "Cube",
+                  "Position": "0,0,0",
+                  "Scale": "0.06481746,0.1829062,0.04894695",
+                  "Components": [
+                    {
+                      "__type": "Sandbox.ModelRenderer",
+                      "__guid": "3261e512-920e-471e-bbb3-da44e3947fe3",
+                      "BodyGroups": 18446744073709551615,
+                      "Model": "models/dev/box.vmdl",
+                      "RenderOptions": {
+                        "GameLayer": true,
+                        "OverlayLayer": false,
+                        "BloomLayer": false,
+                        "AfterUILayer": false
+                      },
+                      "RenderType": "On",
+                      "Tint": "1,1,1,1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__guid": "6a14705a-d7d9-4395-9fe7-97e1973b09f4",
+          "Flags": 0,
+          "Name": "Cube",
+          "Position": "0,0,0",
+          "Scale": "0.06481746,0.1829062,0.04894695",
+          "Components": [
+            {
+              "__type": "Sandbox.ModelRenderer",
+              "__guid": "a2bad922-67c1-41b7-8ee9-a60f71d7dd5f",
+              "BodyGroups": 18446744073709551615,
+              "Model": "models/dev/box.vmdl",
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
+              "RenderType": "On",
+              "Tint": "1,1,1,1"
+            }
+          ]
+        },
+        {
+          "__guid": "5829767c-a962-42c5-8015-adc35a641d4e",
+          "Flags": 0,
+          "Name": "Collision",
+          "Position": "0,0,0",
+          "Components": [
+            {
+              "__type": "Sandbox.CapsuleCollider",
+              "__guid": "cf8eda07-fc4f-4ba7-a457-02197470a708",
+              "End": "36.79994,0,4",
+              "IsTrigger": false,
+              "Radius": 1.2000027,
+              "Start": "47.1,0,4",
+              "Static": false,
+              "Surface": "surfaces/metal.weapon.surface"
+            },
+            {
+              "__type": "Sandbox.CapsuleCollider",
+              "__guid": "2896cc34-0350-439a-84ec-69d04e60a3a6",
+              "End": "5.699862,0,3.35",
+              "IsTrigger": false,
+              "Radius": 2.7000027,
+              "Start": "35.10004,0,3.35",
+              "Static": false,
+              "Surface": "surfaces/metal.weapon.surface"
+            },
+            {
+              "__type": "Sandbox.CapsuleCollider",
+              "__guid": "30189dfd-7fad-4a7e-8541-025bd443100a",
+              "End": "6.399861,0,-2.45",
+              "IsTrigger": false,
+              "Radius": 2.6000028,
+              "Start": "34.10006,0,-2.45",
+              "Static": false,
+              "Surface": "surfaces/metal.weapon.surface"
+            }
+          ],
+          "Children": [
+            {
+              "__guid": "b98b505e-d517-4706-8cc3-9426fc6a5210",
+              "Flags": 0,
+              "Name": "Collision - Handle",
+              "Position": "-8.882755,0,-1.618328",
+              "Rotation": "0,-0.1166707,0,0.9931707",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "1738b797-7558-4b29-abf4-6576a497d65e",
+                  "Center": "0,0,0",
+                  "IsTrigger": false,
+                  "Scale": "25.40007,5,8.299992",
+                  "Static": false,
+                  "Surface": "surfaces/wood.surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__guid": "2afe03ef-d387-447e-a09b-9fce66ca3148",
+          "Flags": 0,
+          "Name": "Two Hand IK",
+          "Position": "4.429791,1.626792,-2.856309",
+          "Rotation": "0.7071058,-0.00000004097819,-0.00000007450581,0.7071056",
+          "Enabled": true
+        }
+      ]
+    }
+  ],
+  "SceneProperties": {
+    "FixedUpdateFrequency": 50,
+    "MaxFixedUpdates": 5,
+    "NetworkFrequency": 60,
+    "NetworkInterpolation": true,
+    "ThreadedAnimation": true,
+    "TimeScale": 1,
+    "UseFixedUpdate": true,
+    "NavMesh": {
+      "Enabled": false,
+      "IncludeStaticBodies": true,
+      "IncludeKeyframedBodies": true,
+      "EditorAutoUpdate": true,
+      "AgentHeight": 64,
+      "AgentRadius": 16,
+      "AgentStepSize": 18,
+      "AgentMaxSlope": 40,
+      "ExcludedBodies": "",
+      "IncludedBodies": ""
+    }
+  },
+  "Title": "minimal",
+  "Description": "",
+  "ResourceVersion": 1,
+  "__references": [],
+  "IsValid": true,
+  "__version": 1
+}

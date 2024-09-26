@@ -1,13 +1,45 @@
 
 using Sandbox.Utility;
 using System;
+using System.Runtime.CompilerServices;
+
+[GameResource("ProceduralAnimationConfig", "pac", "ProceduralAnimationConfig")]
+public class ProceduralAnimationConfig : GameResource
+{
+	[Group("Ground"), Property] public float groundBobAmount { get; set; } = 2.5f;
+	[Group("Ground"), Property] public Vector2 groundBobRateRange { get; set; } = new Vector2(7.5f, 20.0f);
+	[Group("Ground"), Property] public float groundBobMoveTowardsRate { get; set; } = 75.0f;
+	[Group("Ground"), Property] public Vector2 groundVelocityRange { get; set; } = new Vector2(0.0f, 320.0f);
+	[Group("Ground"), Property] public Vector2 groundVelocityWalkToSprintRange { get; set; } = new Vector2(100.0f, 320.0f);
+
+	[Group("Mantle"), Property] public float mantleCenterZRate { get; set; } = 5.0f;
+	[Group("Mantle"), Property] public float mantleMaxGunLower { get; set; } = 10.0f;
+	[Group("Mantle"), Property] public Curve mantlePitchCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f, 0.0f, 1.0f), new Curve.Frame(0.5f, 1.0f, -1.0f, -1.0f), new Curve.Frame(1.0f, 0.0f, 1.0f, 0.0f));
+
+	[Group("Sliding"), Property] public float slidingCenterZRate { get; set; } = 5.0f;
+
+	[Group("Air"), Property] public float airVerticalMoveCap { get; set; } = 500.0f;
+	[Group("Air"), Property] public float airMaxZ { get; set; } = 3.5f;
+	[Group("Air"), Property] public Vector2 airMoveRateRange { get; set; } = new Vector2(10f, 50f);
+
+	[Group("Ground Impact"), Property] public float ungroundedBumpTime { get; set; } = 0.15f;
+	[Group("Ground Impact"), Property] public float ungroundedBumpRate { get; set; } = 30.0f;
+}
 
 public class ProceduralAnimation : Component
 {
-	[Group("Setup"), Property] public Character owner { get; set; }
+	[Group("Setup"), Property] public Equipment equipment { get; set; }
+	[Group("Setup"), Property] public ProceduralAnimationConfig config { get; set; }
 
 	[Group("Runtime"), Order(100), Property] public bool isDownBob { get; set; } = true;
 	[Group("Runtime"), Order(100), Property] public float bobRate { get; set; }
+
+	public Character owner => equipment?.instigator;
+
+	protected override void OnStart()
+	{
+		config = config ?? new ProceduralAnimationConfig();
+	}
 
 	protected override void OnUpdate()
 	{
@@ -15,7 +47,13 @@ public class ProceduralAnimation : Component
 			return;
 
 		Vector3 desiredPos = Vector3.Zero;
-		if (owner.movement.isSliding)
+		Angles desiredAngles = Angles.Zero;
+		if (owner.movement.isMantling)
+		{
+			desiredPos = GetSlidingMovement();
+			desiredAngles = GetMantlingRotation();
+		}
+		else if (owner.movement.isSliding)
 		{
 			desiredPos = GetSlidingMovement();
 		}
@@ -28,21 +66,44 @@ public class ProceduralAnimation : Component
 			desiredPos = GetGroundMovement();
 		}
 
-		var ungroundedLerp = MathX.LerpInverse(owner.movement.lastUngrounded, 0.0f, 0.15f);
-		if (owner.movement.isGrounded && ungroundedLerp < 1.0f)
+		if (!owner.movement.isMantling)
 		{
-			desiredPos.z -= Time.Delta * 30.0f;
-			//desiredPos.z = 0.0f;
+			var ungroundedLerp = MathX.LerpInverse(owner.movement.lastUngrounded, 0.0f, config.ungroundedBumpTime);
+			if (owner.movement.isGrounded && ungroundedLerp < 1.0f)
+			{
+				desiredPos.z -= Time.Delta * config.ungroundedBumpRate;
+			}
 		}
 
 		//desiredPos = GetAirMovement();
 		Transform.LocalPosition = desiredPos;
+		Transform.LocalRotation = desiredAngles.ToRotation();
+	}
+
+	public virtual Vector3 GetMantlingMovement()
+	{
+		Vector3 localPos = Transform.LocalPosition;
+		localPos.z = MathY.MoveTowards(localPos.z, 0.0f, Time.Delta * config.mantleCenterZRate);
+		return localPos;
+	}
+
+	public virtual Angles GetMantlingRotation()
+	{
+		var mantleLerp = owner.movement.timeToFinishMantle.Fraction;
+		var mantleLerpCurved = config.mantlePitchCurve.Evaluate(mantleLerp);
+
+		Angles localAngles = Transform.LocalRotation.Angles();
+		float gunLowerTarget = config.mantleMaxGunLower * mantleLerpCurved;
+
+		localAngles.pitch = gunLowerTarget;
+		//localAngles.pitch = MathY.MoveTowards(localAngles.pitch, gunLowerTarget, Time.Delta * 5.0f);
+		return localAngles;
 	}
 
 	public virtual Vector3 GetSlidingMovement()
 	{
 		Vector3 localPos = Transform.LocalPosition;
-		localPos.z = MathY.MoveTowards(localPos.z, 0.0f, Time.Delta * 5.0f);
+		localPos.z = MathY.MoveTowards(localPos.z, 0.0f, Time.Delta * config.slidingCenterZRate);
 		return localPos;
 	}
 
@@ -50,23 +111,19 @@ public class ProceduralAnimation : Component
 	{
 		Vector3 localPos = Transform.LocalPosition;
 		var verticalVelocity = owner.controller.Velocity.z;
-		//verticalVelocity = owner.characterMovement.velocity.z;
-		//verticalVelocity = 100.0f;
-		var lerp = MathX.LerpInverse(Math.Abs(verticalVelocity), 0.0f, 500.0f);
+		var lerp = MathX.LerpInverse(Math.Abs(verticalVelocity), 0.0f, config.airVerticalMoveCap);
 		var heightTarget = owner.controller.Velocity;
-		var desiredHeight = 3.5f;
-		var rate = MathX.Lerp(10, 50f, lerp);
-		//rate = 35f;
+		var desiredHeight = config.airMaxZ;
+		var rate = config.airMoveRateRange.Lerp(lerp);
 		if (verticalVelocity > 0.0f)
 		{
 			desiredHeight = -desiredHeight;
 		}
 
-		Gizmo.Draw.ScreenText($"verticalVelocity: {verticalVelocity}", new Vector2(10, 10));
-		Gizmo.Draw.ScreenText($"lerp: {lerp}", new Vector2(10, 25));
-		Gizmo.Draw.ScreenText($"desiredHeight: {desiredHeight}", new Vector2(10, 40));
-		Gizmo.Draw.ScreenText($"rate: {rate}", new Vector2(10, 55));
-		//Gizmo.Draw.ScreenText($"velocity: {velocity.Length}", new Vector2(10, 55));
+		Debuggin.ToScreen($"verticalVelocity: {verticalVelocity}");
+		Debuggin.ToScreen($"lerp: {lerp}");
+		Debuggin.ToScreen($"desiredHeight: {desiredHeight}");
+		Debuggin.ToScreen($"rate: {rate}");
 
 		localPos.z = MathY.MoveTowards(localPos.z, desiredHeight, Time.Delta * rate);
 		return localPos;
@@ -74,28 +131,36 @@ public class ProceduralAnimation : Component
 
 	public virtual Vector3 GetGroundMovement()
 	{
-		var velocity = owner.controller.Velocity.WithZ(0);
-		var localVelocity = owner.controller.Transform.World.NormalToLocal(velocity);
+		Vector3 localPos = Transform.LocalPosition;
+		var velocityHorizontal = owner.controller.Velocity.WithZ(0);
 
-		var lerp = MathX.LerpInverse(velocity.Length, 0.0f, 320.0f);
-		var lerpWalkToSprint = MathX.LerpInverse(velocity.Length, 100.0f, 320.0f);
-		var easedLerp = Easing.QuadraticIn(lerpWalkToSprint);
+		var movementSpeedLerp = config.groundVelocityRange.InverseLerp(velocityHorizontal.Length);
+		var walkToSprintLerp = config.groundVelocityWalkToSprintRange.InverseLerp(velocityHorizontal.Length);
 
-		var bobAmount = 2.5f;
-		var bobTarget = MathX.Lerp(0.0f, bobAmount, lerp);
-		var desiredBobRate = MathX.Lerp(7.5f, 20.0f, lerpWalkToSprint);
-		bobRate = MathY.MoveTowards(bobRate, desiredBobRate, Time.Delta * 75.0f);
+		var bobAmount = config.groundBobAmount;
+		var bobTarget = MathX.Lerp(0.25f, bobAmount, movementSpeedLerp);
+		var desiredBobRate = config.groundBobRateRange.Lerp(walkToSprintLerp);
+		bobRate = MathY.MoveTowards(bobRate, desiredBobRate, Time.Delta * config.groundBobMoveTowardsRate);
 
 		if (isDownBob)
 		{
 			bobTarget = -bobTarget;
 		}
 
-		bool hasExceededTarget = Transform.LocalPosition.z >= bobTarget;
+		// TODO: FIX THIS
+		//bool hasExceededTarget = isDownBob ? localPos.z <= bobTarget : localPos.z >= bobTarget;
 
+		//hasExceededTarget |= MathX.AlmostEqual(localPos.z, bobTarget);
+
+		bool hasExceededTarget = localPos.z >= bobTarget;
 		if (isDownBob)
 		{
-			hasExceededTarget = Transform.LocalPosition.z <= bobTarget;
+			hasExceededTarget = localPos.z <= bobTarget;
+		}
+
+		if (!hasExceededTarget && MathX.AlmostEqual(localPos.z, bobTarget))
+		{
+			hasExceededTarget = true;
 		}
 
 		if (hasExceededTarget)
@@ -103,13 +168,12 @@ public class ProceduralAnimation : Component
 			isDownBob = !isDownBob;
 		}
 
-		if (velocity.IsNearZeroLength)
-		{
-			isDownBob = false;
-		}
+		Debuggin.ToScreen($"bobTarget: {bobTarget}");
+		Debuggin.ToScreen($"desiredBobRate: {desiredBobRate}");
+		Debuggin.ToScreen($"bobRate: {bobRate}");
 
-		Vector3 localPos = Transform.LocalPosition;
 		localPos.z = MathY.MoveTowards(localPos.z, bobTarget, Time.Delta * bobRate);
+		Debuggin.ToScreen($"localPos.z: {localPos.z}");
 		return localPos;
 	}
 }

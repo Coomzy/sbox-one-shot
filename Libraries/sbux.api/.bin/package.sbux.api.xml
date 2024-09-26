@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>package.sbux.api</name>
+    </assembly>
+    <members>
+        <member name="P:Sandbox.Services.GamePass.Ident">
+            <summary>
+            The ident of this game pass. A short name with no special characters.
+            </summary>
+        </member>
+        <member name="P:Sandbox.Services.GamePass.Cost">
+            <summary>
+            The amount of s&amp;bux this game pass costs.
+            </summary>
+        </member>
+        <member name="P:Sandbox.Services.GamePass.Title">
+            <summary>
+            Name of the game pass to show in UI.
+            </summary>
+        </member>
+        <member name="P:Sandbox.Services.GamePass.Icon">
+            <summary>
+            Icon for this game pass. Only works with urls (for now).
+            </summary>
+        </member>
+        <member name="M:Sandbox.Services.Monetization.WaitForLoad">
+            <summary>
+            It may take a second to get a response from the backend. Use this to ensure everything is loaded.
+            </summary>
+        </member>
+        <member name="M:Sandbox.Services.Monetization.Has(Sandbox.Services.GamePass)">
+            <summary>
+            If the player owns the game pass.
+            </summary>
+        </member>
+        <member name="M:Sandbox.Services.Monetization.Purchase(Sandbox.Services.GamePass)">
+            <summary>Prompts the player to purchase the game pass.</summary>
+            <returns>True if the game pass was bought.</returns>
+            <remarks>A game pass can be purchased multiple times.</remarks>
+        </member>
+        <member name="M:Sandbox.Services.Monetization.HasOrPurchase(Sandbox.Services.GamePass)">
+            <summary>
+            If the player owns the game pass, if not - prompt a purchase.
+            </summary>
+        </member>
+    </members>
+</doc>

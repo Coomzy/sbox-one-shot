@@ -8,17 +8,21 @@
       {
         "__type": "HarpoonGun_Proxy",
         "__guid": "3df05aac-4291-482d-8bbd-8fac8d8cde82",
-        "harpoonSpear": {
-          "_type": "component",
-          "component_id": "4ecc14d8-63cc-4ecd-8134-7ca12108b2bd",
-          "go": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
-          "component_type": "SkinnedModelRenderer"
-        },
         "model": {
           "_type": "component",
           "component_id": "d322430f-3a52-47f6-be39-f868776e2cc1",
           "go": "5d09a53d-728e-41ce-942d-d2105167a569",
           "component_type": "SkinnedModelRenderer"
+        },
+        "spearModel": {
+          "_type": "component",
+          "component_id": "4ecc14d8-63cc-4ecd-8134-7ca12108b2bd",
+          "go": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "twoHandedGrip": {
+          "_type": "gameobject",
+          "go": "dc9a6d39-386e-473c-93e5-f2d8508ad259"
         }
       }
     ],
@@ -50,11 +54,28 @@
                   "BloomLayer": false,
                   "AfterUILayer": false
                 },
-                "RenderType": "ShadowsOnly",
+                "RenderType": "On",
                 "Tint": "1,1,1,1",
                 "UseAnimGraph": false
               }
             ],
+            "Children": [
+              {
+                "__guid": "dc9a6d39-386e-473c-93e5-f2d8508ad259",
+                "Flags": 0,
+                "Name": "Two Handed Grip",
+                "Position": "-15.48598,4.987687,-10.82607",
+                "Rotation": "0.7071056,-0.0000001192093,-0.0000007655472,0.7071056",
+                "Enabled": true
+              }
+            ]
+          },
+          {
+            "__guid": "a7d8d58a-9630-48b3-93b0-69bff45399e5",
+            "Flags": 0,
+            "Name": "Spear Socket",
+            "Position": "22.78719,0,3.778697",
+            "Enabled": true,
             "Children": [
               {
                 "__guid": "1aaf3842-5bca-4c1d-a84a-767da71ba290",
@@ -76,7 +97,7 @@
                       "BloomLayer": false,
                       "AfterUILayer": false
                     },
-                    "RenderType": "ShadowsOnly",
+                    "RenderType": "On",
                     "Tint": "1,1,1,1",
                     "UseAnimGraph": false
                   }
@@ -92,7 +113,9 @@
   "ShowInMenu": false,
   "MenuPath": null,
   "MenuIcon": null,
+  "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
+  "IsValid": true,
   "__version": 1
 }

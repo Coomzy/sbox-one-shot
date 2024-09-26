@@ -1,69 +1,166 @@
 
+using Sandbox;
 using System;
+using System.Reflection.Metadata;
 
 [Group("GMF")]
 public class PlayerInfo : Component, Component.INetworkSpawn
 {
 	public static PlayerInfo local { get; private set; }
-	static Dictionary<Guid, PlayerInfo> connectionToPlayerInfos = new Dictionary<Guid, PlayerInfo>();
+	public static List<PlayerInfo> all { get; private set; } = new List<PlayerInfo>();
 
-	[HostSync, Property] public string displayName { get; set; }
+
+	[HostSync, Sync, Property] public string displayName { get; set; }
+	[HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
 
 	public ulong steamId { get; set; }
-	[HostSync, Property] public Character character { get; set; }
-	[Property] public Spectator spectator { get; set; }
+	[HostSync, Sync, Property] public Character character { get; set; }
 
-	[HostSync, Property] public bool isKnifer { get; set; }
-	[HostSync, Property] public bool isDead { get; set; } = false;
+	[HostSync,Sync, Property] public bool isDead { get; private set; } = true;
+	[HostSync, Sync, Property] public TimeSince aliveTime { get; private set; }
+	[HostSync, Sync, Property] public TimeSince deadTime { get; private set; }
+
+	public bool isLocal => this == local;
+
+	protected override void OnAwake()
+	{
+		all.Add(this);
+	}
 
 	protected override void OnStart()
 	{
-		connectionToPlayerInfos[Network.OwnerConnection.Id] = this;
-		displayName = Network.OwnerConnection.DisplayName;
-
-		//local = this;
-	}
-
-	public void OnNetworkSpawn(Connection owner)
-	{
-		local = this;
-		CreateSpectatorPawn();
-	}
-
-	public void Rejoined()
-	{
-		CreateSpectatorPawn();
-	}
-
-	void CreateSpectatorPawn()
-	{
-		Log.Info($"CreateSpectatorPawn()");
-		var spectatorPrefab = Game.IsRunningInVR ? WorldSettings.instance.spectatorVRPrefab : WorldSettings.instance.spectatorPrefab;
-		var spectatorInst = spectatorPrefab.Clone().BreakPrefab().Components.Get<Spectator>();
-
-		spectator = spectatorInst;
-		spectator.GameObject.Name = $"Spectator Pawn";
-
-		var spawnPoints = Scene.GetAllComponents<SpawnPoint>().ToArray();
-		spectator.Transform.Position = spawnPoints[0].Transform.Position + (Vector3.Up * 50.0f);
-		spectator.Transform.Rotation = spawnPoints[0].Transform.Rotation;
-	}
-
-	public static PlayerInfo ConnectionToPlayerInfo(Connection connection)
-	{
-		if (connectionToPlayerInfos.TryGetValue(connection.Id, out PlayerInfo playerInfo))
+		Debuggin.ToScreen($"PlayerInfo::OnStart() '{GameObject.Name}' sProxy: {IsProxy}", 15.0f);
+		if (!IsProxy)
 		{
-			return playerInfo;
+			local = this;
+			Spectator.TryCreate();
+		}
+	}
+
+	public void OnNetworkSpawn(Connection connection)
+	{
+		if (connection.IsHost)
+		{
+			local = this;
+			Spectator.TryCreate();
+		}
+		displayName = connection.DisplayName;
+
+		var avatarJson = connection.GetUserData("avatar");
+		var clothingContainer = new ClothingContainer();
+		clothingContainer.Deserialize(avatarJson);
+		foreach (var clothingEntry in clothingContainer.Clothing)
+		{
+			clothing[clothingEntry.Clothing.ResourceId] = clothingEntry.Tint;
+		}
+	}
+
+	public virtual void Rejoined()
+	{
+		character = null;
+	}
+
+	public virtual void Diconnected()
+	{
+		if (character != null)
+		{
+			character.DestroyRequest();
+		}
+		character = null;
+	}
+
+	public virtual void OnBecameHost(PlayerInfo previousHost)
+	{
+		
+	}
+
+	public virtual void Possess(Character newCharacter)
+	{
+		if (character != null)
+		{
+			Unpossess();
+		}
+		character = newCharacter;
+		isDead = false;
+		aliveTime = 0;
+	}
+
+	public virtual void Unpossess()
+	{
+		if (character != null)
+		{
+			character.Unpossess();
+		}
+		character = null;
+		isDead = true;
+		deadTime = 0;
+	}
+
+	public virtual void DestroyPawn()
+	{
+		var oldCharacter = character;
+		Unpossess();
+		if (oldCharacter != null)
+		{
+			oldCharacter.DestroyRequest();
+		}
+	}
+
+	public static bool TryFromConnection(Connection connection, out PlayerInfo playerInfo) => TryFromConnection(connection, out playerInfo);
+	public static bool TryFromConnection<T>(Connection connection, out T playerInfo) where T : PlayerInfo
+	{
+		playerInfo = FromConnection<T>(connection);
+		return playerInfo != null;
+	}
+
+	public static PlayerInfo FromConnection(Connection connection) => FromConnection<PlayerInfo>(connection);
+	public static T FromConnection<T>(Connection connection) where T : PlayerInfo
+	{
+		foreach (var playerInfo in all)
+		{
+			if (playerInfo == null || !playerInfo.IsValid || playerInfo?.GameObject == null)
+				return null;
+
+			if (!playerInfo.Network.Active || playerInfo.Network.OwnerId == Guid.Empty)
+				return null;
+
+			if (connection.Id == playerInfo.Network.OwnerId)
+				return playerInfo as T;
 		}
 
 		return null;
 	}
 
-	public static T ConnectionToPlayerInfo<T>(Connection connection) where T : PlayerInfo
+	public static bool TryGetOwner(Component component, out PlayerInfo playerInfo) => TryGetOwner<PlayerInfo>(component?.GameObject, out playerInfo);
+	public static bool TryGetOwner(GameObject gameObject, out PlayerInfo playerInfo) => TryGetOwner<PlayerInfo>(gameObject, out playerInfo);
+	public static bool TryGetOwner<T>(Component component, out T playerInfo) where T : PlayerInfo => TryGetOwner(component?.GameObject, out playerInfo);
+	public static bool TryGetOwner<T>(GameObject gameObject, out T playerInfo) where T : PlayerInfo
 	{
-		if (connectionToPlayerInfos.TryGetValue(connection.Id, out PlayerInfo playerInfo))
+		playerInfo = GetOwner<T>(gameObject);
+		return playerInfo != null;
+	}
+
+	public static PlayerInfo GetOwner(Component component) => GetOwner<PlayerInfo>(component?.GameObject);
+	public static PlayerInfo GetOwner(GameObject gameObject) => GetOwner<PlayerInfo>(gameObject);
+	public static T GetOwner<T>(Component component) where T : PlayerInfo => GetOwner<T>(component?.GameObject);
+	public static T GetOwner<T>(GameObject gameObject) where T : PlayerInfo
+	{
+		if (gameObject == null || !gameObject.IsValid)
+			return null;
+
+		if (!gameObject.Network.Active || gameObject.Network.OwnerId == Guid.Empty)
+			return null;
+
+		foreach (var playerInfo in all)
 		{
-			return playerInfo as T;
+			if (playerInfo == null || !playerInfo.IsValid || playerInfo?.GameObject == null)
+				return null;
+
+			if (!playerInfo.Network.Active || playerInfo.Network.OwnerId == Guid.Empty)
+				return null;
+
+			if (gameObject.Network.OwnerId == playerInfo.Network.OwnerId)
+				return playerInfo as T;
 		}
 
 		return null;

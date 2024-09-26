@@ -1,0 +1,15 @@
+{
+  "Title": "Reconnecter",
+  "Type": "library",
+  "Org": "coomzy",
+  "Ident": "reconnecter",
+  "Schema": 1,
+  "IncludeSourceFiles": true,
+  "Resources": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "IsWhitelistDisabled": false,
+  "Metadata": {
+    "CsProjName": ""
+  }
+}

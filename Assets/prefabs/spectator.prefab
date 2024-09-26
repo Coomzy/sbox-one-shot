@@ -9,8 +9,8 @@
       {
         "__type": "Spectator",
         "__guid": "41b0c516-7729-4f4d-830f-22af9116cfc2",
-        "flyMoveSpeed": 190,
-        "sprintMoveSpeed": 320
+        "flyMoveSpeed": 500,
+        "sprintMoveSpeed": 750
       }
     ],
     "Children": [],
@@ -19,6 +19,7 @@
   "ShowInMenu": false,
   "MenuPath": null,
   "MenuIcon": null,
+  "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
   "__version": 1

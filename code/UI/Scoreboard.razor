@@ -29,30 +29,7 @@
 
                 </div>
                 @{
-                    var slasherPlayerInfo = PlayerInfo.ConnectionToPlayerInfo<OSPlayerInfo>(entry);
-                    slasherPlayerInfo = null;
-                    if (slasherPlayerInfo != null)
-                    {
-                        /*if (slasherPlayerInfo.isDead)
-                        {
-                            <div class="stat">☠️</div>
-                        }
-                        else
-                        {
-                            if (slasherPlayerInfo.isKnifer)
-                            {
-                                <div class="stat">🔪</div>
-                            }
-                            else
-                            {
-                                <div class="stat">🏃‍</div>
-                            }
-                        }*/
-                    }
-                    else
-                    {
-                        <div class="stat">❓</div>
-                    }
+                    <div class="stat">❓</div>
                 }
             </div>
         }
@@ -71,5 +48,5 @@
     /// <summary>
     /// update every second
     /// </summary>
-    protected override int BuildHash() => System.HashCode.Combine( RealTime.Now.CeilToInt() );
+    protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt());
 }

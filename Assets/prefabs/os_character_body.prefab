@@ -35,6 +35,12 @@
         "thirdPersonEquipmentAttachPoint": {
           "_type": "gameobject",
           "go": "a6de72cd-cc34-442c-ac3f-7362b585ccd0"
+        },
+        "voiceTransmitter": {
+          "_type": "component",
+          "component_id": "5d7f0bc2-c404-400e-b938-51039b3da1ad",
+          "go": "bc2bb9cf-be29-417e-b4cb-66e03bd1df73",
+          "component_type": "Voice"
         }
       },
       {
@@ -82,6 +88,7 @@
       {
         "__type": "Sandbox.ModelPhysics",
         "__guid": "af373d9c-291f-4626-abaf-cdf45eca8095",
+        "__enabled": false,
         "Locking": {},
         "Model": "models/citizen/citizen.vmdl",
         "MotionEnabled": false,
@@ -92,6 +99,23 @@
           "component_type": "SkinnedModelRenderer"
         },
         "RigidbodyFlags": 0
+      },
+      {
+        "__type": "Sandbox.Voice",
+        "__guid": "5d7f0bc2-c404-400e-b938-51039b3da1ad",
+        "Loopback": false,
+        "Mode": "AlwaysOn",
+        "MorphScale": 3,
+        "MorphSmoothTime": 0.1,
+        "PushToTalkInput": "voice",
+        "Renderer": {
+          "_type": "component",
+          "component_id": "927a9bdc-6a32-4825-ad1e-3e1bab191da2",
+          "go": "bc2bb9cf-be29-417e-b4cb-66e03bd1df73",
+          "component_type": "SkinnedModelRenderer"
+        },
+        "Volume": 1,
+        "WorldspacePlayback": true
       }
     ],
     "Children": [
@@ -932,6 +956,7 @@
   "ShowInMenu": false,
   "MenuPath": null,
   "MenuIcon": null,
+  "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
   "__version": 1

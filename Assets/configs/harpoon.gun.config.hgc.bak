@@ -1,0 +1,26 @@
+{
+  "reloadTime": 0.35,
+  "reloadXAxisCurve": [
+    {},
+    {
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "reloadYAxisCurve": [
+    {},
+    {
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "reloadZAxisCurve": [
+    {},
+    {
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "__references": [],
+  "__version": 0
+}

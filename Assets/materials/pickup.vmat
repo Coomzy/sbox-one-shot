@@ -1,0 +1,24 @@
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
+{
+	shader "shaders/projected_decals.shader"
+
+	//---- Ambient Occlusion ----
+	TextureAmbientOcclusion "materials/sun/overlay_color.tga"
+
+	//---- Color ----
+	TextureColor "materials/sun/overlay_color.tga"
+
+	//---- Fog ----
+	g_bFogEnabled "1"
+
+	//---- Lighting ----
+	g_flGlossiness "0.200"
+
+	//---- Metalness ----
+	TextureMetalness "materials/sun/overlay_color.tga"
+
+	//---- Translucent ----
+	TextureTranslucency "materials/sun/overlay_color.tga"
+}

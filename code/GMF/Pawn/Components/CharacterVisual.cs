@@ -21,22 +21,22 @@ public class CharacterVisual : Component, Component.INetworkSpawn
 
 	protected override void OnStart()
 	{
-		//LoadClothing(GameObject.Network.OwnerConnection);
+		//LoadClothing(GameObject.Network.Owner);
 
-		//Log.Info($"CharacterVisual::OnStart() OwnerConnection: {GameObject.Network.OwnerConnection}, IsProxy: {IsProxy}, hasNetworkSpawned: {hasNetworkSpawned}");
-		Log.Info($"CharacterVisual::OnStart()             IsOwner: {GameObject.Network.IsOwner}, IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost} for '{GameObject.Name}'");
+		//Log.Info($"CharacterVisual::OnStart() OwnerConnection: {GameObject.Network.Owner}, IsProxy: {IsProxy}, hasNetworkSpawned: {hasNetworkSpawned}");
+		Log.Info($"CharacterVisual::OnStart()             IsOwner: {GameObject.Network.IsOwner}, IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost} for '{GameObject.Name}'");
 		SetFirstPersonMode(firstPersonDefaultView && !IsProxy);
 	}
 
 	public async virtual void OnNetworkSpawn(Connection connection)
 	{
 		hasNetworkSpawned = true;
-		//Log.Info($"CharacterVisual::OnNetworkSpawn() 1 connection: {connection}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsProxy: {IsProxy}");
-		Log.Info($"CharacterVisual::OnNetworkSpawn() PRE  IsOwner: {GameObject.Network.IsOwner}, IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost} for '{GameObject.Name}' connection: {connection}");
+		//Log.Info($"CharacterVisual::OnNetworkSpawn() 1 connection: {connection}, OwnerConnection: {GameObject.Network.Owner}, IsProxy: {IsProxy}");
+		Log.Info($"CharacterVisual::OnNetworkSpawn() PRE  IsOwner: {GameObject.Network.IsOwner}, IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost} for '{GameObject.Name}' connection: {connection}");
 		LoadClothing(connection);
 		await Task.Frame();
-		//Log.Info($"CharacterVisual::OnNetworkSpawn() 2 connection: {connection}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsProxy: {IsProxy}");
-		Log.Info($"CharacterVisual::OnNetworkSpawn() POST IsOwner: {GameObject.Network.IsOwner}, IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost} for '{GameObject.Name}' connection: {connection}");
+		//Log.Info($"CharacterVisual::OnNetworkSpawn() 2 connection: {connection}, OwnerConnection: {GameObject.Network.Owner}, IsProxy: {IsProxy}");
+		Log.Info($"CharacterVisual::OnNetworkSpawn() POST IsOwner: {GameObject.Network.IsOwner}, IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost} for '{GameObject.Name}' connection: {connection}");
 
 		/*LoadClothing(connection);
 
@@ -48,7 +48,7 @@ public class CharacterVisual : Component, Component.INetworkSpawn
 	{
 		if (connection == null)
 		{
-			connection = Network.OwnerConnection;
+			connection = Network.Owner;
 		}
 
 		var avatarJson = connection.GetUserData("avatar");

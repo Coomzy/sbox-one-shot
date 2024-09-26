@@ -1,0 +1,43 @@
+{
+  "reloadTime": 0.35,
+  "reloadXAxisCurve": {
+    "rangey": "0,3",
+    "frames": [
+      {},
+      {
+        "x": 0.6,
+        "y": 0.8333333
+      },
+      {
+        "x": 1,
+        "y": 0.3333333
+      }
+    ]
+  },
+  "reloadYAxisCurve": [
+    {},
+    {
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "reloadZAxisCurve": {
+    "rangey": "0,3",
+    "frames": [
+      {
+        "y": 0.083333276
+      },
+      {
+        "x": 0.8000001,
+        "y": 0.6666666
+      },
+      {
+        "x": 1,
+        "y": 0.3333333
+      }
+    ]
+  },
+  "__references": [],
+  "IsValid": true,
+  "__version": 0
+}

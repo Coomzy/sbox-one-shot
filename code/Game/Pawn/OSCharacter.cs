@@ -5,17 +5,20 @@ using System.Numerics;
 using System.Threading.Channels;
 
 [Group("OS")]
-public class OSCharacter : Character, Component.INetworkSpawn
+public class OSCharacter : Character
 {
 	[Group("Setup"), Property] public GameObject eyeHolder { get; set; }
 	[Group("Setup"), Property] public GameObject firstPersonArmsHolder { get; set; }
 	[Group("Setup"), Property] public GameObject gunHolder { get; set; }
 
-	[Group("Setup"), Property] public GameObject harpoonGunPrefab { get; set; }	
+	// TODO: Make some kind of loadout system?
+	[Group("Setup"), Property] public GameObject harpoonGunPrefab { get; set; }
 
 	protected override void OnAwake()
 	{
-		movement.config = movement.config ?? PlayerSettings.instance.characterMovementConfig;
+		base.OnAwake();
+
+		movement.config = movement.config ?? GameSettings.instance.characterMovementConfig;
 
 		eyeAngles = Transform.Rotation.Angles().WithRoll(0).WithPitch(0);
 	}
@@ -24,106 +27,45 @@ public class OSCharacter : Character, Component.INetworkSpawn
 	{
 		base.OnStart();
 
-		//Log.Info($"OSPawn::OnStart() '{GameObject.Name}', IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost}");
+		//Log.Info($"Network.Owner: {Network.Owner}, Network.OwnerId: {Network.OwnerId}, PlayerInfo: {PlayerInfo.connectionToPlayerInfos[Network.OwnerId]}");
+
+		//Log.Info($"OSPawn::OnStart() '{GameObject.Name}', IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost}");
 		if (IsProxy)
 		{
 			return;
 		}
 
+		// TODO: Move this into Character
 		var playerBodyInst = playerBodyPrefab.Clone();
 		body = playerBodyInst.Components.Get<CharacterBody>();
 		body.owner = this;
-		playerBodyInst.NetworkSpawn(GameObject.Network.OwnerConnection);
-		body.owner = this;
+		playerBodyInst.NetworkSpawn(GameObject.Network.Owner);
 		//playerBody = playerBodyInst.Components.Get<PlayerBody>();
 
 		var harpoonGunInst = harpoonGunPrefab.Clone();
+		//harpoonGunInst.NetworkInterpolation = false;
 		equippedItem = harpoonGunInst.Components.Get<Equipment>();
 		equippedItem.instigator = this;
-		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' connection: {connection}, IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost}");
-		harpoonGunInst.NetworkSpawn(GameObject.Network.OwnerConnection);
-		equippedItem.instigator = this;
+		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' connection: {connection}, IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost}");
+		harpoonGunInst.NetworkSpawn(GameObject.Network.Owner);
 		//equippedItem = harpoonGunInst.Components.Get<Equipment>();
-
-		//DelayedAttach();
 
 		harpoonGunInst.SetParent(gunHolder);
 		harpoonGunInst.Transform.LocalPosition = Vector3.Zero;
 		harpoonGunInst.Transform.LocalRotation = Quaternion.Identity;
-	}
 
-	public async virtual void OnNetworkSpawn(Connection connection)
-	{
-		//await Task.Frame();
-		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' connection: {connection}, IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost}");
-
-
-		if (IsProxy)
+		var crosshairBuilder = Scene.Components.GetInDescendantsOrSelf<CrosshairBuilder>(true);
+		if (crosshairBuilder != null)
 		{
-			return;
+			crosshairBuilder.Enabled = true;
 		}
-		return;
-		//await Task.Frame();
-
-		var playerBodyInst = playerBodyPrefab.Clone();
-		body = playerBodyInst.Components.Get<CharacterBody>();
-		body.owner = this;
-		playerBodyInst.NetworkSpawn(connection);
-		body.owner = this;
-		//playerBody = playerBodyInst.Components.Get<PlayerBody>();
-
-		var harpoonGunInst = harpoonGunPrefab.Clone();
-		equippedItem = harpoonGunInst.Components.Get<Equipment>();
-		equippedItem.instigator = this;
-		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' connection: {connection}, IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost}");
-		harpoonGunInst.NetworkSpawn(connection);
-		equippedItem.instigator = this;
-		//equippedItem = harpoonGunInst.Components.Get<Equipment>();
-
-		//DelayedAttach();
-
-		await Task.Frame();
-		harpoonGunInst.SetParent(gunHolder);
-		harpoonGunInst.Transform.LocalPosition = Vector3.Zero;
-		harpoonGunInst.Transform.LocalRotation = Quaternion.Identity;
-
-		/*var harpoonGunInst = harpoonGunPrefab.Clone();
-		equippedItem = harpoonGunInst.Components.Get<Equipment>();
-		equippedItem.owner = this;
-		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' connection: {connection}, IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost}");
-		harpoonGunInst.NetworkSpawn(connection);
-
-		//DelayedAttach();
-
-		harpoonGunInst.SetParent(gunHolder);
-		harpoonGunInst.Transform.LocalPosition = Vector3.Zero;
-		harpoonGunInst.Transform.LocalRotation = Quaternion.Identity;
-
-		var camera = Scene.GetAllComponents<CameraComponent>().Where(x => x.IsMainCamera).FirstOrDefault();
-		//camera.GameObject.SetParent(eyeHolder, false);
-		//camera.Transform.LocalPosition = Vector3.Zero;
-		//camera.Transform.LocalRotation = Rotation.Identity;
-		//firstPersonArmsHolder.SetParent(eyeHolder, false);
-		//firstPersonArmsHolder.Transform.LocalPosition = Vector3.Zero;
-		//firstPersonArmsHolder.Transform.LocalRotation = Rotation.Identity;*/
 	}
 
-	public async void DelayedAttach()
-	{
-		await Task.Frame();
-
-		equippedItem.GameObject.SetParent(gunHolder);
-		equippedItem.GameObject.Transform.LocalPosition = Vector3.Zero;
-		equippedItem.GameObject.Transform.LocalRotation = Quaternion.Identity;
-
-	}
-
-	[Property] public GameObject spherePrefab { get; set; } 
 	protected override void OnUpdate()
 	{
 		base.OnUpdate();
 
-		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.OwnerConnection}, IsHost: {Networking.IsHost}");
+		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost}");
 		if (IsProxy)
 		{
 			return;
@@ -135,18 +77,21 @@ public class OSCharacter : Character, Component.INetworkSpawn
 
 		UpdateCamera();
 
-		if (Input.Pressed("reload"))
+		/*if (Input.Pressed("debug"))
 		{
-			var spawnPoint = PlayerCamera.instance.GetPointInFront(100.0f);
-			var inst = spherePrefab.Clone(spawnPoint);
-			inst.NetworkSpawn(GameObject.Network.OwnerConnection);
-		}
+			DamageInfo damageInfo = new DamageInfo();
+			damageInfo.instigator = owner;
+			damageInfo.damageCauser = equippedItem;
+			Die(damageInfo);
+		}*/
 	}
 
 	void MouseInput()
 	{
 		var e = eyeAngles;
-		e += Input.AnalogLook;
+		//e += Input.AnalogLook;
+		e += Input.AnalogLook / PlayerCamera.GetScaledSensitivity();
+		//e *= PlayerCamera.GetScaledSensitivity();
 		e.pitch = e.pitch.Clamp( -90, 90 );
 		e.roll = 0.0f;
 		eyeAngles = e;
@@ -260,9 +205,10 @@ public class OSCharacter : Character, Component.INetworkSpawn
 			return;
 		}
 
-		if (body != null && body.IsValid)
+		var crosshairBuilder = Scene.Components.GetInDescendantsOrSelf<CrosshairBuilder>(true);
+		if (crosshairBuilder != null)
 		{
-			body.Destroy();
+			crosshairBuilder.Enabled = false;
 		}
 
 		base.OnDestroy();

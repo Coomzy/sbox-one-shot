@@ -1,6 +1,8 @@
 
 using Sandbox;
+using Sandbox.Utility;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 [Group("GMF")]
 public class CharacterMovement : Component
@@ -10,6 +12,7 @@ public class CharacterMovement : Component
 	[Group("Setup"), Property] public CharacterMovementConfig config { get; set; }
 
 	[Group("Runtime"), Property, Sync] public bool isSliding { get; set; }
+	[Group("Runtime"), Property, Sync] public bool isMantling { get; set; }
 	[Group("Runtime"), Property, Sync] public bool isCrouching { get; set; }
 	[Group("Runtime"), Property, Sync] public Vector3 wishVelocity { get; set; }
 	[Group("Runtime"), Property, Sync] public Vector3 slideVelocity { get; set; }
@@ -17,9 +20,15 @@ public class CharacterMovement : Component
 	[Group("Runtime"), Property] public bool wishCrouch { get; set; }
 	[Group("Runtime"), Property] public float eyeHeight { get; set; }
 
+	[Group("Runtime"), Property] public TimeSince lastMantleInput { get; set; }
+	[Group("Runtime"), Property] public TimeUntil timeToFinishMantle { get; set; }
+	[Group("Runtime"), Property] public Vector3 mantleStart { get; set; }
+	[Group("Runtime"), Property] public Vector3 mantleEnd { get; set; }
+
 	[Group("Runtime"), Property, Sync] public bool isGrounded { get; set; }
 	[Group("Runtime"), Property] public TimeSince lastGrounded { get; set; }
 	[Group("Runtime"), Property] public TimeSince lastUngrounded { get; set; }
+	[Group("Runtime"), Property] public TimeSince lastMantleEnd { get; set; }
 
 	[Group("Runtime"), Property] public TimeSince lastJump { get; set; }
 	[Group("Runtime"), Property] public TimeSince slideStart { get; set; }
@@ -48,6 +57,12 @@ public class CharacterMovement : Component
 		if (IsProxy)
 			return;
 
+		if (isMantling)
+		{
+			MantleUpdate();
+			return;
+		}
+
 		SlideInput();
 
 		if (isSliding)
@@ -56,11 +71,13 @@ public class CharacterMovement : Component
 		}
 		else
 		{
+			MantlingInput();
 			CrouchingInput();
 			MovementInput();
 		}
 
 		UpdateGrounding();
+		GetMantleSpot(out var mantleEndPoint);
 	}	
 
 	float GetFriction()
@@ -82,8 +99,7 @@ public class CharacterMovement : Component
 		if (CanJump() && Input.Pressed("jump"))
 		{
 			lastJump = 0;
-			float jumpBoost = MathX.Clamp(slideSpeedScalar, 1.0f, 2.0f);
-			characterController.Punch(Vector3.Up * (config.jumpHeight * jumpBoost));
+			characterController.Punch(Vector3.Up * (config.jumpHeight * slideSpeedScalar));
 			owner.body.Jump();
 			isSliding = false;
 		}
@@ -95,11 +111,150 @@ public class CharacterMovement : Component
 			isSliding = false;
 		}
 
-		if (!characterController.IsOnGround && lastGrounded > 0.2f)
+		if (!characterController.IsOnGround && lastGrounded > config.jumpCoyoteTime)
 		{
 			isSliding = false;
 		}
+	}
 
+	void MantleUpdate()
+	{
+		isMantling = true;
+		var horizontalLerp = Easing.QuadraticIn(timeToFinishMantle.Fraction);
+		var verticalLerp = Easing.QuadraticOut(timeToFinishMantle.Fraction);
+
+		horizontalLerp = config.mantleHorizontalCurve.Evaluate(timeToFinishMantle.Fraction);
+		verticalLerp = config.mantleVerticalCurve.Evaluate(timeToFinishMantle.Fraction);
+
+		var newMantleVerticalPosition = Vector3.Lerp(mantleStart, mantleEnd, verticalLerp);
+		var newMantlePosition = Vector3.Lerp(mantleStart, mantleEnd, horizontalLerp);
+		newMantlePosition.z = newMantleVerticalPosition.z;
+
+		//GameObject.Transform.Position = newMantlePosition;
+		characterController.MoveTo(newMantlePosition, true);
+
+		if (timeToFinishMantle)
+		{
+			isMantling = false;
+			lastMantleEnd = 0;
+		}
+	}
+
+	void MantlingInput()
+	{
+		if (isSliding || isCrouching)
+			return;
+
+		if (isGrounded)
+			return;
+
+		if (Input.Pressed("jump"))
+		{
+			lastMantleInput = 0;
+		}
+
+		if (lastMantleInput > config.mantleInputBuffer)
+		{
+			return;
+		}
+
+		if (!GetMantleSpot(out var mantleEndPoint))
+		{
+			return;
+		}
+
+		isMantling = true;
+		characterController.Velocity = Vector3.Zero;
+		mantleStart = Transform.Position;
+		mantleEnd = mantleEndPoint;
+
+		float mantleDistance = Vector3.DistanceBetween(mantleStart, mantleEnd);
+		timeToFinishMantle = config.mantleMoveDistanceRemap.Evaluate(mantleDistance);
+	}
+
+	bool debugMantle = false;
+	bool GetMantleSpot(out Vector3 mantleEndPoint)
+	{
+		mantleEndPoint = Transform.Position;
+
+		float radius = characterController.Radius * 0.8f;
+		var capsule = Capsule.FromHeightAndRadius(5.0f, radius);
+		var trace = Scene.Trace.Capsule(capsule).IgnoreGameObjectHierarchy(GameObject).WithoutTags("ragdoll", "local");
+
+		// Ground Buffer Check
+		float maxHeightFromGroundBuffer = 20.0f;
+
+		var groundBufferStart = GameObject.Transform.Position;
+		var groundBufferEnd = groundBufferStart - (GameObject.Transform.World.Up * maxHeightFromGroundBuffer);
+		var groundBufferResult = trace.FromTo(groundBufferStart, groundBufferEnd).Run();
+
+		float groundBuffer = maxHeightFromGroundBuffer;
+
+		if (groundBufferResult.Hit)
+		{
+			var groundBufferPoint = groundBufferResult.HitPosition - (Vector3.Up * radius);
+			groundBuffer = Vector3.DistanceBetween(groundBufferStart, groundBufferPoint);
+
+			if (debugMantle)
+			{
+				Debuggin.draw.Sphere(groundBufferPoint, radius, 8, Game.ActiveScene.FixedDelta, Color.Yellow);
+			}
+		}
+		float groundBufferDelta = maxHeightFromGroundBuffer - groundBuffer;
+		if (debugMantle)
+		{
+			Debuggin.draw.Capsule(groundBufferStart, groundBufferEnd, radius, Game.ActiveScene.FixedDelta, groundBufferResult.Hit ? Color.Red : Color.Green);
+		}
+
+		// Above Character Check
+		float aboveHeightCheckDistance = 50.0f;
+
+		var upCheckStart = GameObject.Transform.Position + (GameObject.Transform.World.Up * characterController.Height);
+		var upCheckEnd = upCheckStart + (GameObject.Transform.World.Up * aboveHeightCheckDistance);
+		var upCheckResult = trace.FromTo(upCheckStart, upCheckEnd).Run();
+		if (debugMantle)
+		{
+			Debuggin.draw.Capsule(upCheckStart, upCheckEnd, radius, Game.ActiveScene.FixedDelta, upCheckResult.Hit ? Color.Red : Color.Green);
+		}
+
+		// Forward Check
+		float forwardCheckDistance = 40.0f;
+
+		var forwardCheckStart = upCheckEnd;
+		var forwardCheckEnd = forwardCheckStart + (GameObject.Transform.World.Forward * forwardCheckDistance);
+		var forwardCheckResult = trace.FromTo(forwardCheckStart, forwardCheckEnd).Run();
+		if (debugMantle)
+		{
+			Debuggin.draw.Capsule(forwardCheckStart, forwardCheckEnd, radius, Game.ActiveScene.FixedDelta, forwardCheckResult.Hit ? Color.Red : Color.Green);
+		}
+
+		if (forwardCheckResult.Hit)
+		{
+			return false;
+		}
+
+		// Down Check
+		float downCheckDistance = 95.0f - groundBufferDelta;
+
+		var downCheckStart = forwardCheckEnd;
+		var downCheckEnd = downCheckStart - (GameObject.Transform.World.Up * downCheckDistance);
+		var downCheckResult = trace.FromTo(downCheckStart, downCheckEnd).Run();
+		if (debugMantle)
+		{
+			Debuggin.draw.Capsule(downCheckStart, downCheckEnd, radius, Game.ActiveScene.FixedDelta, downCheckResult.Hit ? Color.Red : Color.Green);
+		}
+
+		if (downCheckResult.Hit)
+		{
+			var mantlePoint = downCheckResult.HitPosition - (Vector3.Up * radius);
+			mantleEndPoint = mantlePoint;
+			if (debugMantle)
+			{
+				Debuggin.draw.Sphere(mantlePoint, radius, 8, Game.ActiveScene.FixedDelta, Color.Yellow);
+			}
+		}
+
+		return downCheckResult.Hit;
 	}
 
 	void MovementInput()
@@ -133,7 +288,6 @@ public class CharacterMovement : Component
 				//wishVelocity = wishVelocity.ClampLength(75);
 			}
 		}
-
 
 		cc.ApplyFriction(GetFriction());
 
@@ -196,6 +350,10 @@ public class CharacterMovement : Component
 
 		if (isGrounded)
 		{
+			//Log.Info($"owner: {owner}, owner.body: {owner?.body}");
+			//Log.Info($"owner: {owner}");
+			if (owner?.body == null)
+				return;
 			owner.body.heightOffset = MathY.MoveTowards(owner.body.heightOffset, 0.0f, Time.Delta * 100.0f);
 			owner.body.SetPosition(true);
 		}
@@ -232,14 +390,14 @@ public class CharacterMovement : Component
 	{
 		if (isSliding)
 		{
-			if (Input.Released("duck"))
+			if (Input.Released("duck") || Input.Released("duck_alt"))
 			{
 				isSliding = false;
 			}
 			return;
 		}
 
-		if (!Input.Pressed("duck"))
+		if (!Input.Pressed("duck") && !Input.Down("duck_alt"))
 			return;
 
 		if (!characterController.IsOnGround)
@@ -255,7 +413,7 @@ public class CharacterMovement : Component
 
 	void CrouchingInput()
 	{
-		wishCrouch = Input.Down("duck");
+		wishCrouch = Input.Down("duck") || Input.Down("duck_alt");
 
 		if (isSliding)
 		{
