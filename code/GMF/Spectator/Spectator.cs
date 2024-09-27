@@ -31,7 +31,7 @@ public class Spectator : Component
 
 	public static bool TryCreate(Vector3 spawnPos, Rotation spawnRot)
 	{
-		if (Check.IsFullyValid(instance))
+		if (IsFullyValid(instance))
 		{
 			return false;
 		}
@@ -56,7 +56,7 @@ public class Spectator : Component
 	{
 		if (!IsUsingSpectatorCamera())
 		{
-			if (Check.IsFullyValid(PlayerCamera.cam))
+			if (IsFullyValid(PlayerCamera.cam))
 			{
 				Transform.Position = PlayerCamera.cam.Transform.Position;
 				Transform.Rotation = PlayerCamera.cam.Transform.Rotation;
@@ -118,7 +118,7 @@ public class Spectator : Component
 
 	void UpdateCamera()
 	{
-		if (!Check.IsFullyValid(PlayerCamera.cam))
+		if (!IsFullyValid(PlayerCamera.cam))
 			return;
 
 		PlayerCamera.cam.Transform.Position = Transform.Position;
@@ -136,12 +136,12 @@ public class Spectator : Component
 
 	public virtual bool AllowedMove()
 	{
-		if (!Check.IsFullyValid(GameMode.instance) ||
+		if (!IsFullyValid(GameMode.instance) ||
 			GameMode.instance.modeState == ModeState.PreGame ||
 			GameMode.instance.modeState == ModeState.PreRound)
 			return false;
 
-		if (Check.IsFullyValid(PlayerInfo.local?.character))
+		if (IsFullyValid(PlayerInfo.local?.character))
 			return false;
 
 		if (PlayerInfo.local.deadTime < 3.0f)
@@ -152,7 +152,7 @@ public class Spectator : Component
 
 	public virtual bool IsUsingSpectatorCamera()
 	{
-		if (!Check.IsFullyValid(PlayerInfo.local?.character))
+		if (!IsFullyValid(PlayerInfo.local?.character))
 			return true;
 
 		return false;
@@ -160,13 +160,13 @@ public class Spectator : Component
 
 	public static void Teleport(Vector3 pos, Quaternion? rot = null)
 	{
-		if (!Check.IsFullyValid(instance))
+		if (!IsFullyValid(instance))
 			return;
 
 		instance.Transform.Position = pos;
 		if (rot.HasValue) instance.Transform.Rotation = rot.Value;
 
-		if (!Check.IsFullyValid(PlayerCamera.cam))
+		if (!IsFullyValid(PlayerCamera.cam))
 			return;
 
 		PlayerCamera.cam.Transform.Position = instance.Transform.Position;

@@ -71,7 +71,9 @@ public class Pickup : Component, Component.ITriggerListener
 
 	public void OnTriggerEnter(Collider other)
 	{
-		Log.Info($"JumpPad::OnTriggerEnter() other: {other?.GameObject?.Name}");
+		if (isActive)
+			return;
+
 		var osPawn = other.Components.Get<OSCharacter>();
 		var harpoonGun = (HarpoonGun)osPawn?.equippedItem;
 		if (harpoonGun == null)

@@ -16,6 +16,7 @@ public class HarpoonSpear : Projectile
 		//ExtraDebug.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
 	}
 
+	// TODO: Move this into the base!
 	protected override void DoFlightPlayerHitDetection(Vector3 start, Vector3 end)
 	{
 		//ExtraDebug.draw.Line(start, end, 15.0f);
@@ -40,6 +41,7 @@ public class HarpoonSpear : Projectile
 		{
 			return;
 		}
+		Sound.Play("harpoon.impact.flesh", result.HitPosition);
 		var characterBody = result.GameObject.Components.Get<CharacterBody>();
 		if (characterBody == null)
 		{
@@ -59,6 +61,13 @@ public class HarpoonSpear : Projectile
 		//ExtraDebug.draw.Sphere(Transform.Position, 10.0f, 8, 15.0f);
 		Debuggin.draw.Line(Transform.Position, Transform.Position + damageInfo.hitVelocity, 15.0f);
 		characterBody.TakeDamage(damageInfo);
+		
+
+		if (owner is HarpoonGun harpoonGun)
+		{
+			harpoonGun.Reload();
+			PlayerInfo.local.OnScoreKill();
+		}
 
 		//((OSCharacterBody)characterBody).Impale(this, result.Body.GroupIndex);
 		//characterBody.bodyPhysics

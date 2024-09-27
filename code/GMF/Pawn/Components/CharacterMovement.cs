@@ -50,12 +50,22 @@ public class CharacterMovement : Component
 		config = config ?? new CharacterMovementConfig();
 
 		eyeHeight = config.eyeHeight;
+
+		isGrounded = true;
+		isSliding = false;
+		isMantling = false;
+		isCrouching = false;
 	}
 
 	protected override void OnFixedUpdate()
 	{
 		if (IsProxy)
 			return;
+
+		if (GameMode.instance.modeState == ModeState.ReadyPhase)
+		{
+			return;
+		}
 
 		if (isMantling)
 		{

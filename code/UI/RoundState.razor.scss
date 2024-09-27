@@ -39,7 +39,18 @@ RoundState {
 			flex-shrink: 0;
 			font-family: Poppins;
 			color: #fff;
-			text-shadow: 1px 1px 1px black;//3.0em 3.0em 0.1em black;
+			text-shadow: 1px 1px 1px black; //3.0em 3.0em 0.1em black;
+		}
+
+		.subtitle {
+			padding: 35px 0px 0px 0px;
+			min-height: 27px;
+			align-self: center;
+			font-size: 150px;
+			flex-shrink: 0;
+			//font-family: Helvetica;
+			color: #fff;
+			text-shadow: 2px 2px 2px black; //3.0em 3.0em 0.1em black;
 		}
 
 		> .buttons {
@@ -188,6 +199,16 @@ RoundState {
 		.avatar {
 			width: 48px;
 			height: 48px;
+			background-position: center;
+			background-size: cover;
+			//border-radius: 100px;
+		}
+
+		.skull {
+			transform: translate(25%, 25%);
+
+			width: 32px;
+			height: 32px;
 			background-position: center;
 			background-size: cover;
 			//border-radius: 100px;

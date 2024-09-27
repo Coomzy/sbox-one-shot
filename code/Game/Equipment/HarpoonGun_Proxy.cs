@@ -1,4 +1,5 @@
 
+using Sandbox.Diagnostics;
 using System;
 
 [Group("OS")]
@@ -8,6 +9,10 @@ public class HarpoonGun_Proxy : EquipmentProxy
 
 	public void SetState(bool hasHarpoonSpear)
 	{
+		// TODO: Add this to Checks but for IsValid?
+		//Assert.NotNull(hasHarpoonSpear);
+		//Assert.True(hasHarpoonSpear);
+		//Assert()
 		model.Enabled = true;
 		spearModel.Enabled = hasHarpoonSpear;
 	}

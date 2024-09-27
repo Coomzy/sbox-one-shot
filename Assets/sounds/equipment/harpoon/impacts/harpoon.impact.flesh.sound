@@ -1,0 +1,21 @@
+{
+  "UI": false,
+  "Volume": "1",
+  "Pitch": "1",
+  "Decibels": 70,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/equipment/harpoon/impacts/arrow_impact_flesh.vsnd",
+    "sounds/equipment/harpoon/impacts/arrow_impact_flesh2.vsnd",
+    "sounds/equipment/harpoon/impacts/arrow_impact_flesh3.vsnd",
+    "sounds/equipment/harpoon/impacts/arrow_impact_flesh4.vsnd"
+  ],
+  "Occlusion": true,
+  "AirAbsorption": true,
+  "Transmission": true,
+  "OcclusionRadius": 64,
+  "DistanceAttenuation": true,
+  "__references": [],
+  "IsValid": true,
+  "__version": 0
+}

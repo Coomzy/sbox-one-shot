@@ -5,9 +5,7 @@
   "Decibels": 70,
   "SelectionMode": "Random",
   "Sounds": [
-    "sounds/pickup/equipment_pickup1.vsnd",
-    "sounds/pickup/equipment_pickup2.vsnd",
-    "sounds/pickup/equipment_pickup3.vsnd"
+    "sounds/pickup/powerup_pickup_agility.vsnd"
   ],
   "Occlusion": true,
   "AirAbsorption": true,
@@ -15,5 +13,6 @@
   "OcclusionRadius": 64,
   "DistanceAttenuation": true,
   "__references": [],
+  "IsValid": true,
   "__version": 0
 }

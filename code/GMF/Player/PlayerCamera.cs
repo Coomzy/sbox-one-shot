@@ -37,9 +37,9 @@ public class PlayerCamera : Component
 		var scaledSensitivity = CalculateZoomedSensitivity(Preferences.Sensitivity, Preferences.FieldOfView, cam.FieldOfView);
 		var sensitivityDelta = Preferences.Sensitivity - scaledSensitivity;
 		sensitivityDelta = scaledSensitivity / Preferences.Sensitivity;
-		Debuggin.ToScreen($"Preferences.Sensitivity: {Preferences.Sensitivity}");
+		/*Debuggin.ToScreen($"Preferences.Sensitivity: {Preferences.Sensitivity}");
 		Debuggin.ToScreen($"scaledSensitivity: {scaledSensitivity}");
-		Debuggin.ToScreen($"sensitivityDelta: {sensitivityDelta}");
+		Debuggin.ToScreen($"sensitivityDelta: {sensitivityDelta}");*/
 		//sensitivityDelta = 1.0f - sensitivityDelta;
 		return sensitivityDelta;
 	}

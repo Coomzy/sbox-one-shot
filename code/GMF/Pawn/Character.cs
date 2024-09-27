@@ -6,7 +6,7 @@ using System.Numerics;
 using static Sandbox.ModelRenderer;
 
 [Group("GMF")]
-public class Character : Component, IRoundInstance//, Component.INetworkSpawn
+public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 {
 	public PlayerInfo owner => PlayerInfo.GetOwner(GameObject);
 	public bool hasOwner => owner != null;
@@ -37,7 +37,7 @@ public class Character : Component, IRoundInstance//, Component.INetworkSpawn
 
 	public virtual void TryAttachEquippedItem()
 	{
-		if (!Check.IsFullyValid(body, equippedItem))
+		if (!IsFullyValid(body, equippedItem))
 		{
 			return;
 		}
@@ -118,14 +118,23 @@ public class Character : Component, IRoundInstance//, Component.INetworkSpawn
 			equippedItem.Drop(Vector3.Zero);
 		}
 		body.Die(damageInfo);
-		owner.Unpossess();
+		owner.OnDie();
 
-		var cameraPoint = PlayerCamera.cam.Transform.Position - (damageInfo.hitVelocity.Normal * 150.0f);
-		var hitDirection = Rotation.LookAt(-damageInfo.hitVelocity.Normal, Vector3.Up);
-		hitDirection = Rotation.LookAt(damageInfo.hitVelocity.Normal, Vector3.Up);
-		//hitDirection = Rotation.LookAt(Vector3.Right, Vector3.Up);
-		Debuggin.ToScreen($"damageInfo.hitVelocity.Normal: {damageInfo.hitVelocity.Normal}", 15.0f);
-		//hitDirection = Vector3.Up.EulerAngles.ToRotation();
+		var hitVelocity = damageInfo.hitVelocity.Normal;
+		if (damageInfo.hitVelocity.IsNearlyZero())
+		{
+			hitVelocity = GameObject.Transform.World.Forward;
+		}
+		Debuggin.ToScreen($"damageInfo.hitVelocity: {damageInfo.hitVelocity}, damageInfo.hitVelocity.IsNearlyZero() {damageInfo.hitVelocity.IsNearlyZero()}", 10.0f);
+
+		var cameraPoint = PlayerCamera.cam.Transform.Position - (hitVelocity * 150.0f);
+		//var hitDirection = Rotation.LookAt(hitVelocity, Vector3.Up);
+		Rotation? hitDirection = PlayerCamera.cam.Transform.Rotation;
+
+		if (damageInfo.hitVelocity.IsNearlyZero())
+		{
+			hitDirection = null;
+		}
 
 		Spectator.Teleport(cameraPoint, hitDirection);
 
@@ -153,7 +162,7 @@ public class Character : Component, IRoundInstance//, Component.INetworkSpawn
 		GameObject.Destroy();
 	}
 
-	public void Cleanup()
+	public void RoundCleanup()
 	{
 		if (IsProxy)
 			return;

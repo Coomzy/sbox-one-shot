@@ -93,7 +93,7 @@ public class NetworkManager : Component, Component.INetworkListener
 	public void OnDisconnected(Connection connection)
 	{		
 		Log.Info($"Player '{connection.DisplayName}' disconnected");
-		PlayerInfo pi = PlayerInfo.FromConnection(connection);
+
 		if (!PlayerInfo.TryFromConnection(connection, out var leavingPlayerInfo))
 		{
 			return;
@@ -107,7 +107,7 @@ public class NetworkManager : Component, Component.INetworkListener
 	public void OnBecameHost(Connection previousHost)
 	{
 		Log.Info($"You are now host, player '{previousHost.DisplayName}' disconnected");
-		PlayerInfo.local.OnBecameHost(PlayerInfo.FromConnection(previousHost));
+		//PlayerInfo.local.OnBecameHost(PlayerInfo.FromConnection(previousHost));
 	}
 
 	PlayerInfo FindExistingPlayerInfo(Connection channel = null )

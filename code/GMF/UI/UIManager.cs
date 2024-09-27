@@ -11,10 +11,8 @@ public class UIManager : Component, Component.INetworkListener
 
 	[Property] public RoundState roundState { get; private set; }
 	[Property] public Scoreboard scoreboard { get; private set; }
+	[Property] public RoundCountWidget roundCountWidget { get; private set; }
 	[Property] public CrosshairBuilder crosshairBuilder { get; private set; }
-
-
-	//public Crosshair
 
 	protected override void OnAwake()
 	{

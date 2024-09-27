@@ -57,7 +57,7 @@ public class ProceduralAnimation : Component
 		{
 			desiredPos = GetSlidingMovement();
 		}
-		else if (!owner.controller.IsOnGround)
+		else if (!owner.movement.isGrounded)
 		{
 			desiredPos = GetAirMovement();
 		}
@@ -120,10 +120,10 @@ public class ProceduralAnimation : Component
 			desiredHeight = -desiredHeight;
 		}
 
-		Debuggin.ToScreen($"verticalVelocity: {verticalVelocity}");
+		/*Debuggin.ToScreen($"verticalVelocity: {verticalVelocity}");
 		Debuggin.ToScreen($"lerp: {lerp}");
 		Debuggin.ToScreen($"desiredHeight: {desiredHeight}");
-		Debuggin.ToScreen($"rate: {rate}");
+		Debuggin.ToScreen($"rate: {rate}");*/
 
 		localPos.z = MathY.MoveTowards(localPos.z, desiredHeight, Time.Delta * rate);
 		return localPos;
@@ -168,12 +168,12 @@ public class ProceduralAnimation : Component
 			isDownBob = !isDownBob;
 		}
 
-		Debuggin.ToScreen($"bobTarget: {bobTarget}");
+		/*Debuggin.ToScreen($"bobTarget: {bobTarget}");
 		Debuggin.ToScreen($"desiredBobRate: {desiredBobRate}");
-		Debuggin.ToScreen($"bobRate: {bobRate}");
+		Debuggin.ToScreen($"bobRate: {bobRate}"); */
 
 		localPos.z = MathY.MoveTowards(localPos.z, bobTarget, Time.Delta * bobRate);
-		Debuggin.ToScreen($"localPos.z: {localPos.z}");
+		//Debuggin.ToScreen($"localPos.z: {localPos.z}");
 		return localPos;
 	}
 }

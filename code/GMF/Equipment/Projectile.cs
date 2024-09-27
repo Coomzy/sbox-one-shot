@@ -3,7 +3,7 @@ using Sandbox;
 using System;
 
 [Group("GMF")]
-public class Projectile : Component, IRoundInstance, Component.INetworkSpawn
+public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 {
 	[Group("Setup"), Property] public GameObject impactEffect { get; set; }
 
@@ -50,6 +50,20 @@ public class Projectile : Component, IRoundInstance, Component.INetworkSpawn
 			nextMovePos += Transform.World.Forward * impactDist;
 			isInFlight = false;
 			SpawnImpactEffect(traceResult.HitPosition, -Transform.World.Forward);
+
+			// TODO: Jesus make this better
+			if (traceResult.Surface.ResourceName == "wood" || traceResult.Surface.ResourceName == "wood.sheet")
+			{
+				Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
+			}
+			else if (traceResult.Surface.ResourceName == "concrete" || traceResult.Surface.ResourceName == "brick")
+			{
+				Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
+			}
+			else
+			{
+				Sound.Play("harpoon.impact.metal", traceResult.HitPosition);
+			}
 		}
 		Debuggin.draw.Line(Transform.Position, nextMovePos);
 		DoFlightPlayerHitDetection(Transform.Position, nextMovePos);
@@ -64,7 +78,7 @@ public class Projectile : Component, IRoundInstance, Component.INetworkSpawn
 	[Broadcast]
 	protected virtual void SpawnImpactEffect(Vector3 hitPoint, Vector3 hitNormal)
 	{ 
-		if (!Check.IsFullyValid(impactEffect))
+		if (!IsFullyValid(impactEffect))
 		{
 			//Log.Warning($"Missing Impact Effects on '{GameObject}'");
 			//return;
@@ -86,7 +100,7 @@ public class Projectile : Component, IRoundInstance, Component.INetworkSpawn
 
 	}
 
-	public void Cleanup()
+	public void RoundCleanup()
 	{
 		if (IsProxy)
 			return;

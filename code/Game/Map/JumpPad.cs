@@ -5,6 +5,7 @@ public class JumpPad : Component, Component.ITriggerListener
 
 	protected override void OnAwake()
 	{
+		GameObject.NetworkMode = NetworkMode.Object;
 		SetupBoxCollider();
 		//boxCollider.OnTriggerEnter += OnTriggerEnter;
 	}
@@ -22,7 +23,17 @@ public class JumpPad : Component, Component.ITriggerListener
 		if (osPawn == null)
 			return;
 
+		if (osPawn.IsProxy)
+			return;
+
 		osPawn.movement.Launch(Vector3.Up * 1000.0f);
+		PlaySound(Transform.Position);
+	}
+
+	[Broadcast]
+	static void PlaySound(Vector3 pos)
+	{
+		Sound.Play("world.jumppad", pos);
 	}
 
 	public override void Reset()

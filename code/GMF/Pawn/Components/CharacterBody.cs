@@ -7,7 +7,7 @@ using static Sandbox.ModelRenderer;
 using static Sandbox.PhysicsContact;
 
 [Group("GMF")]
-public class CharacterBody : Component, IRoundInstance, Component.INetworkSpawn
+public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 {
 	[Group("Setup"), Order(-100), Property] public ModelPhysics bodyPhysics { get; set; }
 	[Group("Setup"), Order(-100), Property] public ModelCollider bodyCollider { get; set; }
@@ -274,8 +274,8 @@ public class CharacterBody : Component, IRoundInstance, Component.INetworkSpawn
 		if (thirdPersonAnimationHelper is null || characterMovement is null) return;
 
 		thirdPersonAnimationHelper.WithWishVelocity(characterMovement.wishVelocity);
-		thirdPersonAnimationHelper.WithVelocity(characterMovement.characterController.Velocity);
-		thirdPersonAnimationHelper.IsGrounded = characterMovement.characterController.IsOnGround;
+		thirdPersonAnimationHelper.WithVelocity(characterMovement.wishVelocity);
+		thirdPersonAnimationHelper.IsGrounded = characterMovement.isGrounded;
 		thirdPersonAnimationHelper.MoveStyle = characterMovement.wishVelocity.Length < 160f ? CitizenAnimationHelper.MoveStyles.Walk : CitizenAnimationHelper.MoveStyles.Run;
 
 		if (characterMovement.isSliding)
@@ -325,7 +325,7 @@ public class CharacterBody : Component, IRoundInstance, Component.INetworkSpawn
 	{
 		if (bodyPhysics.MotionEnabled)
 		{
-			//return;
+			return;
 		}
 
 		var playerPos = owner.Transform.Position;
@@ -403,7 +403,7 @@ public class CharacterBody : Component, IRoundInstance, Component.INetworkSpawn
 		//Components.GetAll<GameTransform>(FindMode.EverythingInChildren).First(x => { Log.Info($"x.Name: {x.GameObject.Name}"); return true; });
 	}
 
-	public void Cleanup()
+	public void RoundCleanup()
 	{
 		if (IsProxy)
 			return;

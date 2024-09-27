@@ -4,7 +4,7 @@ using System;
 using System.Numerics;
 
 [Group("GMF")]
-public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
+public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 {
 	[Group("Setup"), Property] public SkinnedModelRenderer model { get; set; }
 	[Group("Setup"), Property] public ProceduralAnimation procAnim { get; set; }
@@ -23,9 +23,11 @@ public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 	[Group("Runtime"), Order(100), Property] public EquipmentProxy equipmentProxy { get; set; }
 
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireInputDown { get; set; }
+	[Group("Runtime"), Property, ReadOnly] public TimeSince fireStartTime { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince lastFire { get; set; }
 
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireAltInputDown { get; set; }
+	[Group("Runtime"), Property, ReadOnly] public TimeSince fireAltStartTime { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince lastFireAlt { get; set; }
 
 	protected override void OnAwake()
@@ -61,19 +63,17 @@ public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 		model.RenderOptions.Overlay = isFirstPerson;
 
 		procAnim.Enabled = isFirstPerson;
-
-		Log.Info($"");
 	}
 
 	public virtual void OnRep_instigator(Character oldValue, Character newValue)
 	{
 		return;
-		if (Check.IsFullyValid(equipmentProxy, instigator?.body?.thirdPersonEquipmentAttachPoint))
+		if (IsFullyValid(equipmentProxy, instigator?.body?.thirdPersonEquipmentAttachPoint))
 		{
 			Log.Info($"OninstigatorChanged() attempted valid attach! Yay");
 			equipmentProxy.AttachTo(instigator.body.thirdPersonEquipmentAttachPoint);
 		}
-		else if (Check.IsFullyValid(newValue))
+		else if (IsFullyValid(newValue))
 		{
 			Log.Error($"OninstigatorChanged() and have an instigator '{newValue}' but something is null equipmentProxy '{equipmentProxy}' body '{newValue?.body}' thirdPersonEquipmentAttachPoint '{newValue?.body?.thirdPersonEquipmentAttachPoint}'");
 		}
@@ -141,7 +141,16 @@ public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 	public virtual void FireStart()
 	{
 		hasFireInputDown = true;
-		lastFire = 0;
+		fireStartTime = 0;
+
+		if (CanFire())
+		{
+			Fire();
+		}
+		else if (CanDryFire())
+		{
+			DryFire();
+		}
 	}
 
 	public virtual void FireEnd()
@@ -152,7 +161,16 @@ public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 	public virtual void FireAltStart()
 	{
 		hasFireAltInputDown = true;
-		lastFireAlt = 0;
+		fireStartTime = 0;
+
+		if (CanFireAlt())
+		{
+			FireAlt();
+		}
+		else if (CanDryFireAlt())
+		{
+			DryFireAlt();
+		}
 	}
 
 	public virtual void FireAltEnd()
@@ -160,25 +178,54 @@ public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 		hasFireAltInputDown = false;
 	}
 
-	public virtual void TryFire()
-	{
-		if (!CanFire())
-			return;
-
-		Fire_Local();
-	}
-
-	public virtual void Fire_Local()
+	public virtual void Fire()
 	{
 		lastFire = 0;
+	}
+
+	public virtual void FireAlt()
+	{
+		lastFireAlt = 0;
+	}
+
+	public virtual void DryFire()
+	{
+		lastFire = 0;
+	}
+
+	public virtual void DryFireAlt()
+	{
+		lastFireAlt = 0;
 	}
 
 	public virtual bool CanFire()
 	{
 		if (lastFire < attackCooldownTime)
+		{
 			return false;
+		}
 
 		return true;
+	}
+
+	public virtual bool CanFireAlt()
+	{
+		return true;
+	}
+
+	public virtual bool CanDryFire()
+	{
+		if (lastFire < attackCooldownTime)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public virtual bool CanDryFireAlt()
+	{
+		return false;
 	}
 
 	public virtual void Drop(Vector3 force)
@@ -201,7 +248,7 @@ public class Equipment : Component, IRoundInstance, Component.INetworkSpawn
 		}
 	}
 
-	public void Cleanup()
+	public void RoundCleanup()
 	{
 		if (IsProxy)
 			return;

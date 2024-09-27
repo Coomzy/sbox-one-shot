@@ -103,20 +103,29 @@ public class HarpoonGun : Equipment
 	public override bool CanFire()
 	{
 		if (!hasAmmo)
-		{
 			return false;
-		}
+
+		if (isReloading)
+			return false;
+
 		return base.CanFire();
 	}
 
-	public override void FireStart()
+	public override bool CanDryFire()
 	{
-		base.FireStart();
+		if (hasAmmo)
+			return false;
 
-		if (!hasAmmo)
-		{
-			return;
-		}
+		if (isReloading)
+			return false;
+
+		return base.CanDryFire();
+	}
+
+	public override void Fire()
+	{
+		base.Fire();
+
 		hasAmmo = false;		
 
 		var spawnPoint = PlayerCamera.instance.GetPointInFront(70.0f);
@@ -156,6 +165,23 @@ public class HarpoonGun : Equipment
 
 		Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
 		instigator.body.Shoot();
+	}
+
+	public override void DryFire()
+	{
+		base.DryFire();
+
+		Sound.Play("harpoon.dryfire", muzzleSocket.Transform.Position);
+		DryFire_Remote();
+	}
+
+	[Broadcast]
+	public void DryFire_Remote()
+	{
+		if (!IsProxy)
+			return;
+
+		Sound.Play("harpoon.dryfire", muzzleSocket.Transform.Position);
 	}
 
 	public async void Reload()

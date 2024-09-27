@@ -5,13 +5,16 @@
   "Decibels": 70,
   "SelectionMode": "Random",
   "Sounds": [
-    "sounds/equipment/harpoon/40mm_m79_grenade_launcher_single_shot_close_perspective.vsnd"
+    "sounds/equipment/harpoon/impacts/arrow_impact_wood.vsnd",
+    "sounds/equipment/harpoon/impacts/arrow_impact_wood2.vsnd",
+    "sounds/equipment/harpoon/impacts/arrow_impact_wood4.vsnd"
   ],
-  "Occlusion": false,
+  "Occlusion": true,
   "AirAbsorption": true,
   "Transmission": true,
   "OcclusionRadius": 64,
   "DistanceAttenuation": true,
   "__references": [],
+  "IsValid": true,
   "__version": 0
 }

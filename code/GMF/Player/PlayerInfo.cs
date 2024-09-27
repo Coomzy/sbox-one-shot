@@ -4,7 +4,7 @@ using System;
 using System.Reflection.Metadata;
 
 [Group("GMF")]
-public class PlayerInfo : Component, Component.INetworkSpawn
+public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents
 {
 	public static PlayerInfo local { get; private set; }
 	public static List<PlayerInfo> all { get; private set; } = new List<PlayerInfo>();
@@ -19,6 +19,13 @@ public class PlayerInfo : Component, Component.INetworkSpawn
 	[HostSync,Sync, Property] public bool isDead { get; private set; } = true;
 	[HostSync, Sync, Property] public TimeSince aliveTime { get; private set; }
 	[HostSync, Sync, Property] public TimeSince deadTime { get; private set; }
+
+	[HostSync, Sync, Property] public int deathCount { get; set; }
+	[HostSync, Sync, Property] public int killCount { get; set; }
+	[HostSync, Sync, Property] public int winCount { get; set; }
+
+	[HostSync, Sync, Property] public int deathCountRound { get; set; }
+	[HostSync, Sync, Property] public int killCountRound { get; set; }
 
 	public bool isLocal => this == local;
 
@@ -106,11 +113,37 @@ public class PlayerInfo : Component, Component.INetworkSpawn
 		}
 	}
 
-	public static bool TryFromConnection(Connection connection, out PlayerInfo playerInfo) => TryFromConnection(connection, out playerInfo);
+	public virtual void OnDie()
+	{
+		deathCount++;
+		deathCountRound++;
+		isDead = true;
+
+		Unpossess();
+	}
+
+	public virtual void OnScoreKill()
+	{
+		killCount++;
+		killCountRound++;
+	}
+
+	public virtual void OnScoreWin()
+	{
+		winCount++;
+	}
+
+	public virtual void RoundCleanup()
+	{
+		deathCountRound = 0;
+		killCountRound = 0;
+	}
+
+	public static bool TryFromConnection(Connection connection, out PlayerInfo playerInfo) => TryFromConnection<PlayerInfo>(connection, out playerInfo);
 	public static bool TryFromConnection<T>(Connection connection, out T playerInfo) where T : PlayerInfo
 	{
 		playerInfo = FromConnection<T>(connection);
-		return playerInfo != null;
+		return IsFullyValid(playerInfo);
 	}
 
 	public static PlayerInfo FromConnection(Connection connection) => FromConnection<PlayerInfo>(connection);
@@ -118,11 +151,11 @@ public class PlayerInfo : Component, Component.INetworkSpawn
 	{
 		foreach (var playerInfo in all)
 		{
-			if (playerInfo == null || !playerInfo.IsValid || playerInfo?.GameObject == null)
-				return null;
+			if (!IsFullyValid(playerInfo))
+				continue;
 
 			if (!playerInfo.Network.Active || playerInfo.Network.OwnerId == Guid.Empty)
-				return null;
+				continue;
 
 			if (connection.Id == playerInfo.Network.OwnerId)
 				return playerInfo as T;

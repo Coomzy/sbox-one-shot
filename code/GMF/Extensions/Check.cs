@@ -1,5 +1,4 @@
-
-using System;
+global using static Check;
 
 public static class Check
 {

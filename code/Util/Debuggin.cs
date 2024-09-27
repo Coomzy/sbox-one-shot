@@ -179,11 +179,11 @@ public class Debuggin : GameObjectSystem
 
 	public override void Dispose()
 	{
-		/*if (Check.IsFullyValid(draw))
+		/*if (IsFullyValid(draw))
 		{
 			draw.Enabled = false;
 		}
-		if (Check.IsFullyValid(draw?.GameObject))
+		if (IsFullyValid(draw?.GameObject))
 		{
 			draw.GameObject.Destroy();
 		}*/

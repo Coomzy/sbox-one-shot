@@ -33,9 +33,18 @@
 					borderColor = "red";
 				}
 				<div class="card" style="background-color: @borderColor;">
-                    <div class="avatar" style="background-image: url(avatar:@entry.SteamId)"></div>
+					<div class="avatar" style="background-image: url(avatar:@entry.SteamId)">
+						@if (playerInfo.isDead)
+						{
+							<div class="skull" style="background-image: url(ui/skull_filled.png)"></div>
+						}
+					</div>
+					
                 </div>
             }
+		</div>
+		<div class="subtitle">
+			<div class="subtitle">@GetRoundCountTime()</div>
 		</div>
 		<!-- Lol I need this to push the cards to the top, IDK what I'm doing-->
 		<div class="content tab-content" CanDragScroll="false">
@@ -46,6 +55,8 @@
 
 @code
 {
+	[Property] public int lastCountdownNumber { get; set; } = -1;
+
 	string GetGameState()
 	{
 		if (GameMode.instance == null)
@@ -58,8 +69,40 @@
 			return "Waiting For Players";
 		}
 
+		if (GameMode.instance.modeState == ModeState.ReadyPhase)
+		{
+			return "Get Ready";
+		}
+
 		return "";
 	}
 
-	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt());
+	string GetRoundCountTime()
+	{
+		if (GameMode.instance == null)
+		{
+			return "";
+		}
+
+		if (GameMode.instance.modeState != ModeState.ReadyPhase)
+		{
+			return "";
+		}
+
+		this.Dirty();
+
+		var remainingStateTime = GameMode.instance.remainingStateTime;
+		var rounded = MathX.CeilToInt(remainingStateTime);
+
+		if (lastCountdownNumber != rounded)
+		{
+			Sound.Play("ui.countdown");
+		}
+		lastCountdownNumber = rounded;
+
+		return rounded.ToString();
+	}
+
+	//protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt(), this.GetDirty(), GameMode.instance.modeState);
 }

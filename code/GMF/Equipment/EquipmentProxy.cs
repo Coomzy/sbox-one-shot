@@ -4,7 +4,7 @@ using System.Reflection.PortableExecutable;
 using static Sandbox.ModelRenderer;
 
 [Group("GMF")]
-public class EquipmentProxy : Component, IRoundInstance
+public class EquipmentProxy : Component, IRoundEvents
 {
 	[Group("Setup"), Property] public ModelRenderer model {  get; set; }
 	[Group("Setup"), Property] public GameObject twoHandedGrip { get; set; }
@@ -15,10 +15,10 @@ public class EquipmentProxy : Component, IRoundInstance
 	{
 		ModelRenderer.ShadowRenderType renderType = ModelRenderer.ShadowRenderType.Off;
 
-		if (Check.IsFullyValid(equipment))
+		if (IsFullyValid(equipment))
 		{
 			renderType = equipment.IsProxy? ModelRenderer.ShadowRenderType.On : ModelRenderer.ShadowRenderType.ShadowsOnly;
-			if (Check.IsFullyValid(equipment?.instigator?.body?.thirdPersonEquipmentAttachPoint))
+			if (IsFullyValid(equipment?.instigator?.body?.thirdPersonEquipmentAttachPoint))
 			{
 				AttachTo(equipment?.instigator?.body?.thirdPersonEquipmentAttachPoint);
 			}
@@ -43,7 +43,7 @@ public class EquipmentProxy : Component, IRoundInstance
 
 	public virtual void AttachTo(GameObject target)
 	{
-		if (!Check.IsFullyValid(target))
+		if (!IsFullyValid(target))
 		{
 			Log.Error($"EquipmentProxy '{GameObject}' tried to attach, but target was null!");
 			return;
@@ -58,7 +58,7 @@ public class EquipmentProxy : Component, IRoundInstance
 		GameObject.SetParent(null, true);
 	}
 
-	public virtual void Cleanup()
+	public virtual void RoundCleanup()
 	{
 		GameObject.Destroy();
 	}

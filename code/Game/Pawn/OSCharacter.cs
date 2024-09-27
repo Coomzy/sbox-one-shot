@@ -14,6 +14,8 @@ public class OSCharacter : Character
 	// TODO: Make some kind of loadout system?
 	[Group("Setup"), Property] public GameObject harpoonGunPrefab { get; set; }
 
+	[Group("Runtime"), Property] float jumpShrinkAmount { get; set; } = 0.0f;
+
 	protected override void OnAwake()
 	{
 		base.OnAwake();
@@ -97,8 +99,12 @@ public class OSCharacter : Character
 		eyeAngles = e;
 	}
 
+	// TODO: Move to base
 	void FireInput()
 	{
+		if (GameMode.instance.modeState == ModeState.ReadyPhase)
+			return;
+
 		if (Input.Pressed("attack1"))
 		{
 			equippedItem.FireStart();
@@ -120,7 +126,6 @@ public class OSCharacter : Character
 		}
 	}
 
-	float jumpShrinkAmount = 0.0f;
 	void UpdateCamera()
 	{
 		var camera = PlayerCamera.cam;

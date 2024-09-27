@@ -13,6 +13,7 @@ public enum ModeState
 	PreGame,
 	WaitingForPlayers,
 	PreRound,
+	ReadyPhase,
 	ActiveRound,
 	PostRound,
 	PostGame
@@ -26,6 +27,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Config - Delays"), Order(1), Property] public float preGameDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float waitingForPlayersDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float preRoundDelay { get; set; } = 1.0f;
+	[Group("Config - Delays"), Order(1), Property] public float readyPhaseDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float postGameDelay { get; set; } = 3.0f;
 
@@ -37,15 +39,24 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	public Dictionary<SpawnPoint, float> spawnPointToLastUsedTime = new Dictionary<SpawnPoint, float>();
 
-	[Group("Runtime"), Order(100), HostSync, Property] public int roundCount { get; set; }
-	[Group("Runtime"), Order(100), HostSync, Property] public ModeState modeState { get; set; }
-	[Group("Runtime"), Order(100), Property] public TimeSince stateTime { get; set; }
+	[Group("Runtime"), Order(100), HostSync, Property] public int roundCount { get; private set; }
+	[Group("Runtime"), Order(100), HostSync, Property] public ModeState modeState { get; private set; }
+	[Group("Runtime"), Order(100), HostSync, Property] public TimeSince stateTime { get; private set; }
 
-	[Group("Runtime"), Order(100), Property] public TimeSince metPlayerReqTime { get; set; }
+	[Group("Runtime"), Order(100), Property] public TimeSince metPlayerReqTime { get; private set; }
 
 	[Group("Runtime"), Order(100), Property] SpawnPoint[] allSpawnPoints { get; set; }
 
 	[Group("Runtime"), Order(100), Property] int preGameSpawnIndex { get; set; } = 0;
+
+	[Group("Runtime"), Order(100), Property] public float remainingStateTime
+	{
+		get
+		{			
+			return readyPhaseDelay - stateTime;
+			//return 0.0f;
+		}
+	}
 
 	protected override void OnAwake()
 	{
@@ -117,43 +128,6 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		return pawnPrefab;
 	}
 
-	protected override void OnUpdate()
-	{
-		base.OnUpdate();
-
-		Debuggin.ToScreen($"modeState: {modeState}", color: Color.Red);
-
-		if (IsProxy)
-		{
-			return;
-		}
-
-		switch (modeState)
-		{
-			case ModeState.PreGame:
-				PreGameUpdate();
-				break;
-			case ModeState.WaitingForPlayers:
-				WaitingForPlayersUpdate();
-				break;
-			case ModeState.PreRound:
-				PreRoundUpdate();
-				break;
-			case ModeState.ActiveRound:
-				ActiveRoundUpdate();
-				break;
-			case ModeState.PostRound:
-				PostRoundUpdate();
-				break;
-			case ModeState.PostGame:
-				PostGameUpdate();
-				break; 
-			default:
-				Log.Error($"What state is this? modeState: {modeState}");
-				break;
-		}
-	}
-
 	// Pre Game
 	protected virtual void PreGameStart()
 	{
@@ -202,6 +176,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Pre Round
 	protected virtual void PreRoundStart()
 	{
+		roundCount++;
 		foreach (var playerInfo in PlayerInfo.all)
 		{
 			playerInfo.DestroyPawn();
@@ -218,8 +193,32 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return;
 		}
 
+		SetModeState(ModeState.ReadyPhase);
+	}
+
+	// Ready Phase
+	protected virtual void ReadyPhaseStart()
+	{
+		var spawnPoints = Scene.GetAllComponents<SpawnPoint>().ToArray();
+		spawnPoints.Shuffle();
+		int playerCount = 0;
+		foreach (PlayerInfo playerInfo in PlayerInfo.all)
+		{
+			CreatePawn(playerInfo, spawnPoints[playerCount]);
+			playerCount++;
+		}
+	}
+
+	protected virtual void ReadyPhaseUpdate()
+	{
+		if (stateTime < readyPhaseDelay)
+		{
+			return;
+		}
+
 		SetModeState(ModeState.ActiveRound);
 	}
+	
 
 	// Active Round
 	protected virtual void ActiveRoundStart()
@@ -269,34 +268,19 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	protected virtual void PostGameUpdate()
 	{
-
-	}
-
-	void SetModeState(ModeState state)
-	{
-		if (modeState == state)
-			return;
-
-		modeState = state;
-		stateTime = 0.0f;
-
-		switch ( modeState )
+		if (stateTime < postGameDelay)
 		{
-			case ModeState.PreGame:
-				PreGameStart();
-				break;
-			case ModeState.PreRound:
-				PreRoundStart();
-				break;
-			case ModeState.ActiveRound:
-				ActiveRoundStart();
-				break;
-			case ModeState.PostRound:
-				PostRoundStart();
-				break;
-			case ModeState.PostGame:
-				PostGameStart();
-				break;
+			return;
+		}
+
+		// Not sure if this should call PreGame instead
+		if (HasMetRequiredPlayerCount())
+		{
+			SetModeState(ModeState.PreRound);
+		}
+		else
+		{
+			SetModeState(ModeState.WaitingForPlayers);
 		}
 	}
 
@@ -413,7 +397,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return true;
 		}
 
-		if (modeState != ModeState.ActiveRound)
+		if (modeState != ModeState.ActiveRound && modeState != ModeState.ReadyPhase)
 		{
 			return false;
 		}
@@ -442,13 +426,90 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	{
 		//Scene.RunEvent<IRoundInstance>(x => x.Cleanup());
 		//IRoundInstance.Post(x => x.Cleanup());
-		var restartables = Scene.GetAllComponents<IRoundInstance>();
+		var restartables = Scene.GetAllComponents<IRoundEvents>();
 		foreach (var restartable in restartables)
 		{
 			if (restartable == null)
 				continue;
 
-			restartable.Cleanup();
+			restartable.RoundCleanup();
+		}
+	}
+
+	void SetModeState(ModeState state)
+	{
+		if (modeState == state)
+			return;
+
+		modeState = state;
+		stateTime = 0.0f;
+
+		switch (modeState)
+		{
+			case ModeState.PreGame:
+				PreGameStart();
+				break;
+			case ModeState.PreRound:
+				PreRoundStart();
+				break;
+			case ModeState.ReadyPhase:
+				ReadyPhaseStart();
+				break;
+			case ModeState.ActiveRound:
+				ActiveRoundStart();
+				break;
+			case ModeState.PostRound:
+				PostRoundStart();
+				break;
+			case ModeState.PostGame:
+				PostGameStart();
+				break;
+		}
+	}
+
+	protected override void OnUpdate()
+	{
+		base.OnUpdate();
+
+		Debuggin.ToScreen($"modeState: {modeState}", color: Color.Red);
+		Debuggin.ToScreen($"stateTime: {stateTime}", color: Color.Red);
+
+		UpdateModeState();
+	}
+
+	protected virtual void UpdateModeState()
+	{
+		if (IsProxy)
+		{
+			return;
+		}
+
+		switch (modeState)
+		{
+			case ModeState.PreGame:
+				PreGameUpdate();
+				break;
+			case ModeState.WaitingForPlayers:
+				WaitingForPlayersUpdate();
+				break;
+			case ModeState.PreRound:
+				PreRoundUpdate();
+				break;
+			case ModeState.ReadyPhase:
+				ReadyPhaseUpdate();
+				break;
+			case ModeState.ActiveRound:
+				ActiveRoundUpdate();
+				break;
+			case ModeState.PostRound:
+				PostRoundUpdate();
+				break;
+			case ModeState.PostGame:
+				PostGameUpdate();
+				break;
+			default:
+				Log.Error($"What state is this? modeState: {modeState}");
+				break;
 		}
 	}
 }
