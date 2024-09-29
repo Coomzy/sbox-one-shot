@@ -1,0 +1,116 @@
+ScoreboardWidget {
+	position: absolute;
+	top: -1500px;
+	left: -1500px;
+	right: -1500px;
+	bottom: -1000px;
+	//background-color: #1115;
+	justify-content: center;
+	align-items: center;
+	font-family: Poppins;
+	font-size: 22px;
+	color: white; //#fff;
+	//color: #fff;
+	//backdrop-filter: blur( 10px );
+	transform: scale( 1 );
+	//transition: all 0.1s ease-out;
+	z-index: 10;
+
+	.table {
+		flex-direction: column;
+		width: 750px;
+		justify-content: center;
+		//mix-blend-mode: lighten;
+
+		.header {
+			//opacity: 0.3;
+			background-color: rgba(0,0,0,0.95); //black;
+		}
+
+		.lastwinner {
+			//opacity: 0.3;
+			//background-color: black;
+			//background-position: center;
+			position: absolute;
+			top: -16px;
+			left: -16px;
+			transform: rotate(-45deg);
+		}
+
+		.host {
+			//opacity: 0.3;
+			//background-color: black;
+			//background-position: center;
+			position: absolute;
+			top: 8px;
+			left: -32px;
+		}
+
+		.avatar {
+			width: 48px;
+			height: 48px;
+			background-position: center;
+			background-size: cover;
+			position: relative;
+			//border-radius: 100px;
+		}
+
+		.rank {
+			width: 32px;
+			height: 48px;
+			align-items: center;
+			background-position: center;
+			background-size: cover;
+			//padding: 0px 4px 0px 4px;
+			//margin: 0px 4px 0px 4px;
+			//border-radius: 100px;
+		}
+
+		.row {
+			white-space: nowrap;
+			//background-color: red;
+
+			> .rank {
+				align-self: center;
+			}
+
+			> .name {
+				flex-grow: 1;
+				align-items: center;
+			}
+
+			> .stat {
+				width: 100px;
+				justify-content: flex-end;
+				align-items: center;
+			}
+
+			> .gap {
+				width: 0px;
+				padding: 0px 2px;
+				justify-content: flex-end;
+				align-items: center;
+			}
+
+			> * {
+				padding: 0px 8px;
+			}
+		}
+
+		.me {
+			//color: #4cff00;
+			background-color: rgba(49, 94, 35, 0.95);
+		}
+
+		.other {
+			//color: #4cff00;
+			background-color: rgba(0,0,0,0.8); //black;
+		}
+	}
+
+	&.hidden {
+		opacity: 0.0;
+		transform: scale( 0.8 );
+		//transition: all 0.2s ease-in;
+	}
+}

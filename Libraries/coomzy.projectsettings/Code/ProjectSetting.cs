@@ -6,7 +6,7 @@ public abstract partial class ProjectSetting<T> : ProjectSettingNonGenericBase, 
 {
 	public static string fileName => $@"{typeof(T).ToSimpleString(false)}";
 	public static string filePath => $@"{filePathWithoutExtension}.{fileExtension}";
-	public static string filePathWithoutExtension => $@"ProjectSettings\{fileName}";
+	public static string filePathWithoutExtension => $@"settings\{fileName}";
 	public static string fullFilePath => $@"{Project.Current.GetAssetsPath()}\{filePath}";
 	public static string fullFilePathWithoutExtension => $@"{Project.Current.GetAssetsPath()}\{filePathWithoutExtension}";
 

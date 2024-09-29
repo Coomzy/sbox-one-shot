@@ -75,7 +75,7 @@ public class HarpoonGun : Equipment
 
 		//Debuggin.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
 
-		if (Input.Pressed("debug"))
+		if (Input.Pressed(Inputs.debug))
 		{
 			Reload();
 		}
@@ -204,33 +204,35 @@ public class HarpoonGun : Equipment
 		if (proxy != null)
 		{
 			proxy.SetState(true);
-			var _ = ReloadAnimation(proxy.spearModel.Transform);
+			var _ = ReloadAnimation(proxy.spearModel.GameObject);
 		}
 
 		RemoteReloadAnim();
 
-		await ReloadAnimation(spearModel.Transform);
+		await ReloadAnimation(spearModel.GameObject);
 		hasAmmo = true;
 		isReloading = false;
 
 		model.GameObject.Enabled = true;
 		gunModel.GameObject.Enabled = false;
 		spearModel.GameObject.Enabled = false;
-		Log.Info($"Reload!");
 	}
 
-	public async Task ReloadAnimation(GameTransform target)
+	public async Task ReloadAnimation(GameObject target)
 	{
 		TimeUntil reloadFinish = config.reloadTime;
 
 		Vector3 scale = Vector3.Zero;
 		while (!reloadFinish)
 		{
+			if (!IsFullyValid(target))
+				break;
+
 			scale.x = config.reloadXAxisCurve.Evaluate(reloadFinish.Fraction);
 			scale.y = config.reloadYAxisCurve.Evaluate(reloadFinish.Fraction);
 			scale.z = config.reloadZAxisCurve.Evaluate(reloadFinish.Fraction);
 
-			target.LocalScale = scale;
+			target.Transform.LocalScale = scale;
 			await Task.Frame();
 		}
 	}
@@ -250,7 +252,7 @@ public class HarpoonGun : Equipment
 		if (proxy != null)
 		{
 			proxy.SetState(true);
-			var _ = ReloadAnimation(proxy.spearModel.Transform);
+			var _ = ReloadAnimation(proxy.spearModel.GameObject);
 		}
 	}
 

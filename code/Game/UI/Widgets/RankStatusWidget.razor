@@ -1,0 +1,81 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.Utility;
+@using System;
+@inherits PanelComponent
+
+<root>
+	<div class="container">
+		<img class="rank" style="background-image: url(@RankSettings.GetRankIcon(currentRank))">
+		<div @ref=progressBar class="pbar-container">
+			<div class="pbar-progress" style="width: @(rankProgress*100.0f)%;"></div>
+			<div class="xpStatus">@GetXPStatus()</div>
+		</div>
+		<img class="rank" style="background-image: url(@RankSettings.GetRankIcon(currentRank + 1))">
+	</div>
+</root>
+
+@code
+{
+	protected Panel progressBar;
+	protected Panel progressValue;
+
+	[Property] public int currentXP { get; set; } = 0;
+	[Property] public int currentRankXP { get; set; } = 0;
+	[Property] public int nextRankXP { get; set; } = 0;
+
+	[Property] public int currentRank { get; set; } = 0;
+
+	[Property] public float rankProgress => MathX.LerpInverse(currentXP, currentRankXP, nextRankXP);
+
+	public string GetXPStatus()
+	{
+		return $"{currentXP}/{nextRankXP}";
+	}
+
+	protected override void OnUpdate()
+	{
+		bool shouldBeVisible = ShouldBeVisible();
+
+		SetClass("visible", shouldBeVisible);
+		SetClass("hidden", !shouldBeVisible);
+
+		if (!shouldBeVisible)
+		{
+			return;
+		}
+
+		var osPlayerInfo = PlayerInfo.local as OSPlayerInfo;
+		if (!IsFullyValid(osPlayerInfo))
+			return;
+
+		currentXP = osPlayerInfo.xp;
+		currentRankXP = RankSettings.GetRankXP(osPlayerInfo.rank);
+		nextRankXP = RankSettings.GetRankXP(osPlayerInfo.rank + 1);
+		currentRank = osPlayerInfo.rank;
+
+		this.Dirty();
+	}
+
+	bool ShouldBeVisible()
+	{
+		if (GameMode.instance.modeState == ModeState.ReadyPhase)
+		{
+			return true;
+		}
+
+		if (Input.Down(Inputs.score))
+		{
+			return true;	
+		}
+
+		if (UIManager.instance.rankUpWidget.IsVisible())
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+}

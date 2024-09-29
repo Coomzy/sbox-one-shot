@@ -9,12 +9,11 @@ public class NetworkManager : Component, Component.INetworkListener
 {
 	public static NetworkManager instance { get; private set; }
 
-	public List<PlayerInfo> playerInfos { get; set; } = new List<PlayerInfo>();
-	public List<PlayerInfo> inactivePlayerInfos { get; set; } = new List<PlayerInfo>();
-
 	protected override void OnAwake()
 	{
 		instance = this;
+
+		// Yikes, does this cause any issues?
 		PlayerInfo.all.Clear();
 	}
 
@@ -29,15 +28,6 @@ public class NetworkManager : Component, Component.INetworkListener
 		if (!Networking.IsActive)
 		{
 			Networking.CreateLobby();
-		}
-	}
-
-	protected override void OnUpdate()
-	{
-		Debuggin.ToScreen($"Connection.All: {Connection.All.Count}");
-		foreach (var connection in Connection.All)
-		{
-			Debuggin.ToScreen($"connection: {connection.DisplayName} - {connection.Id}");
 		}
 	}
 
@@ -70,13 +60,6 @@ public class NetworkManager : Component, Component.INetworkListener
 			playerInfo.Network.AssignOwnership(connection);
 		}
 
-		if (inactivePlayerInfos.Contains(playerInfo))
-		{
-			inactivePlayerInfos.Remove(playerInfo);
-		}
-
-		playerInfos.Add(playerInfo);
-
 		if (rejoined)
 		{
 			playerInfo.Rejoined();
@@ -99,9 +82,7 @@ public class NetworkManager : Component, Component.INetworkListener
 			return;
 		}
 
-		leavingPlayerInfo.Diconnected();
-		playerInfos.Remove(leavingPlayerInfo);
-		inactivePlayerInfos.Remove(leavingPlayerInfo);
+		leavingPlayerInfo.Disconnected();
 	}
 
 	public void OnBecameHost(Connection previousHost)
@@ -112,7 +93,7 @@ public class NetworkManager : Component, Component.INetworkListener
 
 	PlayerInfo FindExistingPlayerInfo(Connection channel = null )
 	{
-		var possiblePlayerInfo = inactivePlayerInfos.FirstOrDefault( x =>
+		var possiblePlayerInfo = PlayerInfo.allInactive.FirstOrDefault( x =>
 		{
 			// A candidate player state has no owner.
 			return x.Network.Owner == null && x.steamId == channel.SteamId;

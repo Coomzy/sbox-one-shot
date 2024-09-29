@@ -1,0 +1,117 @@
+{
+  "RootObject": {
+    "__guid": "a9be5c46-b7b6-421d-a83f-8e5f3c7e4e3f",
+    "Flags": 0,
+    "Name": "pickup",
+    "Tags": "light_spot,light,light_point",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "NetworkOrphaned": 1,
+    "Components": [
+      {
+        "__type": "Pickup",
+        "__guid": "9a965536-8355-4e6d-b26b-9937d7f9938d",
+        "activeColor": "0,1,0,1",
+        "boxCollider": {
+          "_type": "component",
+          "component_id": "e813c1c6-02bd-46a5-9b59-e2d7cd4ba0d7",
+          "go": "a9be5c46-b7b6-421d-a83f-8e5f3c7e4e3f",
+          "component_type": "BoxCollider"
+        },
+        "cooldownTime": 10,
+        "decalRenderer": {
+          "_type": "component",
+          "component_id": "fa2c3059-31a0-4e37-bc14-72212d131ff8",
+          "go": "7697e083-dfae-4c01-830f-cae723434a04",
+          "component_type": "DecalRenderer"
+        },
+        "inactiveColor": "1,0,0,1",
+        "isActive": true,
+        "lastPickup": {
+          "Relative": 13320.615
+        },
+        "visualHolder": {
+          "_type": "gameobject",
+          "go": "321fed18-ea01-4884-a983-5b2ae9056249"
+        }
+      },
+      {
+        "__type": "Sandbox.BoxCollider",
+        "__guid": "e813c1c6-02bd-46a5-9b59-e2d7cd4ba0d7",
+        "Center": "0,0,0",
+        "IsTrigger": true,
+        "Scale": "50,50,50",
+        "Static": false
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "321fed18-ea01-4884-a983-5b2ae9056249",
+        "Flags": 0,
+        "Name": "Spear Holder",
+        "Enabled": true,
+        "Children": [
+          {
+            "__guid": "042daaab-7275-4a0b-aabe-56f8554d5fa6",
+            "Flags": 0,
+            "Name": "Spear",
+            "Position": "-20.75928,-2.578857,4.186325",
+            "Enabled": true,
+            "Components": [
+              {
+                "__type": "Sandbox.ModelRenderer",
+                "__guid": "d3afd54e-6384-4ccd-8f58-faae442ff92c",
+                "BodyGroups": 18446744073709551615,
+                "Model": "equipment/harpoon/source/harpoon_low.vmdl",
+                "RenderOptions": {
+                  "GameLayer": true,
+                  "OverlayLayer": false,
+                  "BloomLayer": false,
+                  "AfterUILayer": false
+                },
+                "RenderType": "On",
+                "Tint": "1,1,1,1"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "__guid": "7697e083-dfae-4c01-830f-cae723434a04",
+        "Flags": 0,
+        "Name": "Decal",
+        "Position": "0.00006103516,0,-20.314",
+        "Rotation": "0,0.7071068,0,0.7071068",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "Sandbox.DecalRenderer",
+            "__guid": "fa2c3059-31a0-4e37-bc14-72212d131ff8",
+            "CutoffAngle": 0,
+            "CutoffAngleSoftness": 13.92,
+            "Material": "materials/pickup.vmat",
+            "Mod2XBlending": false,
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "Size": "128,128,32",
+            "TintColor": "0,1,0,1",
+            "TriPlanar": false
+          }
+        ]
+      }
+    ],
+    "__variables": []
+  },
+  "ShowInMenu": true,
+  "MenuPath": "Level/Pickup",
+  "MenuIcon": "arrow_forward",
+  "DontBreakAsTemplate": true,
+  "ResourceVersion": 1,
+  "__references": [],
+  "IsValid": true,
+  "__version": 1
+}

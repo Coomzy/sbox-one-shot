@@ -78,22 +78,12 @@ public class OSCharacter : Character
 		FireInput();
 
 		UpdateCamera();
-
-		/*if (Input.Pressed("debug"))
-		{
-			DamageInfo damageInfo = new DamageInfo();
-			damageInfo.instigator = owner;
-			damageInfo.damageCauser = equippedItem;
-			Die(damageInfo);
-		}*/
 	}
 
 	void MouseInput()
 	{
 		var e = eyeAngles;
-		//e += Input.AnalogLook;
 		e += Input.AnalogLook / PlayerCamera.GetScaledSensitivity();
-		//e *= PlayerCamera.GetScaledSensitivity();
 		e.pitch = e.pitch.Clamp( -90, 90 );
 		e.roll = 0.0f;
 		eyeAngles = e;
@@ -105,22 +95,22 @@ public class OSCharacter : Character
 		if (GameMode.instance.modeState == ModeState.ReadyPhase)
 			return;
 
-		if (Input.Pressed("attack1"))
+		if (Input.Pressed(Inputs.attack1))
 		{
 			equippedItem.FireStart();
 		}
 
-		if (Input.Released("attack1"))
+		if (Input.Released(Inputs.attack1))
 		{
 			equippedItem.FireEnd();
 		}
 
-		if (Input.Pressed("attack2"))
+		if (Input.Pressed(Inputs.attack2))
 		{
 			equippedItem.FireAltStart();
 		}
 
-		if (Input.Released("attack2"))
+		if (Input.Released(Inputs.attack2))
 		{
 			equippedItem.FireAltEnd();
 		}
@@ -190,8 +180,10 @@ public class OSCharacter : Character
 
 		var fov = Preferences.FieldOfView;
 
-		if (Input.Down("attack2"))
+		// TODO: Move to equipment
+		if (Input.Down(Inputs.attack2))
 		{
+			// AND DON'T HARDCODE
 			fov *= 0.6f;
 		}
 

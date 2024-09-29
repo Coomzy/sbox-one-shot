@@ -87,7 +87,7 @@ public static class Cheats
 	public static void TeleportPlayers()
 	{
 		var teleportPoint = PlayerCamera.instance.GetPointInFront(150.0f);
-		foreach (var playerInfo in PlayerInfo.all)
+		foreach (var playerInfo in PlayerInfo.allActive)
 		{
 			if (!IsFullyValid(playerInfo?.character))
 				continue;

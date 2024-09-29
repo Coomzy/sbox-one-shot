@@ -54,14 +54,13 @@ public class HarpoonSpear : Projectile
 		DamageInfo damageInfo = new DamageInfo();
 		damageInfo.instigator = owner?.instigator?.owner;
 		damageInfo.damageCauser = this;
-		damageInfo.hitBodyIndex = result.Body.GroupIndex;
+		damageInfo.hitBodyIndex = GetClosestSafeIndex(characterBody.bodyPhysics, result.Body.GroupIndex);
 		damageInfo.hitVelocity = Transform.World.Forward * 100.0f;
 		Log.Info($"Spear Hit Transform.Position: {Transform.Position}");
 		Debuggin.draw.Sphere(start, 10.0f, 8, 15.0f);
 		//ExtraDebug.draw.Sphere(Transform.Position, 10.0f, 8, 15.0f);
 		Debuggin.draw.Line(Transform.Position, Transform.Position + damageInfo.hitVelocity, 15.0f);
-		characterBody.TakeDamage(damageInfo);
-		
+		characterBody.TakeDamage(damageInfo);		
 
 		if (owner is HarpoonGun harpoonGun)
 		{
@@ -86,5 +85,35 @@ public class HarpoonSpear : Projectile
 			Log.Info($"Unlock double_penetration achievement!");
 			//Sandbox.Services.Achievements.Unlock("double_penetration");
 		}
+	}
+
+	// Any other hit bones turn terry into stretch armstrong
+	public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
+	{
+		if (index == Bones.Terry.spine_0 || index == Bones.Terry.spine_2 || index == Bones.Terry.head)
+		{
+			return index;
+		}
+
+		var hitBodyPosition = bodyPhysics.PhysicsGroup.Bodies.ElementAt(index).Position;
+		var spine_0Position = bodyPhysics.PhysicsGroup.Bodies.ElementAt(Bones.Terry.spine_0).Position;
+		var spine_2Position = bodyPhysics.PhysicsGroup.Bodies.ElementAt(Bones.Terry.spine_2).Position;
+		var headPosition = bodyPhysics.PhysicsGroup.Bodies.ElementAt(Bones.Terry.head).Position;
+
+		var spine_0_Dist = Vector3.DistanceBetween(hitBodyPosition, spine_0Position);
+		var spine_2_Dist = Vector3.DistanceBetween(hitBodyPosition, spine_2Position);
+		var head_Dist = Vector3.DistanceBetween(hitBodyPosition, headPosition);
+
+		if (spine_0_Dist <= spine_2_Dist && spine_0_Dist <= head_Dist)
+		{
+			return Bones.Terry.spine_0;
+		}
+
+		if (spine_2_Dist <= spine_0_Dist && spine_2_Dist <= head_Dist)
+		{
+			return Bones.Terry.spine_2;
+		}
+
+		return Bones.Terry.head;
 	}
 }

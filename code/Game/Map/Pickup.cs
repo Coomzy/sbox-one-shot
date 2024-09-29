@@ -12,8 +12,16 @@ public class Pickup : Component, Component.ITriggerListener
 	[Group("Config"), Property] public Color activeColor { get; set; } = Color.Green;
 	[Group("Config"), Property] public Color inactiveColor { get; set; } = Color.Red;
 
-	[Group("Runtime"), HostSync] public bool isActive { get; set; }
-	[Group("Runtime")] public TimeSince lastPickup { get; set; }
+	[Group("Runtime"), Property, HostSync] public bool isActive { get; set; } = true;
+	[Group("Runtime"), Property] public TimeSince lastPickup { get; set; }
+
+	protected override void OnAwake()
+	{
+		if (IsProxy)
+			return;
+
+		isActive = true;
+	}
 
 	protected override void OnUpdate()
 	{
@@ -71,7 +79,7 @@ public class Pickup : Component, Component.ITriggerListener
 
 	public void OnTriggerEnter(Collider other)
 	{
-		if (isActive)
+		if (!isActive)
 			return;
 
 		var osPawn = other.Components.Get<OSCharacter>();

@@ -11,10 +11,61 @@
       {
         "__type": "OSPlayerInfo",
         "__guid": "1d82eccc-349b-4fc3-af41-240183bf276e",
-        "isDead": false
+        "aliveTime": {
+          "Relative": 12021.497
+        },
+        "deadTime": {
+          "Relative": 12021.497
+        },
+        "deaths": 0,
+        "deathsRound": 0,
+        "isActive": true,
+        "isDead": true,
+        "isPromptingPayToWin": false,
+        "kills": 0,
+        "killsRound": 0,
+        "rank": 0,
+        "steamId": 0,
+        "voice": {
+          "_type": "component",
+          "component_id": "cf8584bc-0695-410a-82a5-826f66aefc03",
+          "go": "dd1be113-1293-48ba-8e7e-0c3cc37d4351",
+          "component_type": "GMFVoice"
+        },
+        "wins": 0,
+        "xp": 0,
+        "xpRankTest": 0,
+        "xpTest": 0
       }
     ],
-    "Children": [],
+    "Children": [
+      {
+        "__guid": "dd1be113-1293-48ba-8e7e-0c3cc37d4351",
+        "Flags": 0,
+        "Name": "Voice",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "GMFVoice",
+            "__guid": "cf8584bc-0695-410a-82a5-826f66aefc03",
+            "excludedPlayers": [],
+            "Loopback": false,
+            "Mode": "PushToTalk",
+            "MorphScale": 3,
+            "MorphSmoothTime": 0.1,
+            "owner": {
+              "_type": "component",
+              "component_id": "1d82eccc-349b-4fc3-af41-240183bf276e",
+              "go": "3e023e10-0d92-49f9-b58f-da5b81f35849",
+              "component_type": "OSPlayerInfo"
+            },
+            "PushToTalkInput": "voice",
+            "Volume": 1,
+            "WorldspacePlayback": false
+          }
+        ]
+      }
+    ],
     "__variables": []
   },
   "ShowInMenu": false,
@@ -23,5 +74,6 @@
   "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
+  "IsValid": true,
   "__version": 1
 }

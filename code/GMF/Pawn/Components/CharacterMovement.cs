@@ -38,8 +38,8 @@ public class CharacterMovement : Component
 		get
 		{
 			if (isCrouching) return config.crouchMoveSpeed;
-			if (Input.Down("run")) return config.sprintMoveSpeed;
-			if (Input.Down("walk")) return config.walkMoveSpeed;
+			if (Input.Down(Inputs.run)) return config.sprintMoveSpeed;
+			if (Input.Down(Inputs.walk)) return config.walkMoveSpeed;
 
 			return config.runMoveSpeed;
 		}
@@ -106,7 +106,7 @@ public class CharacterMovement : Component
 
 		characterController.Velocity = curSlideVelocity;
 
-		if (CanJump() && Input.Pressed("jump"))
+		if (CanJump() && Input.Pressed(Inputs.jump))
 		{
 			lastJump = 0;
 			characterController.Punch(Vector3.Up * (config.jumpHeight * slideSpeedScalar));
@@ -158,7 +158,7 @@ public class CharacterMovement : Component
 		if (isGrounded)
 			return;
 
-		if (Input.Pressed("jump"))
+		if (Input.Pressed(Inputs.jump))
 		{
 			lastMantleInput = 0;
 		}
@@ -278,7 +278,7 @@ public class CharacterMovement : Component
 
 		wishVelocity = Input.AnalogMove;
 
-		if (CanJump() && Input.Pressed("jump"))
+		if (CanJump() && Input.Pressed(Inputs.jump))
 		{
 			lastJump = 0;
 			cc.Punch(Vector3.Up * config.jumpHeight);
@@ -400,14 +400,14 @@ public class CharacterMovement : Component
 	{
 		if (isSliding)
 		{
-			if (Input.Released("duck") || Input.Released("duck_alt"))
+			if (Input.Released(Inputs.duck) || Input.Released(Inputs.duck_alt))
 			{
 				isSliding = false;
 			}
 			return;
 		}
 
-		if (!Input.Pressed("duck") && !Input.Down("duck_alt"))
+		if (!Input.Pressed(Inputs.duck) && !Input.Down(Inputs.duck_alt))
 			return;
 
 		if (!characterController.IsOnGround)
@@ -423,7 +423,7 @@ public class CharacterMovement : Component
 
 	void CrouchingInput()
 	{
-		wishCrouch = Input.Down("duck") || Input.Down("duck_alt");
+		wishCrouch = Input.Down(Inputs.duck) || Input.Down(Inputs.duck_alt);
 
 		if (isSliding)
 		{

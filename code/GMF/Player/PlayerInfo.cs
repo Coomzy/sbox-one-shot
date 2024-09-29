@@ -4,38 +4,93 @@ using System;
 using System.Reflection.Metadata;
 
 [Group("GMF")]
-public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents
+public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGameEvents
 {
 	public static PlayerInfo local { get; private set; }
 	public static List<PlayerInfo> all { get; private set; } = new List<PlayerInfo>();
+	public static List<PlayerInfo> allActive { get; private set; } = new List<PlayerInfo>();
+	public static List<PlayerInfo> allInactive { get; private set; } = new List<PlayerInfo>();
+	public static List<PlayerInfo> allAlive { get; private set; } = new List<PlayerInfo>();
+	public static List<PlayerInfo> allDead { get; private set; } = new List<PlayerInfo>();
 
+	[Group("Setup"), Order(-100), Property] public GMFVoice voice { get; set; }
 
 	[HostSync, Sync, Property] public string displayName { get; set; }
+	[HostSync, Property] public ulong steamId { get; set; }
 	[HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
 
-	public ulong steamId { get; set; }
 	[HostSync, Sync, Property] public Character character { get; set; }
 
-	[HostSync,Sync, Property] public bool isDead { get; private set; } = true;
+	[HostSync,Sync, Property, Change("OnRep_isActive")] public bool isActive { get; private set; } = true;
+	[HostSync, Sync, Property, Change("OnRep_isDead")] public bool isDead { get; private set; } = true;
 	[HostSync, Sync, Property] public TimeSince aliveTime { get; private set; }
 	[HostSync, Sync, Property] public TimeSince deadTime { get; private set; }
 
-	[HostSync, Sync, Property] public int deathCount { get; set; }
-	[HostSync, Sync, Property] public int killCount { get; set; }
-	[HostSync, Sync, Property] public int winCount { get; set; }
+	[HostSync, Sync, Property] public int kills { get; set; }
+	[HostSync, Sync, Property] public int deaths { get; set; }
+	[HostSync, Sync, Property] public int wins { get; set; }
 
-	[HostSync, Sync, Property] public int deathCountRound { get; set; }
-	[HostSync, Sync, Property] public int killCountRound { get; set; }
+	[HostSync, Sync, Property] public int deathsRound { get; set; }
+	[HostSync, Sync, Property] public int killsRound { get; set; }
 
 	public bool isLocal => this == local;
+
+	void OnRep_isActive()
+	{
+		if (isActive)
+		{
+			allActive.AddUnique(this);
+			allInactive.Remove(this);
+		}
+		else
+		{
+			allActive.Remove(this);
+			allInactive.AddUnique(this);
+		}
+		OnRep_isDead();
+	}
+
+	void OnRep_isDead()
+	{
+		if (!isActive)
+		{
+			allAlive.Remove(this);
+			allDead.Remove(this);
+			return;
+		}
+
+		if (isDead)
+		{
+			allAlive.Remove(this);
+			allDead.AddUnique(this);
+		}
+		else
+		{
+			allAlive.AddUnique(this);
+			allDead.Remove(this);
+		}
+	}
 
 	protected override void OnAwake()
 	{
 		all.Add(this);
 	}
 
+	protected override void OnDestroy()
+	{
+		all.Remove(this);
+		allActive.Remove(this);
+		allInactive.Remove(this);
+		allAlive.Remove(this);
+		allDead.Remove(this);
+
+		base.OnDestroy();
+	}
+
 	protected override void OnStart()
 	{
+		OnRep_isActive();
+
 		Debuggin.ToScreen($"PlayerInfo::OnStart() '{GameObject.Name}' sProxy: {IsProxy}", 15.0f);
 		if (!IsProxy)
 		{
@@ -44,7 +99,35 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents
 		}
 	}
 
-	public void OnNetworkSpawn(Connection connection)
+	protected override void OnUpdate()
+	{
+		UpdateVoice();
+	}
+
+	protected virtual void UpdateVoice()
+	{
+		if (voice == null)
+			return;
+
+		if (AudioPreferences.instance.voipMode == VOIPMode.Off)
+		{
+			voice.Mode = Voice.ActivateMode.Manual;
+			return;
+		}
+
+		// TODO: Remove magic number
+		voice.WorldspacePlayback = !isDead || deadTime < 3.0f;
+		voice.Renderer = character?.body?.bodyRenderer;
+		voice.Mode = AudioPreferences.instance.voipMode == VOIPMode.PushToTalk ? Voice.ActivateMode.PushToTalk : Voice.ActivateMode.AlwaysOn;
+
+		if (!IsFullyValid(PlayerCamera.cam))
+			return;
+
+		voice.Transform.Position = PlayerCamera.cam.Transform.Position;
+		voice.Transform.Rotation = PlayerCamera.cam.Transform.Rotation;
+	}
+
+	public virtual void OnNetworkSpawn(Connection connection)
 	{
 		if (connection.IsHost)
 		{
@@ -64,15 +147,20 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents
 
 	public virtual void Rejoined()
 	{
-		character = null;
+		isActive = true;
+		isDead = true;
+		//character = null;
 	}
 
-	public virtual void Diconnected()
+	public virtual void Disconnected()
 	{
+		isActive = false;
+
 		if (character != null)
 		{
 			character.DestroyRequest();
 		}
+		Unpossess();
 		character = null;
 	}
 
@@ -115,8 +203,8 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents
 
 	public virtual void OnDie()
 	{
-		deathCount++;
-		deathCountRound++;
+		deaths++;
+		deathsRound++;
 		isDead = true;
 
 		Unpossess();
@@ -124,19 +212,33 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents
 
 	public virtual void OnScoreKill()
 	{
-		killCount++;
-		killCountRound++;
+		kills++;
+		killsRound++;		
 	}
 
-	public virtual void OnScoreWin()
+	public virtual void OnScoreRoundWin()
 	{
-		winCount++;
+		wins++;
+	}
+
+	public virtual void OnScoreGameWin()
+	{
+		wins++;
 	}
 
 	public virtual void RoundCleanup()
 	{
-		deathCountRound = 0;
-		killCountRound = 0;
+		deathsRound = 0;
+		killsRound = 0;
+	}
+
+	// We'll miss the first callback for this, so don't do anything for initial setup in here
+	public virtual void GameStart()
+	{
+		RoundCleanup();
+		deaths = 0;
+		kills = 0;
+		wins = 0;
 	}
 
 	public static bool TryFromConnection(Connection connection, out PlayerInfo playerInfo) => TryFromConnection<PlayerInfo>(connection, out playerInfo);

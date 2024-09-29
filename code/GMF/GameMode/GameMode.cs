@@ -28,7 +28,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Config - Delays"), Order(1), Property] public float waitingForPlayersDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float preRoundDelay { get; set; } = 1.0f;
 	[Group("Config - Delays"), Order(1), Property] public float readyPhaseDelay { get; set; } = 3.0f;
-	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 3.0f;
+	[Group("Config - Delays"), Order(1), Property] public float roundConditionMetDelay { get; set; } = 1.0f;
+	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 2.0f;
 	[Group("Config - Delays"), Order(1), Property] public float postGameDelay { get; set; } = 3.0f;
 
 	[Group("Config"), Order(2), Property] public int requiredPlayerCount { get; set; } = 2;
@@ -43,10 +44,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Runtime"), Order(100), HostSync, Property] public ModeState modeState { get; private set; }
 	[Group("Runtime"), Order(100), HostSync, Property] public TimeSince stateTime { get; private set; }
 
+	[Group("Runtime"), Order(100), HostSync, Property] public PlayerInfo lastWinner { get; set; }
+
 	[Group("Runtime"), Order(100), Property] public TimeSince metPlayerReqTime { get; private set; }
 
 	[Group("Runtime"), Order(100), Property] SpawnPoint[] allSpawnPoints { get; set; }
 
+	[Group("Runtime"), Order(100), Property] TimeSince? timeSinceRoundConditionMet { get; set; } = null;
 	[Group("Runtime"), Order(100), Property] int preGameSpawnIndex { get; set; } = 0;
 
 	[Group("Runtime"), Order(100), Property] public float remainingStateTime
@@ -123,6 +127,11 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		return pawn;
 	}
 
+	public virtual (Vector3 spawnPos, Rotation spawnRot) GetSpawnFor(PlayerInfo playerInfo)
+	{
+		return (Vector3.Zero, Rotation.Identity);
+	}
+
 	protected virtual GameObject GetPawnPrefabForPlayer(PlayerInfo playerInfo)
 	{
 		return pawnPrefab;
@@ -132,6 +141,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	protected virtual void PreGameStart()
 	{
 		preGameSpawnIndex = 0;
+		roundCount = 0;
+
+		IGameEvents.Post(x => x.GameStart());
 	}
 
 	protected virtual void PreGameUpdate()
@@ -158,7 +170,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	}
 
 	protected virtual void WaitingForPlayersUpdate()
-	{
+	{		
 		if (!HasMetRequiredPlayerCount())
 		{
 			metPlayerReqTime = 0;
@@ -202,7 +214,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		var spawnPoints = Scene.GetAllComponents<SpawnPoint>().ToArray();
 		spawnPoints.Shuffle();
 		int playerCount = 0;
-		foreach (PlayerInfo playerInfo in PlayerInfo.all)
+		foreach (var playerInfo in PlayerInfo.allActive)
 		{
 			CreatePawn(playerInfo, spawnPoints[playerCount]);
 			playerCount++;
@@ -223,14 +235,23 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Active Round
 	protected virtual void ActiveRoundStart()
 	{
-
+		timeSinceRoundConditionMet = null;
 	}
 
 	protected virtual void ActiveRoundUpdate()
 	{
+		if (timeSinceRoundConditionMet.HasValue)
+		{
+			if (timeSinceRoundConditionMet.Value >= roundConditionMetDelay)
+			{
+				RoundOver();
+			}
+			return;
+		}
+
 		if (RoundEndCondition())
 		{
-			RoundOver();
+			timeSinceRoundConditionMet = 0;
 			return;
 		}
 
@@ -263,7 +284,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Post Game
 	protected virtual void PostGameStart()
 	{
-
+		CheckGameWinners();
 	}
 
 	protected virtual void PostGameUpdate()
@@ -273,21 +294,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return;
 		}
 
-		// Not sure if this should call PreGame instead
-		if (HasMetRequiredPlayerCount())
-		{
-			SetModeState(ModeState.PreRound);
-		}
-		else
-		{
-			SetModeState(ModeState.WaitingForPlayers);
-		}
+		SetModeState(ModeState.PreGame);
 	}
 
 	public virtual void TryRespawnPlayers()
 	{
 		// TODO: Make this way less shitty, it doesn't effect one shot though
-		foreach (PlayerInfo playerInfo in NetworkManager.instance.playerInfos)
+		foreach (var playerInfo in PlayerInfo.allActive)
 		{
 			if (!CanRespawn(playerInfo))
 				continue;
@@ -305,14 +318,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	{
 		if (oneLifeOnly)
 		{
-			int alivePlayerCount = 0;
-			foreach (var playerInfo in PlayerInfo.all)
-			{
-				if (playerInfo.isDead)
-					continue;
-				alivePlayerCount++;
-			}
-			return alivePlayerCount < 2;
+			return PlayerInfo.allAlive.Count < 2;
 		}
 
 		if (roundTime.HasValue && stateTime >= roundTime.Value)
@@ -331,6 +337,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return;
 		}
 
+		CheckRoundWinners();
+
 		if (roundCount < maxGameRounds)
 		{
 			SetModeState(ModeState.PostRound);
@@ -339,6 +347,91 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		{
 			SetModeState(ModeState.PostGame);
 		}
+	}
+
+	public virtual void CheckRoundWinners()
+	{
+		var winnerPlayerInfo = PickRoundWinner();
+
+		if (IsFullyValid(winnerPlayerInfo))
+		{
+			winnerPlayerInfo.OnScoreRoundWin();
+		}
+	}
+
+	public virtual PlayerInfo PickRoundWinner()
+	{
+		PlayerInfo winner = null;
+		if (oneLifeOnly)
+		{
+			foreach (var playerInfo in PlayerInfo.allActive)
+			{
+				if (playerInfo.isDead)
+					continue;
+
+				// There can only be one winner
+				if (winner != null)
+				{
+					winner = null;
+					break;
+				}
+
+				winner = playerInfo;
+			}
+		}
+		else
+		{
+			int bestPlayerKills = -1;
+			int bestPlayerDeaths = 0;
+			foreach (var playerInfo in PlayerInfo.allActive)
+			{
+				if (playerInfo.killsRound < bestPlayerKills)
+					continue;
+
+				if (playerInfo.killsRound == bestPlayerKills && playerInfo.deathsRound < bestPlayerDeaths)
+					continue;
+
+				winner = playerInfo;
+				bestPlayerKills = playerInfo.killsRound;
+				bestPlayerDeaths = playerInfo.deathsRound;
+			}
+		}
+
+		return winner;
+	}
+
+	public virtual void CheckGameWinners()
+	{
+		var winnerPlayerInfo = PickGameWinner();
+
+		if (IsFullyValid(winnerPlayerInfo))
+		{
+			winnerPlayerInfo.OnScoreRoundWin();
+			lastWinner = winnerPlayerInfo;
+		}
+		else
+		{
+			lastWinner = null;
+		}
+	}
+
+	public virtual PlayerInfo PickGameWinner()
+	{
+		var sortedPlayers = SortPlayersByWinning(PlayerInfo.allActive);
+
+		if (sortedPlayers.Count <= 0)
+			return null;
+
+		return sortedPlayers[0];
+	}
+
+	public virtual List<PlayerInfo> SortPlayersByWinning(List<PlayerInfo> players)
+	{
+		return players
+			.OrderByDescending(player => player.wins)
+			.ThenByDescending(player => player.kills)
+			.ThenBy(player => player.deaths)
+			.ToList();
 	}
 
 	public virtual float GetClosestSpawnDistance(SpawnPoint[] spawnPoints, SpawnPoint spawnPoint)
@@ -367,7 +460,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	public virtual bool HasMetRequiredPlayerCount()
 	{
-		if (PlayerInfo.all.Count < requiredPlayerCount)
+		if (PlayerInfo.allActive.Count < requiredPlayerCount)
 		{
 			return false;
 		}
@@ -424,16 +517,16 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Broadcast]
 	public virtual void CleanupRoundInstances()
 	{
-		//Scene.RunEvent<IRoundInstance>(x => x.Cleanup());
-		//IRoundInstance.Post(x => x.Cleanup());
-		var restartables = Scene.GetAllComponents<IRoundEvents>();
+		//Scene.RunEvent<IRoundEvents>(x => x.Cleanup());
+		IRoundEvents.Post(x => x.RoundCleanup());
+		/*var restartables = Scene.GetAllComponents<IRoundEvents>();
 		foreach (var restartable in restartables)
 		{
 			if (restartable == null)
 				continue;
 
 			restartable.RoundCleanup();
-		}
+		}*/
 	}
 
 	void SetModeState(ModeState state)

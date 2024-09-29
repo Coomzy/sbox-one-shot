@@ -1,6 +1,4 @@
 
-using System;
-
 public static class MathY
 {
 	public static Vector3 MoveTowards(Vector3 current, Vector3 target, float maxDistanceDelta)
@@ -59,6 +57,30 @@ public static class MathY
 	public static float InverseLerp(this Vector2 vector, float t)
 	{
 		return MathX.LerpInverse(t, vector.x, vector.y);
+	}
+
+	public static int Clamp(int value, int max)
+	{
+		return Clamp(value, 0, max);
+	}
+
+	public static int Clamp(int value, int min, int max)
+	{
+		if (max < min)
+		{
+			max = min;
+		}
+		return (int)MathX.Clamp(value, min, max);
+	}
+
+	public static int Min(int a, int b)
+	{
+		return (a < b) ? a : b;
+	}
+
+	public static int Max(int a, int b)
+	{
+		return (a > b) ? a : b;
 	}
 }
 

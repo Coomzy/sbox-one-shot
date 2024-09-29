@@ -228,6 +228,7 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 		return false;
 	}
 
+	
 	public virtual void Drop(Vector3 force)
 	{
 		GameObject.SetParent(null, true);
@@ -241,6 +242,21 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 		rigidbody.ApplyTorque(Game.Random.Rotation().Forward * weaponRandomTorque);
 
 		model.RenderOptions.Overlay = false;
+		model.GameObject.Enabled = true;
+
+		if (equipmentProxy != null)
+		{
+			equipmentProxy.SetVisibility(false);
+		}
+
+		Drop_Remote();
+	}
+
+	[Broadcast]
+	public void Drop_Remote()
+	{
+		model.RenderOptions.Overlay = false;
+		model.Enabled = true;
 
 		if (equipmentProxy != null)
 		{

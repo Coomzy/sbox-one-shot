@@ -56,24 +56,22 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 		if (impaledByHarpoonSpear == null || !impaledByHarpoonSpear.IsValid || impaledPhysicsBody == null || !impaledPhysicsBody.IsValid())
 			return;
 
+		// Move to OnRep
 		SetFirstPersonMode(false);
 		bodyPhysics.MotionEnabled = true;
-		var followToPos = impaledByHarpoonSpear.GameObject.Transform.World.Position - (impaledByHarpoonSpear.GameObject.Transform.World.Forward * 30.0f);
-		//hitPhysicsBody.Position = followToPos;
-		var delta = Vector3.Direction(impaledPhysicsBody.Position, followToPos);
-		impaledPhysicsBody.Velocity = delta * 500.0f;
-		//impaledPhysicsBody.Velocity = Vector3.Zero;
-		//impaledPhysicsBody.Position = MathY.MoveTowards(impaledPhysicsBody.Position, followToPos, Time.Delta * 100.0f);
-		//Log.Info($"delta.Length: {delta.Length}, impaledByHarpoonSpear.isInFlight: {impaledByHarpoonSpear.isInFlight}");
+		bodyRenderer.UseAnimGraph = false;
 
-		if (delta.Length < 15.0f)// && !impaledByHarpoonSpear.isInFlight)
+		var followToPos = impaledByHarpoonSpear.GameObject.Transform.World.Position - (impaledByHarpoonSpear.GameObject.Transform.World.Forward * 30.0f);
+
+		if (impaledPhysicsBodyIndex == Bones.Terry.spine_0)
 		{
-			impaledPhysicsBody.Velocity = Vector3.Zero;
-			impaledPhysicsBody.AngularVelocity = MathY.MoveTowards(impaledPhysicsBody.AngularVelocity, Vector3.Zero, Time.Delta * 15.0f);
-			impaledPhysicsBody.AngularVelocity = Vector3.Zero;
-			impaledPhysicsBody.Position = followToPos;
-			//impaledPhysicsBody.Velocity = delta * 100.0f;
+			followToPos += Vector3.Up * 10.0f;
 		}
+
+		impaledPhysicsBody.Velocity = Vector3.Zero;
+		impaledPhysicsBody.AngularVelocity = MathY.MoveTowards(impaledPhysicsBody.AngularVelocity, Vector3.Zero, Time.Delta * 15.0f);
+		impaledPhysicsBody.AngularVelocity = Vector3.Zero;
+		impaledPhysicsBody.Position = followToPos;
 	}
 
 	public override void Die(DamageInfo damageInfo)
@@ -142,7 +140,43 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 		}
 
 		playerInfo.character.DestroyRequest();//.Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
-		//this.GetOwningPlayerInfo().character = null;
-		//Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
+											  //this.GetOwningPlayerInfo().character = null;
+											  //Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
+	}
+
+	// NOT IMPLEMENTED: This is to freeze the body position, which probably doesn't need to be done
+	// There is probably a better way to do this as well
+	public void CaptureBodyPos()
+	{
+		var idToPosRot = CapturePosRot(bodyPhysics.GameObject);
+		bodyPhysics.Enabled = false;
+		bodyPhysics.MotionEnabled = false;
+		SetPosRot(bodyPhysics.GameObject, idToPosRot);
+	}
+
+	public Dictionary<Guid, (Vector3 pos, Rotation rot)> CapturePosRot(GameObject target, Dictionary<Guid, (Vector3 pos, Rotation rot)> idToPosRot = null)
+	{
+		idToPosRot = idToPosRot ?? new Dictionary<Guid, (Vector3, Rotation)>();
+
+		idToPosRot[target.Id] = (target.Transform.Position, target.Transform.Rotation);
+
+		foreach (var child in target.Children)
+		{
+			CapturePosRot(child, idToPosRot);
+		}
+
+		return idToPosRot;
+	}
+
+	public void SetPosRot(GameObject target, Dictionary<Guid, (Vector3 pos, Rotation rot)> idToPosRot)
+	{
+		target.Transform.Position = idToPosRot[target.Id].pos;
+		target.Transform.Rotation = idToPosRot[target.Id].rot;
+		target.Flags = GameObjectFlags.ProceduralBone;
+
+		foreach (var child in target.Children)
+		{
+			SetPosRot(child, idToPosRot);
+		}
 	}
 }

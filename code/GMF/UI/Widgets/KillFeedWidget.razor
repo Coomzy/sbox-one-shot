@@ -1,0 +1,63 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.Utility;
+@using System;
+@inherits PanelComponent
+
+<!--Can I be bothered to do a kill feed widget?-->
+<root>
+	<div class="container">
+		<div class="title">@PlayerInfo.local.displayName)</div>
+		<img class="rank" style="background-image: url(@RankSettings.GetRankIcon(PlayerInfo.local))">
+		<div class="title">@PlayerInfo.local.displayName)</div>
+	</div>
+</root>
+
+@code
+{
+	[Property] public float shownDuration { get; set; } = 3.0f;
+	[Property] public TimeSince shownTime { get; set; }
+
+	protected override void OnStart()
+	{
+		Hide();
+	}
+
+	[Button]
+	public void Show()
+	{
+		shownTime = 0;
+		SetClass("visible", true);
+		SetClass("hidden", false);
+
+		Sound.Play("ui.rankup");
+	}
+
+	public void Hide()
+	{
+		SetClass("visible", false);
+		SetClass("hidden", true);
+	}
+
+	public bool IsVisible()
+	{
+		return HasClass("visible");
+	}
+
+	protected override void OnUpdate()
+	{
+		if (!IsVisible())
+		{
+			return;
+		}
+
+		if (shownTime >= shownDuration)
+		{
+			Hide();	
+		}
+
+		this.Dirty();
+	}
+
+	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+}

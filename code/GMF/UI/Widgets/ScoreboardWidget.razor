@@ -1,0 +1,61 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@inherits PanelComponent
+
+<root>	
+    <div class="table">
+        <div class="header row">
+            <div class="name">Player</div>
+            <div class="stat">Kills</div>
+            <div class="stat">Deaths</div>
+            <div class="stat">Wins</div>
+        </div>
+
+        @foreach (var playerInfo in PlayerInfo.allActive)
+        {
+            if (!IsFullyValid(playerInfo))
+                continue;
+
+            bool isLastWinner = playerInfo == GameMode.instance?.lastWinner;
+
+            string specialClass = "other";
+            if (playerInfo.Network.Owner == Connection.Local) specialClass = "me";
+
+            <div class="row">
+                <div class="avatar" style="background-image: url(avatar:@playerInfo.steamId)">
+                    @if (isLastWinner)
+                    {
+                        <div class="lastwinner">👑</div>
+                    }
+                    @if (playerInfo.Network.Owner.IsHost)
+                    {
+                        <div class="host">🖥️</div>
+                    }
+                </div>
+                <div class="gap @specialClass"></div>
+                <img class="rank @specialClass" style="background-image: url(@RankSettings.GetRankIcon(playerInfo))">
+                <div class="name @specialClass">@playerInfo.displayName</div>
+                <div class="stat @specialClass">@playerInfo.kills</div>
+                <div class="stat @specialClass">@playerInfo.deaths</div>
+                <div class="stat @specialClass">@playerInfo.wins</div>
+            </div>
+        }
+
+    </div>
+
+</root>
+
+@code
+{
+    protected override void OnUpdate()
+    {
+        SetClass("hidden", !Input.Down(Inputs.score));
+        //SetClass("hidden", false);
+    }
+
+    /// <summary>
+    /// update every second
+    /// </summary>
+    protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt());
+}

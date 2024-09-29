@@ -5,7 +5,7 @@
   "Ident": "one_shot",
   "Schema": 1,
   "IncludeSourceFiles": true,
-  "Resources": null,
+  "Resources": "ui/*",
   "PackageReferences": [],
   "EditorReferences": null,
   "IsWhitelistDisabled": false,
@@ -23,7 +23,9 @@
     "LeaderboardType": "None",
     "CsProjName": "",
     "StartupScene": "scenes/game.scene",
-    "ControlModes": {},
+    "ControlModes": {
+      "Keyboard": true
+    },
     "InputSettings": {
       "Actions": [
         {
@@ -129,7 +131,7 @@
           "GroupName": "Movement"
         },
         {
-          "Name": "Pay_To_Win",
+          "Name": "s\u0026bux_menu",
           "KeyboardCode": "P",
           "GamepadCode": "None",
           "GroupName": "Game"

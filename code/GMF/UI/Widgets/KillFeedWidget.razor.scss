@@ -1,0 +1,60 @@
+KillFeedWidget {
+	position: absolute;
+	top: 100px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	font-weight: 400;
+	font-family: Consolas;
+	padding: 0;
+	transition: all 0.1s ease-out;
+	pointer-events: none;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+
+	.container {
+		//padding: 20px;
+		//margin: 50px;
+		width: auto;
+		height: 135px;
+		flex-shrink: 0;
+		flex-grow: 0;
+		flex-direction: column;
+
+		.title {
+			align-self: flex-start;
+			font-size: 35px;
+			flex-shrink: 0;
+			font-family: Poppins;
+			color: #fff;
+			text-shadow: 1px 1px 1px black; //3.0em 3.0em 0.1em black;
+			//background: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+		}
+
+		.rank {
+			width: 64px;
+			height: 96px;
+			//flex-grow: 1;
+			align-self: center;
+			align-items: center;
+			background-position: center;
+			background-size: cover;
+			//padding: 0px 4px 0px 4px;
+			//margin: 0px 4px 0px 4px;
+			//border-radius: 100px;
+		}
+	}
+
+	&.visible {
+		opacity: 1;
+	}
+
+	&.hidden {
+		opacity: 0;
+		transition: all 0.2s ease-in;
+	}
+}

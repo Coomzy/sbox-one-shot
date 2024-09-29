@@ -123,17 +123,17 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		var hitVelocity = damageInfo.hitVelocity.Normal;
 		if (damageInfo.hitVelocity.IsNearlyZero())
 		{
-			hitVelocity = GameObject.Transform.World.Forward;
+			//hitVelocity = GameObject.Transform.World.Forward;
 		}
-		Debuggin.ToScreen($"damageInfo.hitVelocity: {damageInfo.hitVelocity}, damageInfo.hitVelocity.IsNearlyZero() {damageInfo.hitVelocity.IsNearlyZero()}", 10.0f);
+		Debuggin.ToScreen($"damageInfo.hitVelocity: {damageInfo.hitVelocity}, damageInfo.hitVelocity.IsNearlyZero() {damageInfo.hitVelocity.IsNearlyZero()}", 20.0f);
 
 		var cameraPoint = PlayerCamera.cam.Transform.Position - (hitVelocity * 150.0f);
-		//var hitDirection = Rotation.LookAt(hitVelocity, Vector3.Up);
-		Rotation? hitDirection = PlayerCamera.cam.Transform.Rotation;
+		Rotation? hitDirection = Rotation.LookAt(hitVelocity.Normal, Vector3.Up);
+		//Rotation? hitDirection = PlayerCamera.cam.Transform.Rotation;
 
 		if (damageInfo.hitVelocity.IsNearlyZero())
 		{
-			hitDirection = null;
+			//hitDirection = null;
 		}
 
 		Spectator.Teleport(cameraPoint, hitDirection);
@@ -172,14 +172,13 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 
 	protected override void OnDestroy()
 	{
-		Log.Info($"OnDestroy() body: {body}, IsProxy: {IsProxy}");
 		if (IsProxy)
 		{
 			base.OnDestroy();
 			return;
 		}
 
-		if (body != null && body.IsValid)
+		if (IsFullyValid(body))
 		{
 			if (keepCharacterBody)
 			{
