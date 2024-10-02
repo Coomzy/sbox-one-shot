@@ -1,63 +1,53 @@
 ﻿@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.Utility;
-@using System;
 @inherits PanelComponent
 
-<!--Can I be bothered to do a kill feed widget?-->
 <root>
-	<div class="container">
-		<div class="title">@PlayerInfo.local.displayName)</div>
-		<img class="rank" style="background-image: url(@RankSettings.GetRankIcon(PlayerInfo.local))">
-		<div class="title">@PlayerInfo.local.displayName)</div>
-	</div>
+	<div class="output">
+		@foreach (var entry in entries)
+		{
+            <div class="entry">
+                <div class="killer">@entry.killer</div>
+                <div class="message">@entry.message</div>
+                <div class="victim">@entry.victim</div>
+			</div>
+		}
+	</div>	
 </root>
 
 @code
 {
-	[Property] public float shownDuration { get; set; } = 3.0f;
-	[Property] public TimeSince shownTime { get; set; }
+    public record Entry(string killer, string victim, string message, TimeSince timeSinceAdded);
+    List<Entry> entries = new();
 
-	protected override void OnStart()
-	{
-		Hide();
-	}
+    protected override void OnUpdate()
+    {
+        if (entries.RemoveAll(x => x.timeSinceAdded > 5.0f) > 0)
+        {
+            StateHasChanged();
+        }
+    }
 
-	[Button]
-	public void Show()
-	{
-		shownTime = 0;
-		SetClass("visible", true);
-		SetClass("hidden", false);
+    [Button]
+    public void Example()
+    {
+        AddEntry("Killer", "Victim", "----->");
+    }
 
-		Sound.Play("ui.rankup");
-	}
+    [Broadcast]
+    public void AddEntry(string killer, string victim, string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
 
-	public void Hide()
-	{
-		SetClass("visible", false);
-		SetClass("hidden", true);
-	}
+        entries.Add(new Entry(killer, victim, message, 0.0f));
+        StateHasChanged();
+    }
 
-	public bool IsVisible()
-	{
-		return HasClass("visible");
-	}
-
-	protected override void OnUpdate()
-	{
-		if (!IsVisible())
-		{
-			return;
-		}
-
-		if (shownTime >= shownDuration)
-		{
-			Hide();	
-		}
-
-		this.Dirty();
-	}
-
-	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+    [Broadcast]
+    public void ClearEntries()
+    {
+        entries.Clear();
+        StateHasChanged();
+    }
 }

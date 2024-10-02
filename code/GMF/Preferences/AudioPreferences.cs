@@ -15,6 +15,7 @@ public class AudioPreferences : EasySave<AudioPreferences>
 	public float gameVolume { get; set; }
 	public float musicVolume { get; set; }
 	public float uiVolume { get; set; }
+	public float announcerVolume { get; set; }
 
 	public VOIPMode voipMode { get; set; }
 
@@ -23,6 +24,7 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		gameVolume = 1.0f;
 		musicVolume = 0.35f;
 		uiVolume = 0.8f;
+		announcerVolume = 0.8f;
 		voipMode = VOIPMode.PushToTalk;
 	}
 
@@ -31,6 +33,7 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		var mixerGame = Mixer.FindMixerByName("Game");
 		var mixerMusic = Mixer.FindMixerByName("Music");
 		var mixerUI = Mixer.FindMixerByName("UI");
+		var mixerAnnouncer = Mixer.FindMixerByName("Announcer");
 
 		if (mixerGame != null)
 		{
@@ -44,6 +47,10 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		{
 			mixerUI.Volume = uiVolume;
 		}
+		if (mixerAnnouncer != null)
+		{
+			mixerAnnouncer.Volume = announcerVolume;
+		}		
 	}
 
 	public void MuteMusic(bool mute)
@@ -81,26 +88,29 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		ApplyVolumesToMixers();
 	}
 
+	void SetAnnouncerVolumeValue(float value)
+	{
+		uiVolume = value;
+		ApplyVolumesToMixers();
+	}
+
 	protected override UITab OnBuildUI()
 	{
 		// Tab Name - UI
 		var tab = new UITab("Audio", 2);
 
 		// Add Group Toggles
-		var groupToggles = tab.AddGroup("Toggles");
+		//var groupToggles = tab.AddGroup("Toggles");
 
-		// Add Toggle 'Mute Music'
-		groupToggles.AddToggle("Mute Music", () => muteMusic, (value) => muteMusic = value);
+		//groupToggles.AddToggle("Mute Music", () => muteMusic, (value) => muteMusic = value);
 
 		// Add Group Volumes
 		var groupVolumes = tab.AddGroup("Volumes");
 
-		// Add Slider 'Game Volume'
 		groupVolumes.AddSlider("Game Volume", () => gameVolume, SetGameVolumeValue);
-		// Add Slider 'Music Volume'
-		groupVolumes.AddSlider("Music Volume", () => musicVolume, SetMusicVolumeValue);
-		// Add Slider 'UI Volume'
+		//groupVolumes.AddSlider("Music Volume", () => musicVolume, SetMusicVolumeValue);
 		groupVolumes.AddSlider("UI Volume", () => uiVolume, SetUIVolumeValue);
+		groupVolumes.AddSlider("Announcer Volume", () => uiVolume, SetAnnouncerVolumeValue);
 
 		// Add Group VOIP
 		var groupVOIP = tab.AddGroup("VOIP");

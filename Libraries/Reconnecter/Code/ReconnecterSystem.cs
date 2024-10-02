@@ -12,10 +12,10 @@ public class ReconnecterSystem : GameObjectSystem
 
 	public ReconnecterSystem(Scene scene) : base(scene)
 	{
-		if (!Application.IsDebug)
+		/*if (!Application.IsDebug)
 		{
 			return;
-		}
+		}*/
 
 		if (startTime == null)
 		{
@@ -43,8 +43,9 @@ public class ReconnecterSystem : GameObjectSystem
 		if (instance == null)
 		{
 			var newGO = new GameObject(true);
+			newGO.Name = $"Reconnecter";
 			instance = newGO.Components.Create<ReconnecterComponent>();
-			newGO.Flags = GameObjectFlags.DontDestroyOnLoad;
+			newGO.Flags = GameObjectFlags.DontDestroyOnLoad | GameObjectFlags.Hidden;
 		}
 
 		startTime = null;

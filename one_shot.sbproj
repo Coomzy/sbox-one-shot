@@ -131,15 +131,31 @@
           "GroupName": "Movement"
         },
         {
-          "Name": "s\u0026bux_menu",
+          "Name": "sbux_menu",
           "KeyboardCode": "P",
           "GamepadCode": "None",
           "GroupName": "Game"
+        },
+        {
+          "Name": "Spray",
+          "KeyboardCode": "f",
+          "GamepadCode": "None",
+          "GroupName": "Actions"
         }
       ],
       "__guid": "7495c57a-5b4a-44a8-9506-8f95a88d0b32"
     },
     "LaunchMode": "Normal",
-    "MapStartupScene": "scenes/game.scene"
+    "MapStartupScene": "scenes/game.scene",
+    "Compiler": {
+      "RootNamespace": "Sandbox",
+      "DefineConstants": "SANDBOX;ADDON;DEBUG",
+      "NoWarn": "1701;1702;1591;",
+      "WarningsAsErrors": "",
+      "Whitelist": true,
+      "AssemblyReferences": [],
+      "IgnoreFolders": [],
+      "DistinctAssemblyReferences": []
+    }
   }
 }

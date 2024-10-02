@@ -28,13 +28,16 @@
 				{
 					borderColor = "#0099cc";
 				}
-				if (playerInfo.isDead)
+				if (IsFullyValid(GameMode.instance) && GameMode.instance.modeState == ModeState.ActiveRound)
+				{ 
+				}
+				if (isActiveRound && playerInfo.isDead)
 				{
 					borderColor = "red";
 				}
 				<div class="card" style="background-color: @borderColor;">
 					<div class="avatar" style="background-image: url(avatar:@entry.SteamId)">
-						@if (playerInfo.isDead)
+						@if (isActiveRound && playerInfo.isDead)
 						{
 							<div class="skull" style="background-image: url(ui/skull_filled.png)"></div>
 						}
@@ -57,6 +60,8 @@
 {
 	[Property] public int lastCountdownNumber { get; set; } = -1;
 
+	public bool isActiveRound => IsFullyValid(GameMode.instance) && GameMode.instance.modeState == ModeState.ActiveRound;
+
 	string GetGameState()
 	{
 		if (GameMode.instance == null)
@@ -74,7 +79,21 @@
 			return "Get Ready";
 		}
 
+		if (GameMode.instance.modeState == ModeState.ActiveRound)
+		{
+			return FormatTime(GameMode.instance.remainingStateTime);
+		}
+
 		return "";
+	}
+
+	string FormatTime(float timeInSeconds)
+	{
+		int minutes = (int)(timeInSeconds / 60);
+		int seconds = (int)(timeInSeconds % 60);
+
+		string formattedTime = string.Format("{0}:{1:D2}", minutes, seconds);
+		return formattedTime;
 	}
 
 	string GetRoundCountTime()

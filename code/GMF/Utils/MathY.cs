@@ -73,12 +73,36 @@ public static class MathY
 		return (int)MathX.Clamp(value, min, max);
 	}
 
+	public static float Clamp(float value, float max)
+	{
+		return Clamp(value, 0, max);
+	}
+
+	public static float Clamp(float value, float min, float max)
+	{
+		if (max < min)
+		{
+			max = min;
+		}
+		return MathX.Clamp(value, min, max);
+	}
+
 	public static int Min(int a, int b)
 	{
 		return (a < b) ? a : b;
 	}
 
 	public static int Max(int a, int b)
+	{
+		return (a > b) ? a : b;
+	}
+
+	public static float Min(float a, float b)
+	{
+		return (a < b) ? a : b;
+	}
+
+	public static float Max(float a, float b)
 	{
 		return (a > b) ? a : b;
 	}

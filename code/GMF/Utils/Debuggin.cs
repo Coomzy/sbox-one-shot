@@ -33,8 +33,8 @@ public class Debuggin : GameObjectSystem
 
 	public Debuggin(Scene scene) : base(scene)
 	{
-		if (!Application.IsDebug)
-			return;
+		/*if (!Application.IsDebug)
+			return;*/
 
 		screenLogs = screenLogs ?? new();
 		draw = draw ?? new();

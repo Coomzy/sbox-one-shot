@@ -18,12 +18,13 @@ public class DebugBinds : Component
 		}
 	}
 
-	[Button]
-	public void DumpActions()
+	[ConCmd]
+	public static void dumpbinds2()
 	{
 		foreach (var action in Input.GetActions())
 		{
-			Log.Info($"action: {action.Name}, {action.KeyboardCode}, {action.GroupName}");
+			string boundButtonName = IGameInstance.Current.GetBind(action.Name, out bool isDefault, out bool isCommon);
+			Log.Info($"The '{action.Name}' action is bound to '{boundButtonName}'{(isDefault ? " (Default binding)" : "")}{(isCommon ? " (Common binding)" : "")}");
 		}
 	}
 
@@ -34,17 +35,25 @@ public class DebugBinds : Component
 		IGameInstance.Current.SaveBinds();
 	}
 
+	[ConCmd]
+	public static void resetbinds2()
+	{
+		IGameInstance.Current.ResetBinds();
+		IGameInstance.Current.SaveBinds();
+	}
+
+	[ConCmd]
+	public static void getbind_Jump2()
+	{
+		string boundButtonName = IGameInstance.Current.GetBind("Jump", out bool isDefault, out bool isCommon);
+		Log.Info($"The 'Jump' action is bound to '{boundButtonName}'{(isDefault ? " (Default binding)" : "")}{(isCommon ? " (Common binding)" : "")}");
+
+	}
+
 	[Button]
 	public void GetBind()
 	{
 		string boundButtonName = IGameInstance.Current.GetBind(actionName, out bool isDefault, out bool isCommon);
 		Log.Info($"actionName: {actionName}, boundButtonName: {boundButtonName}, isDefault: {isDefault}, isCommon: {isCommon}");
-	}
-
-	[ConCmd("setbind_duck_alt")]
-	public static void SetBind_Duck_Alt(string buttonName)
-	{
-		IGameInstance.Current.SetBind("Duck_Alt", buttonName);
-		IGameInstance.Current.SaveBinds();
 	}
 }

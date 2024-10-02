@@ -5,8 +5,6 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 {
 	[Group("Runtime"), Property, Sync] public int xp { get; private set; }
 	[Group("Runtime"), Property, Sync] public int rank { get; private set; }
-	[Group("Runtime"), Property] public int xpTest { get; private set; }
-	[Group("Runtime"), Property] public int xpRankTest => RankSettings.GetRankIndex(xpTest);
 
 	[Group("Runtime"), Property] public bool isPromptingPayToWin { get; set; }
 
@@ -53,32 +51,25 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 		isPromptingPayToWin = false;
 	}
 
-	public override void OnScoreKill()
+	public override void OnScoreKill_Client()
 	{
-		base.OnScoreKill();		
+		base.OnScoreKill_Client();		
 
 		GainXP(GameSettings.instance.xpPerKill);
 	}
 
-	public override void OnScoreRoundWin()
+	public override void OnScoreRoundWin_Client()
 	{
-		base.OnScoreRoundWin();
+		base.OnScoreRoundWin_Client();
 
 		GainXP(GameSettings.instance.xpPerRoundWin);
 	}
 
-	public override void OnScoreGameWin()
+	public override void OnScoreGameWin_Client()
 	{
-		base.OnScoreGameWin();
+		base.OnScoreGameWin_Client();
 
 		GainXP(GameSettings.instance.xpPerGameWin);
-	}
-
-	[ConCmd]
-	public static void GiveXP(int amount)
-	{
-		var osPlayerInfo = (OSPlayerInfo)PlayerInfo.local;
-		osPlayerInfo.GainXP(amount);
 	}
 
 	[Authority]

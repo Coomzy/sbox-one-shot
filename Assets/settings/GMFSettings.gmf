@@ -1,0 +1,18 @@
+{
+  "playerInfoPrefab": {
+    "_type": "gameobject",
+    "prefab": "prefabs/player/os_playerinfo.prefab"
+  },
+  "pawnPrefab": {
+    "_type": "gameobject",
+    "prefab": "prefabs/player/os_character.prefab"
+  },
+  "spectatorPrefab": {
+    "_type": "gameobject",
+    "prefab": "prefabs/player/spectator.prefab"
+  },
+  "spectatorVRPrefab": null,
+  "__references": [],
+  "IsValid": true,
+  "__version": 0
+}

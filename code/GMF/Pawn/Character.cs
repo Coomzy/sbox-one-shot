@@ -81,7 +81,7 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		if (IsProxy)
 			return;
 
-		float killZ = WorldSettings.instance != null ? WorldSettings.instance.killZ : -500.0f;
+		float killZ = WorldInfo.instance != null ? WorldInfo.instance.killZ : -500.0f;
 
 		if (GameObject.Transform.Position.z <= killZ)
 		{

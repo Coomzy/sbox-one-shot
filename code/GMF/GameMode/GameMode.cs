@@ -16,33 +16,36 @@ public enum ModeState
 	ReadyPhase,
 	ActiveRound,
 	PostRound,
-	PostGame
+	PostGame,
+	PostGameResults
 }
 
 public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 {
 	public static GameMode instance { get; private set; }
-	[Group("Setup"), Order(-100), Property] public GameObject pawnPrefab { get; set; }
 
-	[Group("Config - Delays"), Order(1), Property] public float preGameDelay { get; set; } = 3.0f;
+	[Group("Config - Delays"), Order(1), Property] public float initalPreGameDelay { get; set; } = 5.0f;
+	[Group("Config - Delays"), Order(1), Property] public float preGameDelay { get; set; } = 1.0f;
 	[Group("Config - Delays"), Order(1), Property] public float waitingForPlayersDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float preRoundDelay { get; set; } = 1.0f;
 	[Group("Config - Delays"), Order(1), Property] public float readyPhaseDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float roundConditionMetDelay { get; set; } = 1.0f;
-	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 2.0f;
+	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float postGameDelay { get; set; } = 3.0f;
+	[Group("Config - Delays"), Order(1), Property] public float postGameResultsDelay { get; set; } = 5.0f;
 
-	[Group("Config"), Order(2), Property] public int requiredPlayerCount { get; set; } = 2;
-	[Group("Config"), Order(2), Property] public int maxGameRounds { get; set; } = 10;
-	[Group("Config"), Order(2), Property] public float? roundTime { get; set; } = 100.0f;
-	[Group("Config"), Order(2), Property] public bool oneLifeOnly { get; set; } = false;
-	[Group("Config"), Order(2), Property] public float defaultRespawnTime { get; set; } = 3.0f;
+	[Group("Config"), Order(2), Property, HostSync] public int requiredPlayerCount { get; set; } = 2;
+	[Group("Config"), Order(2), Property, HostSync] public int maxGameRounds { get; set; } = 10;
+	[Group("Config"), Order(2), Property, HostSync] public float? roundTime { get; set; } = 180.0f;
+	[Group("Config"), Order(2), Property, HostSync] public bool oneLifeOnly { get; set; } = false;
+	[Group("Config"), Order(2), Property, HostSync] public float defaultRespawnTime { get; set; } = 3.0f;
 
 	public Dictionary<SpawnPoint, float> spawnPointToLastUsedTime = new Dictionary<SpawnPoint, float>();
 
-	[Group("Runtime"), Order(100), HostSync, Property] public int roundCount { get; private set; }
-	[Group("Runtime"), Order(100), HostSync, Property] public ModeState modeState { get; private set; }
-	[Group("Runtime"), Order(100), HostSync, Property] public TimeSince stateTime { get; private set; }
+	[Group("Runtime"), Order(100), Property, HostSync] public int roundCount { get; private set; }
+	[Group("Runtime"), Order(100), Property, HostSync] public int gameCount { get; private set; }
+	[Group("Runtime"), Order(100), Property, HostSync] public ModeState modeState { get; private set; }
+	[Group("Runtime"), Order(100), Property, HostSync] public TimeSince stateTime { get; private set; }
 
 	[Group("Runtime"), Order(100), HostSync, Property] public PlayerInfo lastWinner { get; set; }
 
@@ -50,15 +53,32 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	[Group("Runtime"), Order(100), Property] SpawnPoint[] allSpawnPoints { get; set; }
 
-	[Group("Runtime"), Order(100), Property] TimeSince? timeSinceRoundConditionMet { get; set; } = null;
+	[Group("Runtime"), Order(100), Property] TimeSince? delayedRoundConditionMet { get; set; } = null;
 	[Group("Runtime"), Order(100), Property] int preGameSpawnIndex { get; set; } = 0;
 
-	[Group("Runtime"), Order(100), Property] public float remainingStateTime
+	[Group("Runtime"), Order(100), Property] 
+	public float remainingStateTime
 	{
 		get
-		{			
-			return readyPhaseDelay - stateTime;
-			//return 0.0f;
+		{
+			var maxTime = 0.0f;
+
+			switch (modeState)
+			{
+				case ModeState.ReadyPhase:
+					maxTime = readyPhaseDelay;
+					break;
+				case ModeState.ActiveRound:
+					if (roundTime.HasValue)
+					{
+						maxTime = roundTime.Value;
+					}
+					break;
+			}
+
+			var remainingTime = maxTime - stateTime;
+			remainingTime = MathY.Max(remainingTime, 0);
+			return remainingTime;
 		}
 	}
 
@@ -71,7 +91,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	protected override void OnStart()
 	{
-		var mapInstance = WorldSettings.instance?.mapInstance;
+		var mapInstance = WorldInfo.instance?.mapInstance;
 		if (mapInstance != null)
 		{
 			mapInstance.OnMapLoaded += OnMapLoaded;
@@ -87,7 +107,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	{
 		instance = null;
 
-		var mapInstance = WorldSettings.instance?.mapInstance;
+		var mapInstance = WorldInfo.instance?.mapInstance;
 		if (mapInstance != null)
 		{
 			mapInstance.OnMapLoaded -= OnMapLoaded;
@@ -100,14 +120,20 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		Debuggin.ToScreen($"OnMapLoaded() allSpawnPoints: {allSpawnPoints.Length}", 15.0f);
 	}
 
-	public virtual void OnPlayerConnected(OSPlayerInfo playerInfo, Connection channel)
+	public virtual void OnPlayerConnected(PlayerInfo playerInfo)
 	{
-
+		// Assign team and all the bollocks
+		Log.Info($"GameMode::OnPlayerConnected() player: {playerInfo?.displayName}");
 	}
 
-	public virtual void OnPlayerDisconnected(OSPlayerInfo playerInfo)
+	public virtual void OnPlayerRejoined(PlayerInfo playerInfo)
 	{
+		Log.Info($"GameMode::OnPlayerRejoined() player: {playerInfo?.displayName}");
+	}
 
+	public virtual void OnPlayerDisconnected(PlayerInfo playerInfo)
+	{
+		Log.Info($"GameMode::OnPlayerDisconnected() player: {playerInfo?.displayName}");
 	}
 
 	// TODO: I renamed Pawn to Character, but I want to go back to Pawn at some point
@@ -134,12 +160,14 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	protected virtual GameObject GetPawnPrefabForPlayer(PlayerInfo playerInfo)
 	{
-		return pawnPrefab;
+		return WorldInfo.instance.pawnPrefab;
+		//return GMFSettings.instance.pawnPrefab;
 	}
 
 	// Pre Game
 	protected virtual void PreGameStart()
 	{
+		gameCount++;
 		preGameSpawnIndex = 0;
 		roundCount = 0;
 
@@ -148,7 +176,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	protected virtual void PreGameUpdate()
 	{
-		if (stateTime < preGameDelay)
+		var delay = gameCount > 1 ? preGameDelay : initalPreGameDelay;
+		if (stateTime < delay)
 		{
 			return;
 		}
@@ -189,13 +218,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	protected virtual void PreRoundStart()
 	{
 		roundCount++;
-		foreach (var playerInfo in PlayerInfo.all)
-		{
-			playerInfo.DestroyPawn();
-		}
-
-		CleanupRoundInstances();
-		TeleportSpectatorsToStartingPoint();
+		RoundCleanup();
 	}
 
 	protected virtual void PreRoundUpdate()
@@ -235,23 +258,19 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Active Round
 	protected virtual void ActiveRoundStart()
 	{
-		timeSinceRoundConditionMet = null;
+		delayedRoundConditionMet = null;
 	}
 
 	protected virtual void ActiveRoundUpdate()
 	{
-		if (timeSinceRoundConditionMet.HasValue)
+		if (RoundEndCondition())
 		{
-			if (timeSinceRoundConditionMet.Value >= roundConditionMetDelay)
-			{
-				RoundOver();
-			}
+			RoundOver();
 			return;
 		}
 
-		if (RoundEndCondition())
+		if (delayedRoundConditionMet.HasValue)
 		{
-			timeSinceRoundConditionMet = 0;
 			return;
 		}
 
@@ -261,7 +280,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Post Round
 	protected virtual void PostRoundStart()
 	{
-
+		AnnouncerSystem.QueueSound("announcer.round.over");
 	}
 
 	protected virtual void PostRoundUpdate()
@@ -284,12 +303,29 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Post Game
 	protected virtual void PostGameStart()
 	{
+		AnnouncerSystem.QueueSound("announcer.game.over");
 		CheckGameWinners();
 	}
 
 	protected virtual void PostGameUpdate()
 	{
 		if (stateTime < postGameDelay)
+		{
+			return;
+		}
+
+		SetModeState(ModeState.PostGameResults);
+	}
+
+	// Post Game
+	protected virtual void PostGameResultsStart()
+	{
+		RoundCleanup();
+	}
+
+	protected virtual void PostGameResultsUpdate()
+	{
+		if (stateTime < postGameResultsDelay)
 		{
 			return;
 		}
@@ -310,15 +346,37 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			{
 				continue;
 			}
-			var slasherPawn = CreatePawn(playerInfo, randomSpawn);
+			CreatePawn(playerInfo, randomSpawn);
 		}
+	}
+
+	public virtual SpawnPoint PickSpawnForPlayer(PlayerInfo playerInfo)
+	{
+		var randomSpawn = Game.Random.FromArray(allSpawnPoints);
+		if (randomSpawn != null)
+		{			
+			//spawnInfo
+		}
+
+		return randomSpawn;
 	}
 
 	public virtual bool RoundEndCondition()
 	{
+		if (delayedRoundConditionMet.HasValue && delayedRoundConditionMet.Value >= roundConditionMetDelay)
+		{
+			return true;
+		}
+
 		if (oneLifeOnly)
 		{
-			return PlayerInfo.allAlive.Count < 2;
+			if (!delayedRoundConditionMet.HasValue)
+			{
+				if (PlayerInfo.allAlive.Count < 2)
+				{
+					delayedRoundConditionMet = 0;
+				}
+			}
 		}
 
 		if (roundTime.HasValue && stateTime >= roundTime.Value)
@@ -364,19 +422,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		PlayerInfo winner = null;
 		if (oneLifeOnly)
 		{
-			foreach (var playerInfo in PlayerInfo.allActive)
+			if (PlayerInfo.allAlive.Count == 1)
 			{
-				if (playerInfo.isDead)
-					continue;
-
-				// There can only be one winner
-				if (winner != null)
-				{
-					winner = null;
-					break;
-				}
-
-				winner = playerInfo;
+				winner = PlayerInfo.allAlive[0];
 			}
 		}
 		else
@@ -406,7 +454,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 		if (IsFullyValid(winnerPlayerInfo))
 		{
-			winnerPlayerInfo.OnScoreRoundWin();
+			winnerPlayerInfo.OnScoreGameWin();
 			lastWinner = winnerPlayerInfo;
 		}
 		else
@@ -508,6 +556,27 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		return true;
 	}
 
+	public virtual bool ShouldShowScoreboard()
+	{
+		if (modeState == ModeState.PostGameResults)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	protected virtual void RoundCleanup()
+	{
+		foreach (var playerInfo in PlayerInfo.all)
+		{
+			playerInfo.DestroyPawn();
+		}
+
+		CleanupRoundInstances();
+		TeleportSpectatorsToStartingPoint();
+	}
+
 	[Broadcast]
 	public virtual void TeleportSpectatorsToStartingPoint()
 	{
@@ -557,6 +626,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			case ModeState.PostGame:
 				PostGameStart();
 				break;
+			case ModeState.PostGameResults:
+				PostGameResultsStart();
+				break;
 		}
 	}
 
@@ -599,6 +671,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 				break;
 			case ModeState.PostGame:
 				PostGameUpdate();
+				break;
+			case ModeState.PostGameResults:
+				PostGameResultsUpdate();
 				break;
 			default:
 				Log.Error($"What state is this? modeState: {modeState}");

@@ -1,4 +1,8 @@
 global using static Check;
+using Sandbox.Diagnostics;
+
+// Add AssertIsValid?
+//Sandbox.Diagnostics.Assert.IsNull(SteamAudioSource);
 
 public static class Check
 {

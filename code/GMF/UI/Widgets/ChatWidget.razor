@@ -80,7 +80,7 @@
 		StateHasChanged();
 	}
 
-    [Broadcast] // todo: only from host/owner
+    [Broadcast]
     public void AddSystemText(string message)
     {
         message = message.Truncate(300);

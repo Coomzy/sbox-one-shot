@@ -3,6 +3,7 @@ using System;
 using System.Numerics;
 using System.Reflection.PortableExecutable;
 
+// TODO: Split this out so there can be a Flatscreen and VR version but the code can still reference Spectator.instance
 [Group("GMF")]
 public class Spectator : Component
 {
@@ -35,7 +36,8 @@ public class Spectator : Component
 		{
 			return false;
 		}
-		var spectatorPrefab = Game.IsRunningInVR ? WorldSettings.instance.spectatorVRPrefab : WorldSettings.instance.spectatorPrefab;
+		var spectatorPrefab = WorldInfo.instance.spectatorPrefab;
+		//var spectatorPrefab = Game.IsRunningInVR ? GMFSettings.instance.spectatorVRPrefab : GMFSettings.instance.spectatorPrefab;
 		var spectatorInst = spectatorPrefab.Clone(spawnPos, spawnRot).BreakPrefab().Components.Get<Spectator>();
 		spectatorInst.GameObject.Name = $"Spectator Pawn";
 		return true;
@@ -136,9 +138,11 @@ public class Spectator : Component
 
 	public virtual bool AllowedMove()
 	{
-		if (!IsFullyValid(GameMode.instance) ||
-			GameMode.instance.modeState == ModeState.PreGame ||
-			GameMode.instance.modeState == ModeState.PreRound)
+		if (!IsFullyValid(GameMode.instance))
+			return false;
+
+		if (GameMode.instance.modeState != ModeState.ActiveRound ||
+			GameMode.instance.modeState != ModeState.WaitingForPlayers)
 			return false;
 
 		if (IsFullyValid(PlayerInfo.local?.character))
@@ -184,7 +188,7 @@ public class Spectator : Component
 		spawnPos = Vector3.Zero;
 		spawnRot = Rotation.Identity;
 
-		var spectateStartSpot = Game.ActiveScene.Components.GetInDescendantsOrSelf<SpectateStartSpot>();
+		var spectateStartSpot = Game.ActiveScene.Components.GetInDescendantsOrSelf<SpectateViewpoint>();
 		if (spectateStartSpot != null)
 		{
 			spawnPos = spectateStartSpot.Transform.Position;

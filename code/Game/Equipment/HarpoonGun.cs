@@ -128,19 +128,21 @@ public class HarpoonGun : Equipment
 
 		hasAmmo = false;		
 
+		var camPoint = PlayerCamera.instance.Transform.Position;
 		var spawnPoint = PlayerCamera.instance.GetPointInFront(70.0f);
 		var spawnRot = PlayerCamera.instance.Transform.Rotation;
 
 		var spearInst = spearPrefab.Clone(spawnPoint, spawnRot);
 		if (spearInst != null)
 		{
-			spearInst.NetworkSpawn(GameObject.Network.Owner);
-
-			var spear = spearInst.Components.Get<HarpoonSpear>();			
-			if (spear != null)
+			var projectile = spearInst.Components.Get<Projectile>();
+			if (projectile != null)
 			{
-				spear.owner = this;
+				projectile.owner = this;
+				projectile.SpawnSource(camPoint);
 			}
+
+			spearInst.NetworkSpawn(GameObject.Network.Owner);
 		}
 
 		model.GameObject.Enabled = false;

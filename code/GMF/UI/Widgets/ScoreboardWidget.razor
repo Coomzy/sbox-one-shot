@@ -50,7 +50,12 @@
 {
     protected override void OnUpdate()
     {
-        SetClass("hidden", !Input.Down(Inputs.score));
+        bool shouldShow = Input.Down(Inputs.score);
+        if (GameMode.instance.ShouldShowScoreboard())
+        {
+            shouldShow = true;
+        }
+        SetClass("hidden", !shouldShow);
         //SetClass("hidden", false);
     }
 

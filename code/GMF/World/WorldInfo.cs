@@ -5,14 +5,15 @@ using Sandbox.Network;
 using System;
 using static Sandbox.Gizmo;
 
-public class WorldSettings : Component, Component.INetworkListener
+public class WorldInfo : Component, Component.INetworkListener
 {
-	public static WorldSettings instance { get; private set; }
+	public static WorldInfo instance { get; private set; }
 
-	[Property] public GameObject playerInfoPrefab { get; set; }
-	[Property] public GameObject spectatorPrefab { get; set; }
-	[Property] public GameObject spectatorVRPrefab { get; set; }
-	[Property] public GameObject gameModePrefab { get; set; }
+	[Group("Prefabs"), Property] public GameObject playerInfoPrefab { get; set; }
+	[Group("Prefabs"), Property] public GameObject pawnPrefab { get; set; }
+
+	[Group("Prefabs"), Property] public GameObject spectatorPrefab { get; set; }
+
 	[Property] public MapInstance mapInstance { get; set; }
 	[Property] public MapCollider mapCollider { get; set; }
 

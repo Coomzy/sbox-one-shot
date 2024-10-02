@@ -8,8 +8,8 @@ using static Sandbox.ModelRenderer;
 [Group("OS")]
 public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 {
-	[Group("Runtime"), Order(100), Property, Sync, OnRep] public HarpoonSpear impaledByHarpoonSpear { get; set; }
-	[Group("Runtime"), Order(100), Property, Sync, Change(nameof(OnRep_impaledPhysicsBodyIndex))] public int impaledPhysicsBodyIndex { get; set; } = -1;
+	[Group("Runtime"), Order(100), Property, Sync] public HarpoonSpear impaledByHarpoonSpear { get; set; }
+	[Group("Runtime"), Order(100), Property, Sync] public int impaledPhysicsBodyIndex { get; set; } = -1;
 
 	protected override void OnAwake()
 	{
@@ -17,31 +17,6 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 
 		thirdPersonAnimationHelper.Handedness = CitizenAnimationHelper.Hand.Both;
 		thirdPersonAnimationHelper.HoldType = CitizenAnimationHelper.HoldTypes.Rifle;
-	}
-
-	public void OnRep___impaledByHarpoonSpear__Attrs(HarpoonSpear oldValue, HarpoonSpear newValue)
-	{
-		Log.Info($"OnRep___impaledByHarpoonSpear__Attrs: {newValue}");
-	}
-
-	public void OnRep_impaledByHarpoonSpear(HarpoonSpear oldValue, HarpoonSpear newValue)
-	{
-		Log.Info($"OnRep_impaledByHarpoonSpear: {newValue}");
-	}
-
-	public void OnRep_impaledPhysicsBodyIndex(int oldValue, int newValue)
-	{
-		Log.Info($"OnRep_impaledPhysicsBodyIndex: {newValue}");
-	}
-
-	void OnimpaledByHarpoonSpearChanged(HarpoonSpear oldValue, HarpoonSpear newValue)
-	{
-		Log.Info($"impaledByHarpoonSpear: {newValue}");
-	}
-
-	void OnimpaledPhysicsBodyIndexChanged(int oldValue, int newValue)
-	{
-		Log.Info($"impaledPhysicsBodyIndex: {newValue}");
 	}
 
 	protected override void OnFixedUpdate()
@@ -56,7 +31,7 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 		if (impaledByHarpoonSpear == null || !impaledByHarpoonSpear.IsValid || impaledPhysicsBody == null || !impaledPhysicsBody.IsValid())
 			return;
 
-		// Move to OnRep
+		// Move to OnRep?
 		SetFirstPersonMode(false);
 		bodyPhysics.MotionEnabled = true;
 		bodyRenderer.UseAnimGraph = false;
@@ -76,11 +51,8 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 
 	public override void Die(DamageInfo damageInfo)
 	{
-		Log.Info($"OSCharacterBody::Die() damageInfo.damageCauser: {damageInfo.damageCauser}");
-
 		if (damageInfo.damageCauser is HarpoonSpear instigatorAsHarpoonSpear)
 		{
-			Log.Info($"OSCharacterBody::Die() instigatorAsHarpoonSpear: {instigatorAsHarpoonSpear}");
 			impaledByHarpoonSpear = instigatorAsHarpoonSpear;
 			Impale(damageInfo.damageCauser, damageInfo.hitBodyIndex);
 			return;
@@ -89,13 +61,6 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 		base.Die(damageInfo);
 	}
 
-	public override void TakeDamage(DamageInfo damageInfo)
-	{
-		Log.Info($"OSCharacterBody::TakeDamage() damageInfo.damageCauser: {damageInfo.damageCauser}");
-		base.TakeDamage(damageInfo);
-	}
-
-	//[Broadcast]
 	public void Impale(Component spear, int bodyIndex)
 	{
 		if (owner?.equippedItem != null)
@@ -105,43 +70,10 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 		bodyPhysics.MotionEnabled = true;
 		GameObject.Tags.Set("ragdoll", true);
 
-		var instigatorAsHarpoonSpear = spear as HarpoonSpear;
 		var physBody = (bodyPhysics?.PhysicsGroup?.Bodies.Count() > bodyIndex) ? bodyPhysics.PhysicsGroup.Bodies.ElementAt(bodyIndex) : null;
 
-		foreach (var body in physBody.PhysicsGroup.Bodies)
-		{
-			//Log.Info($"Die() body: {body}");
-		}
-
-		Log.Info($"Die() spear: {spear}, bodyIndex: {bodyIndex}, instigatorAsHarpoonSpear: {instigatorAsHarpoonSpear}, physBody: {physBody}");
-
-		if (instigatorAsHarpoonSpear != null)
-		{
-			impaledByHarpoonSpear = instigatorAsHarpoonSpear;
-		}
+		impaledByHarpoonSpear = spear as HarpoonSpear;
 		impaledPhysicsBodyIndex = bodyIndex;
-
-		if (IsProxy)
-			return;
-
-		//Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
-		//ClearOwner(3.0f);
-		//Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
-	}
-
-	public async void ClearOwner(float delay)
-	{
-		await Task.DelaySeconds(delay);
-
-		Log.Info($"ClearOwner() PlayerInfo.all: {PlayerInfo.all.Count}");
-		foreach (var playerInfo in PlayerInfo.all)
-		{
-			Log.Info($"playerInfo: {playerInfo}, playerInfo.IsValid: {playerInfo.IsValid}, playerInfo?.GameObject == null: {playerInfo?.GameObject == null}, playerInfo.Network.Active: {playerInfo.Network.Active}, playerInfo.Network.OwnerId: {playerInfo.Network.OwnerId}");
-		}
-
-		playerInfo.character.DestroyRequest();//.Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
-											  //this.GetOwningPlayerInfo().character = null;
-											  //Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
 	}
 
 	// NOT IMPLEMENTED: This is to freeze the body position, which probably doesn't need to be done

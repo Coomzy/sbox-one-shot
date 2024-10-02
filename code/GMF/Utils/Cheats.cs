@@ -1,6 +1,7 @@
 
 using System.Diagnostics;
 using System;
+using Sandbox;
 
 public enum CheatFlags
 {
@@ -13,10 +14,12 @@ public enum CheatFlags
 public class CheatAttribute : Attribute
 {
 	public CheatFlags flags { get; set; }
+	public Role role { get; set; } = Role.Moderator;
 
-	public CheatAttribute(CheatFlags flags = CheatFlags.None)
+	public CheatAttribute(CheatFlags flags = CheatFlags.None, Role role = Role.Moderator)
 	{
 		this.flags = flags;
+		this.role = role;
 	}
 
 	public static void OnCheatInvoked(WrappedMethod method, params object[] args)
@@ -28,21 +31,21 @@ public class CheatAttribute : Attribute
 			return;
 		}
 
-		// NB: This doesn't work https://github.com/Facepunch/sbox-issues/issues/6511
-		if (!Application.IsDebug)
+		var role = IsFullyValid(PlayerInfo.local) ? PlayerInfo.local.role : Role.None;
+		if (role < cheatAttribute.role)
+		{
+			Log.Warning($"Cannot use '{method.MethodName}' because it requires the role '{cheatAttribute.role}'");
+			return;
+		}
+
+		/*if (!Application.IsDebug)
 		{
 			if (!cheatAttribute.flags.Contains(CheatFlags.AllowInPackaged))
 			{
 				Log.Warning($"Cannot use '{method.MethodName}' in a packaged game");
 				return;
 			}
-		}
-
-		if (cheatAttribute.flags.Contains(CheatFlags.Broadcast))
-		{
-			Sandbox.Rpc.OnStaticBroadcast(method, args);
-			return;
-		}
+		}*/
 
 		if (cheatAttribute.flags.Contains(CheatFlags.Broadcast))
 		{
@@ -71,7 +74,7 @@ public static class Cheats
 		Game.ActiveScene.TimeScale = timescale;
 	}
 
-	[Cheat, ConCmd("suicide")]
+	[Cheat(role = Role.None), ConCmd("suicide")]
 	public static void Suicide()
 	{
 		if (!IsFullyValid(PlayerInfo.local.character))
@@ -97,5 +100,12 @@ public static class Cheats
 
 			playerInfo?.character.Teleport(teleportPoint);
 		}
+	}
+
+	[Cheat(role = Role.Developer), ConCmd("givexp")]
+	public static void GiveXP(int amount)
+	{
+		var osPlayerInfo = (OSPlayerInfo)PlayerInfo.local;
+		osPlayerInfo.GainXP(amount);
 	}
 }

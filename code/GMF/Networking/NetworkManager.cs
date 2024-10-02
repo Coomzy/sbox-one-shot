@@ -44,12 +44,6 @@ public class NetworkManager : Component, Component.INetworkListener
 			playerInfo = CreatePlayerInfo(connection);
 		}
 
-		if (!playerInfo.IsValid())
-		{
-			throw new Exception($"Something went wrong when trying to create PlayerInfo for {connection.DisplayName}");
-		}
-
-		// Either spawn over network, or claim ownership
 		if (!playerInfo.Network.Active)
 		{
 			playerInfo.GameObject.NetworkSpawn(connection);
@@ -63,9 +57,12 @@ public class NetworkManager : Component, Component.INetworkListener
 		if (rejoined)
 		{
 			playerInfo.Rejoined();
+			GameMode.instance.OnPlayerRejoined(playerInfo);
 		}
-
-		//GameMode.instance.OnPlayerConnected(playerInfo, channel);
+		else
+		{
+			GameMode.instance.OnPlayerConnected(playerInfo);
+		}
 	}
 
 	public void OnConnected(Connection connection)
@@ -74,15 +71,18 @@ public class NetworkManager : Component, Component.INetworkListener
 	}
 
 	public void OnDisconnected(Connection connection)
-	{		
+	{
 		Log.Info($"Player '{connection.DisplayName}' disconnected");
 
 		if (!PlayerInfo.TryFromConnection(connection, out var leavingPlayerInfo))
 		{
+			Log.Warning($"Could not find PlayerInfo for'{connection.DisplayName}' when they disconnected");
 			return;
 		}
 
 		leavingPlayerInfo.Disconnected();
+
+		GameMode.instance.OnPlayerDisconnected(leavingPlayerInfo);
 	}
 
 	public void OnBecameHost(Connection previousHost)
@@ -91,44 +91,37 @@ public class NetworkManager : Component, Component.INetworkListener
 		//PlayerInfo.local.OnBecameHost(PlayerInfo.FromConnection(previousHost));
 	}
 
-	PlayerInfo FindExistingPlayerInfo(Connection channel = null )
+	PlayerInfo CreatePlayerInfo(Connection connection = null)
 	{
-		var possiblePlayerInfo = PlayerInfo.allInactive.FirstOrDefault( x =>
-		{
-			// A candidate player state has no owner.
-			return x.Network.Owner == null && x.steamId == channel.SteamId;
-		} );
-
-		if (possiblePlayerInfo.IsValid())
-		{
-			//Log.Warning( $"Found existing player state for {channel.SteamId} that we can re-use. {possiblePlayerInfo}" );			
-			return possiblePlayerInfo;
-		}
-
-		return null;
-	}
-
-	PlayerInfo CreatePlayerInfo(Connection channel = null)
-	{
-		var prefab = WorldSettings.instance.playerInfoPrefab;
-		Assert.True(prefab.IsValid(), "Could not spawn player as no prefab assigned.");
+		//var prefab = GMFSettings.instance.playerInfoPrefab;
+		var prefab = WorldInfo.instance.playerInfoPrefab;
+		Assert.True(IsFullyValid(prefab), "Could not spawn player as no prefab assigned.");
 
 		var playerInfo = prefab.Clone().BreakPrefab().Components.Get<PlayerInfo>();
-		if (!playerInfo.IsValid())
+		if (!IsFullyValid(playerInfo))
 			return null;
 
-		playerInfo.steamId = channel.SteamId;
-		playerInfo.GameObject.Name = $"PlayerInfo ({channel.DisplayName})";
-		playerInfo.GameObject.Network.SetOrphanedMode( NetworkOrphaned.ClearOwner );
+		playerInfo.steamId = connection.SteamId;
+		playerInfo.role = GMFSettings.instance.GetRoleFromID(connection.SteamId);
+		playerInfo.GameObject.Name = $"PlayerInfo ({connection.DisplayName})";
+		playerInfo.GameObject.Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
 
 		return playerInfo;
 	}
 
+	PlayerInfo FindExistingPlayerInfo(Connection connection = null)
+	{
+		var possiblePlayerInfo = PlayerInfo.allInactive.FirstOrDefault(x =>
+		{
+			return IsFullyValid(x) && x.Network.Owner == null && x.steamId == connection.SteamId;
+		});
+
+		return possiblePlayerInfo;
+	}
+
 	[Button]
 	public void CreateLobby()
-	{
-		Log.Info($"CreateLobby() IsActive: {Networking.IsActive}");
-		
+	{		
 		if (!Networking.IsActive)
 		{
 			Networking.CreateLobby();

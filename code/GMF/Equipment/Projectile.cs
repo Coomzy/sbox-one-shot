@@ -12,6 +12,14 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 	[Group("Runtime"), Property, ReadOnly, Sync] public bool isInFlight { get; set; } = true;
 	[Group("Runtime"), Property, ReadOnly, Sync] public Vector3 startPos { get; set; }
 
+	public virtual void SpawnSource(Vector3 source)
+	{
+		// This seems dumb, but it works, but it seems dumb
+		var end = Transform.Position;
+		Transform.Position = source;
+		DoMoveStep(end);
+	}
+
 	protected override void OnStart()
 	{
 		if (IsProxy)
@@ -69,6 +77,50 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 		DoFlightPlayerHitDetection(Transform.Position, nextMovePos);
 
 		Transform.Position = nextMovePos;
+	}
+
+	public virtual void DoMoveStep(Vector3 moveTo)
+	{
+		if (!isInFlight)
+			return;
+
+		if (IsProxy)
+			return;
+
+		var trace = MoveStepTrace(Transform.Position, moveTo);
+		var traceResult = trace.Run();
+		var nextMovePos = moveTo;
+
+		if (traceResult.Hit)
+		{
+			if (!CanPenetrate(traceResult))
+			{
+				isInFlight = false;
+			}
+
+			GetImpactPosition(ref nextMovePos, traceResult);
+			SpawnImpactEffect(traceResult.HitPosition, -Transform.World.Forward);
+			PlayImpactSound(traceResult);
+		}
+		DoFlightPlayerHitDetection(Transform.Position, nextMovePos);
+
+		Transform.Position = nextMovePos;
+	}
+
+	// This is not for player penetration, it's for walls and shit
+	protected virtual bool CanPenetrate(SceneTraceResult traceResult)
+	{
+		return false;
+	}
+
+	protected virtual void GetImpactPosition(ref Vector3 nextMovePos, SceneTraceResult traceResult)
+	{
+		nextMovePos = traceResult.HitPosition;
+	}
+
+	protected virtual void PlayImpactSound(SceneTraceResult traceResult)
+	{
+		traceResult.Surface.PlayCollisionSound(traceResult.HitPosition);
 	}
 
 	protected virtual void DoFlightPlayerHitDetection(Vector3 start, Vector3 end)

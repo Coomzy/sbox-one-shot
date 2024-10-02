@@ -23,7 +23,7 @@
           "go": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
           "component_type": "CharacterController"
         },
-        "counter": 0,
+        "eyeAngles": "0,0,0",
         "eyeHolder": {
           "_type": "gameobject",
           "go": "facbb7a7-ba57-4a2a-8931-d2bb15ba7a9b"
@@ -38,9 +38,11 @@
         },
         "harpoonGunPrefab": {
           "_type": "gameobject",
-          "prefab": "prefabs/harpoon_gun.prefab"
+          "prefab": "prefabs/equipment/harpoon_gun.prefab"
         },
         "isDead": false,
+        "jumpShrinkAmount": 0,
+        "keepCharacterBody": false,
         "movement": {
           "_type": "component",
           "component_id": "d50d36e4-86c5-40ac-a72b-9ad64977057e",
@@ -49,11 +51,7 @@
         },
         "playerBodyPrefab": {
           "_type": "gameobject",
-          "prefab": "prefabs/os_character_body.prefab"
-        },
-        "spherePrefab": {
-          "_type": "gameobject",
-          "prefab": "prefabs/sphere.prefab"
+          "prefab": "prefabs/player/os_character_body.prefab"
         }
       },
       {
@@ -83,24 +81,22 @@
         "isMantling": false,
         "isSliding": false,
         "lastGrounded": {
-          "Relative": 505.9343
+          "Relative": 2215.2395
         },
         "lastJump": {
-          "Relative": 505.9343
+          "Relative": 2215.2395
+        },
+        "lastMantleEnd": {
+          "Relative": 2215.2395
         },
         "lastMantleInput": {
-          "Relative": 505.9343
+          "Relative": 2215.2395
         },
         "lastUngrounded": {
-          "Relative": 505.9343
+          "Relative": 2215.2395
         },
         "mantleEnd": "0,0,0",
         "mantleStart": "0,0,0",
-        "mantleStartTime": {
-          "Relative": -505.9343,
-          "Passed": 505.9343,
-          "Fraction": 1
-        },
         "owner": {
           "_type": "component",
           "component_id": "b540c380-c41f-4189-8859-f443b00c8411",
@@ -108,9 +104,14 @@
           "component_type": "OSCharacter"
         },
         "slideStart": {
-          "Relative": 505.9343
+          "Relative": 2215.2395
         },
         "slideVelocity": "0,0,0",
+        "timeToFinishMantle": {
+          "Relative": -2215.2395,
+          "Passed": 2215.2395,
+          "Fraction": 1
+        },
         "wishCrouch": false,
         "wishVelocity": "0,0,0"
       },
@@ -181,5 +182,6 @@
   "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
+  "IsValid": true,
   "__version": 1
 }

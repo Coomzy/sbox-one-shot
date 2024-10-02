@@ -1,6 +1,7 @@
 ﻿@using Sandbox;
 @using Sandbox.UI;
 @using Sandbox.Utility;
+@using Sandbox.Audio;
 @using System;
 @inherits PanelComponent
 
@@ -28,7 +29,8 @@
 		SetClass("visible", true);
 		SetClass("hidden", false);
 
-		Sound.Play("ui.rankup");
+		var mixerUI = Mixer.FindMixerByName("UI");
+		Sound.Play("ui.rankup", mixerUI);
 	}
 
 	public void Hide()

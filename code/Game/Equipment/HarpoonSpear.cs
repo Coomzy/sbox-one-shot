@@ -16,6 +16,32 @@ public class HarpoonSpear : Projectile
 		//ExtraDebug.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
 	}
 
+	protected override void GetImpactPosition(ref Vector3 nextMovePos, SceneTraceResult traceResult)
+	{
+		base.GetImpactPosition(ref nextMovePos, traceResult);
+
+		// Go into the object a random amount
+		var impactRange = new Vector2(5.0f, 20.0f);
+		var impactDist = impactRange.RandomRange();
+		nextMovePos += Transform.World.Forward * impactDist;
+	}
+
+	protected override void PlayImpactSound(SceneTraceResult traceResult)
+	{
+		if (traceResult.Surface.ResourceName == "wood" || traceResult.Surface.ResourceName == "wood.sheet")
+		{
+			Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
+		}
+		else if (traceResult.Surface.ResourceName == "concrete" || traceResult.Surface.ResourceName == "brick")
+		{
+			Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
+		}
+		else
+		{
+			Sound.Play("harpoon.impact.metal", traceResult.HitPosition);
+		}
+	}
+
 	// TODO: Move this into the base!
 	protected override void DoFlightPlayerHitDetection(Vector3 start, Vector3 end)
 	{
@@ -56,16 +82,17 @@ public class HarpoonSpear : Projectile
 		damageInfo.damageCauser = this;
 		damageInfo.hitBodyIndex = GetClosestSafeIndex(characterBody.bodyPhysics, result.Body.GroupIndex);
 		damageInfo.hitVelocity = Transform.World.Forward * 100.0f;
-		Log.Info($"Spear Hit Transform.Position: {Transform.Position}");
-		Debuggin.draw.Sphere(start, 10.0f, 8, 15.0f);
-		//ExtraDebug.draw.Sphere(Transform.Position, 10.0f, 8, 15.0f);
-		Debuggin.draw.Line(Transform.Position, Transform.Position + damageInfo.hitVelocity, 15.0f);
-		characterBody.TakeDamage(damageInfo);		
+		characterBody.TakeDamage(damageInfo);
+
+		//Log.Info($"Spear Hit Transform.Position: {Transform.Position}");
+		//Debuggin.draw.Sphere(start, 10.0f, 8, 15.0f);
+		//Debuggin.draw.Line(Transform.Position, Transform.Position + damageInfo.hitVelocity, 15.0f);	
 
 		if (owner is HarpoonGun harpoonGun)
 		{
 			harpoonGun.Reload();
 			PlayerInfo.local.OnScoreKill();
+			UIManager.instance.killFeedUpWidget.AddEntry(PlayerInfo.local.displayName, osCharacter?.owner?.displayName, "----->");
 		}
 
 		//((OSCharacterBody)characterBody).Impale(this, result.Body.GroupIndex);

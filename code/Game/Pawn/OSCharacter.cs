@@ -1,3 +1,4 @@
+using badandbest.Sprays;
 using Sandbox;
 using Sandbox.Citizen;
 using System;
@@ -78,6 +79,11 @@ public class OSCharacter : Character
 		FireInput();
 
 		UpdateCamera();
+
+		if (Input.Pressed("Spray"))
+		{
+			Spray.Place();
+		}
 	}
 
 	void MouseInput()
@@ -195,7 +201,6 @@ public class OSCharacter : Character
 
 	protected override void OnDestroy()
 	{
-		Log.Info($"OnDestroy() body: {body}, IsProxy: {IsProxy}");
 		if (IsProxy)
 		{
 			base.OnDestroy();

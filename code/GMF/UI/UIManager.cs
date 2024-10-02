@@ -9,8 +9,9 @@ public class UIManager : Component, Component.INetworkListener
 {
 	public static UIManager instance { get; private set; }
 
-	[Property] public RoundStateWidget roundState { get; private set; }
-	[Property] public ScoreboardWidget scoreboard { get; private set; }
+	[Property] public RoundStateWidget roundStateUpWidget { get; private set; }
+	[Property] public KillFeedWidget killFeedUpWidget { get; private set; }
+	[Property] public ScoreboardWidget scoreboardUpWidget { get; private set; }
 	[Property] public RankUpWidget rankUpWidget { get; private set; }
 	[Property] public RoundCountWidget roundCountWidget { get; private set; }
 	[Property] public CrosshairBuilder crosshairBuilder { get; private set; }

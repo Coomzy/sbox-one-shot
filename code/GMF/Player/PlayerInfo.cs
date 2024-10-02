@@ -17,6 +17,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 
 	[HostSync, Sync, Property] public string displayName { get; set; }
 	[HostSync, Property] public ulong steamId { get; set; }
+	[HostSync, Property] public Role role { get; set; }
 	[HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
 
 	[HostSync, Sync, Property] public Character character { get; set; }
@@ -91,7 +92,6 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 	{
 		OnRep_isActive();
 
-		Debuggin.ToScreen($"PlayerInfo::OnStart() '{GameObject.Name}' sProxy: {IsProxy}", 15.0f);
 		if (!IsProxy)
 		{
 			local = this;
@@ -213,17 +213,38 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 	public virtual void OnScoreKill()
 	{
 		kills++;
-		killsRound++;		
+		killsRound++;
+		
+		OnScoreKill_Client();
+	}
+
+	[Authority]
+	public virtual void OnScoreKill_Client()
+	{
+		Sandbox.Services.Stats.Increment("kills", 1);
 	}
 
 	public virtual void OnScoreRoundWin()
 	{
 		wins++;
+		OnScoreRoundWin_Client();
+	}
+
+	[Authority]
+	public virtual void OnScoreRoundWin_Client()
+	{
+		Sandbox.Services.Stats.Increment("wins-rounds", 1);
 	}
 
 	public virtual void OnScoreGameWin()
 	{
-		wins++;
+		OnScoreGameWin_Client();
+	}
+
+	[Authority]
+	public virtual void OnScoreGameWin_Client()
+	{
+		Sandbox.Services.Stats.Increment("wins-games", 1);
 	}
 
 	public virtual void RoundCleanup()

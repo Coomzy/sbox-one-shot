@@ -31,10 +31,10 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 
 		//var playerInfo = this.GetOwningPlayerInfo();
 		//Log.Info($"CharacterVisual::OnStart() connection: {Network.OwnerId} playerInfo: {playerInfo} playerInfo.character: {playerInfo?.character}");
-		if (Application.IsDebug)
+		/*if (Application.IsDebug)
 		{
 			voiceTransmitter.Enabled = false;
-		}
+		}*/
 
 		if (owner != null)
 		{
@@ -341,7 +341,6 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 	[Broadcast]
 	public virtual void TakeDamage(DamageInfo damageInfo)
 	{
-		Log.Info($"CharacterBody::TakeDamage() damageInfo.damageCauser: {damageInfo.damageCauser}");
 		ProceduralHitReaction(damageInfo);
 		if (IsProxy)
 		{
