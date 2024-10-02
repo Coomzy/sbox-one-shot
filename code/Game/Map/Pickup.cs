@@ -36,12 +36,12 @@ public class Pickup : Component, Component.ITriggerListener
 		var visualPos = visualHolder.Transform.LocalPosition;
 		var visualAngles = visualHolder.Transform.LocalRotation.Angles();
 
-		float bobRate = 10.0f;
+		float bobRate = 7.5f;
 		float bobAmount = 10.0f;
 		var sinLerp = MathF.Sin(Time.Now * bobRate);
 		visualPos.z = sinLerp * bobAmount;
 
-		var spinSpeed = 500.0f;
+		var spinSpeed = 350.0f;
 		visualAngles.yaw += Time.Delta * spinSpeed;
 
 		visualHolder.Transform.LocalPosition = visualPos;

@@ -76,7 +76,8 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 	}
 	protected override void OnUpdate()
 	{
-		base.OnUpdate();
+		if (isDead)
+			return;
 
 		if (IsProxy)
 			return;
@@ -91,6 +92,9 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 
 	public virtual void TakeDamage(DamageInfo damageInfo)
 	{
+		if (!IsFullyValid(this))
+			return;
+
 		Log.Info($"Character::TakeDamage() damageInfo.damageCauser: {damageInfo.damageCauser}");
 		if (IsProxy)
 		{

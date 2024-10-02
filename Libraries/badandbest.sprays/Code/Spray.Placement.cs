@@ -10,25 +10,25 @@ public static partial class Spray
 	/// <summary>
 	/// Places an image on a surface.
 	/// </summary>
-	public static void Place()
+	public static bool Place()
 	{
 		const float RANGE = 128;// Range in GMOD.
 
 		var ray = Game.ActiveScene.Camera.Transform.World.ForwardRay;
 		var trace = Game.SceneTrace.Ray( ray, RANGE );
 
-		Place( trace );
+		return Place( trace );
 	}
 
 	/// <summary>
 	/// Places an image on a surface.
 	/// </summary>
 	/// <param name="trace">The trace to use.</param>
-	public static void Place( SceneTrace trace )
+	public static bool Place( SceneTrace trace )
 	{
 		// We only want to hit static bodies. ( maps, etc )
 		if ( trace.Run() is not { Body.BodyType: PhysicsBodyType.Static } tr )
-			return;
+			return false;
 
 		var config = new CloneConfig
 		{
@@ -46,11 +46,12 @@ public static partial class Spray
 
 		LocalSpray.NetworkSpawn(); // NetworkSpawn breaks the prefab
 		LocalSpray.SetPrefabSource( "prefabs/spray.prefab" );
+		return true;
 	}
 }
 
 [Title( "Spray Renderer" ), Icon( "imagesearch_roller" )]
-internal class SprayRenderer : Renderer
+public class SprayRenderer : Renderer
 {
 	[Property] internal DecalRenderer _decal { get; set; }
 	[Property] internal TextRenderer _text { get; set; }

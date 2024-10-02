@@ -1,13 +1,22 @@
 
 using Sandbox;
 using Sandbox.Physics;
+using Sandbox.Services;
 using System;
 using System.Diagnostics;
 
 [Group("GMF")]
 public class HarpoonSpear : Projectile
-{	
-	List<GameObject> impaledCharacters { get; set; } = new List<GameObject>();
+{
+	[Property] public Vector3 startPos { get; private set; }
+	List<GameObject> impaledCharacters { get; set; } = new();	
+
+	protected override void OnStart()
+	{
+		base.OnStart();
+
+		startPos = Transform.Position;
+	}
 
 	protected override void OnUpdate()
 	{
@@ -50,8 +59,7 @@ public class HarpoonSpear : Projectile
 
 		//var capsule = new Capsule(start, end, radius);
 		var capsule = Capsule.FromHeightAndRadius(5.0f, radius);
-		var trace = Scene.Trace.Capsule(capsule, start, end).IgnoreGameObjectHierarchy(GameObject).WithTag("player_hitbox").WithoutTags("ragdoll");
-		//var trace = Scene.Trace.Ray(start, end).IgnoreGameObjectHierarchy(GameObject).WithTag("player_hitbox").WithoutTags("ragdoll");
+		var trace = Scene.Trace.Capsule(capsule, start, end).IgnoreGameObjectHierarchy(GameObject).WithTag(Tag.CHARACTER_BODY).WithoutTags(Tag.RAGDOLL, Tag.IMPALED);
 		foreach (var impalee in impaledCharacters)
 		{
 			trace = trace.IgnoreGameObjectHierarchy(impalee);
@@ -67,13 +75,18 @@ public class HarpoonSpear : Projectile
 		{
 			return;
 		}
-		Sound.Play("harpoon.impact.flesh", result.HitPosition);
+		Debuggin.ToScreen($"impaledCharacters: {impaledCharacters.Count}", 15.0f);
+
 		var characterBody = result.GameObject.Components.Get<CharacterBody>();
 		if (characterBody == null)
 		{
 			Log.Warning($"Spear hit '{result.GameObject}' but it didn't have a character body?");
 			return;
 		}
+
+		characterBody.GameObject.Tags.Add(Tag.IMPALED);
+		Sound.Play("harpoon.impact.flesh", result.HitPosition);
+		var distance = Vector3.DistanceBetween(startPos, Transform.Position) * MathY.inchToMeter;
 
 		//Log.Info($"collision.Other.Body: {collision.Other.Body}");
 		var osCharacter = (OSCharacter)characterBody.owner;
@@ -92,19 +105,23 @@ public class HarpoonSpear : Projectile
 		{
 			harpoonGun.Reload();
 			PlayerInfo.local.OnScoreKill();
-			UIManager.instance.killFeedUpWidget.AddEntry(PlayerInfo.local.displayName, osCharacter?.owner?.displayName, "----->");
+			UIManager.instance.killFeedUpWidget.AddEntry(PlayerInfo.local.displayName, $"{osCharacter?.owner?.displayName} {distance.ToString("F2")}m", "----->");
 		}
+
+		Stats.SetValue(Stat.FURTHEST_KILL, distance);
 
 		//((OSCharacterBody)characterBody).Impale(this, result.Body.GroupIndex);
 		//characterBody.bodyPhysics
 
+		Debuggin.ToScreen($"impaledCharacters pre-contains count {impaledCharacters.Count}", 15.0f);
 		if (!impaledCharacters.Contains(characterBody.GameObject))
 		{
 			impaledCharacters.Add(characterBody.GameObject);
+			Debuggin.ToScreen($"impaledCharacters added '{characterBody?.GameObject?.Name}' and has count of {impaledCharacters.Count}", 15.0f);
 		}
 		else
 		{
-			Log.Info($"impaledCharacters alread had: {characterBody.GameObject}");
+			Log.Info($"impaledCharacters already had: {characterBody.GameObject}");
 		}
 
 		if (impaledCharacters.Count > 2)

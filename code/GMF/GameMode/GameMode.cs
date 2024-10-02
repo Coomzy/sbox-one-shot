@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Channels;
 using Microsoft.VisualBasic;
 using Sandbox.UI;
+using badandbest.Sprays;
 
 public enum ModeState
 {
@@ -561,6 +562,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		if (modeState == ModeState.PostGameResults)
 		{
 			return true;
+		}
+		if (roundCount > 0)
+		{
+			if (modeState == ModeState.PreRound)
+			{
+				return true;
+			}
 		}
 
 		return false;

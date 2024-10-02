@@ -38,7 +38,7 @@
 
 	public string GetRoundText()
 	{
-		var roundCount = GameMode.instance.roundCount;
+		var roundCount = MathY.Max(GameMode.instance.roundCount, 1);
 		var maxRoundCount = GameMode.instance.maxGameRounds;
 		return $"Round {roundCount}/{maxRoundCount}";
 	}

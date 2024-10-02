@@ -51,6 +51,11 @@ public class RankSettings : ProjectSetting<RankSettings>
 			{
 				return i - 1;
 			}
+
+			if (i >= instance.rankInfos.Count-1)
+			{
+				return i;
+			}
 		}
 
 		return 0;

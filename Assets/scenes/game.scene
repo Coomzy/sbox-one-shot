@@ -2,26 +2,14 @@
   "__guid": "325a4042-0696-43dd-a79d-dcc314299ba3",
   "GameObjects": [
     {
-      "__guid": "5ce2547f-0669-4c20-ad47-8cba534c6626",
-      "Flags": 129,
-      "Name": "Debug Component",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "DebugComponent",
-          "__guid": "9d3a3a3b-ba99-40ab-913a-f36f7da36bb2"
-        }
-      ]
-    },
-    {
-      "__guid": "a0ae2e15-9947-400b-b511-e17b68fc4fef",
+      "__guid": "8749eeab-e6f3-4fd1-8333-20969dd29733",
       "Flags": 0,
       "Name": "Debug Component",
       "Enabled": true,
       "Components": [
         {
           "__type": "DebugComponent",
-          "__guid": "b3c5dd8f-fd5b-4870-99a7-d8e1ccec8556"
+          "__guid": "053f7024-cfb6-48c6-9c86-c7cd7b5aacb0"
         }
       ]
     },
@@ -87,7 +75,7 @@
           "initalPreGameDelay": 5,
           "maxGameRounds": 10,
           "metPlayerReqTime": {
-            "Relative": 1749.6161
+            "Relative": 7616.073
           },
           "modeState": "PreGame",
           "oneLifeOnly": true,
@@ -95,7 +83,7 @@
           "postGameResultsDelay": 5,
           "postRoundDelay": 3,
           "preGameDelay": 1,
-          "preRoundDelay": 1,
+          "preRoundDelay": 3,
           "readyPhaseDelay": 3,
           "remainingStateTime": 0,
           "requiredPlayerCount": 2,
@@ -103,7 +91,7 @@
           "roundCount": 0,
           "roundTime": 180,
           "stateTime": {
-            "Relative": 1749.6161
+            "Relative": 7616.073
           },
           "waitingForPlayersDelay": 3
         }
@@ -283,7 +271,7 @@
           "__guid": "d42e78c0-e868-444d-9a0e-d366ca9a53db",
           "shownDuration": 3,
           "shownTime": {
-            "Relative": 1749.6161
+            "Relative": 7616.073
           }
         },
         {
@@ -297,7 +285,7 @@
           "currentRankXP": 0,
           "currentXP": 0,
           "nextRankXP": 0,
-          "rankProgress": "NaN"
+          "rankProgress": 1
         },
         {
           "__type": "CrosshairBuilder",

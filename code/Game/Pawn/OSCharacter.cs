@@ -68,11 +68,11 @@ public class OSCharacter : Character
 	{
 		base.OnUpdate();
 
-		//Log.Info($"OSPawn::OnNetworkSpawn() '{GameObject.Name}' IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost}");
-		if (IsProxy)
-		{
+		if (isDead)
 			return;
-		}
+
+		if (IsProxy)
+			return;
 
 		MouseInput();
 		Transform.Rotation = new Angles(0, eyeAngles.yaw, 0);

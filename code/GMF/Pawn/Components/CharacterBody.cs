@@ -29,6 +29,17 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 	{
 		playerInfo = PlayerInfo.GetOwner(GameObject);
 
+		if (IsProxy)
+		{
+			GameObject.Tags.Add("remote");
+			GameObject.Tags.Remove("local");
+		}
+		else
+		{
+			GameObject.Tags.Add("local");
+			GameObject.Tags.Remove("remote");
+		}
+
 		//var playerInfo = this.GetOwningPlayerInfo();
 		//Log.Info($"CharacterVisual::OnStart() connection: {Network.OwnerId} playerInfo: {playerInfo} playerInfo.character: {playerInfo?.character}");
 		/*if (Application.IsDebug)
@@ -370,6 +381,7 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 	{
 		bodyPhysics.Enabled = true;
 		bodyPhysics.MotionEnabled = true;
+		GameObject.Tags.Add(Tag.RAGDOLL);
 
 		if (IsProxy)
 			return;

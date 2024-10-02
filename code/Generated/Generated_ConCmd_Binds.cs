@@ -287,4 +287,19 @@ public static class ConCmd_Binds
 			IGameInstance.Current.SaveBinds();
 		}
 	}
+
+	[ConCmd("bind_Spray")]
+	public static void bind_Spray(string buttonName = null)
+	{
+		if (string.IsNullOrWhiteSpace(buttonName))
+		{
+			string boundButtonName = IGameInstance.Current.GetBind("Spray", out bool isDefault, out bool isCommon);
+			Log.Info($"The 'Spray' action is bound to '{boundButtonName}'{(isDefault ? " (Default binding)" : "")}{(isCommon ? " (Common binding)" : "")}");
+		}
+		else
+		{
+			IGameInstance.Current.SetBind("Spray", buttonName);
+			IGameInstance.Current.SaveBinds();
+		}
+	}
 }

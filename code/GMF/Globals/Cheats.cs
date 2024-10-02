@@ -7,7 +7,7 @@ public enum CheatFlags
 {
 	None = 0,
 	Broadcast = 1,
-	AllowInPackaged = 1,
+	//AllowInPackaged = 1,
 }
 
 [CodeGenerator(CodeGeneratorFlags.WrapMethod | CodeGeneratorFlags.Static, "CheatAttribute.OnCheatInvoked")]
@@ -38,15 +38,6 @@ public class CheatAttribute : Attribute
 			return;
 		}
 
-		/*if (!Application.IsDebug)
-		{
-			if (!cheatAttribute.flags.Contains(CheatFlags.AllowInPackaged))
-			{
-				Log.Warning($"Cannot use '{method.MethodName}' in a packaged game");
-				return;
-			}
-		}*/
-
 		if (cheatAttribute.flags.Contains(CheatFlags.Broadcast))
 		{
 			Sandbox.Rpc.OnStaticBroadcast(method, args);
@@ -57,14 +48,8 @@ public class CheatAttribute : Attribute
 	}
 }
 
-public static class Cheats
+public static partial class Cheats
 {
-	[Cheat(CheatFlags.AllowInPackaged), ConCmd("log_isdebug")]
-	public static void LogIsDebug(float timescale = 1.0f)
-	{
-		Log.Info($"IsDebug: {Application.IsDebug}");
-	}
-
 	[Cheat(CheatFlags.Broadcast), ConCmd("timescale")]
 	public static void SetTimescale(float timescale = 1.0f)
 	{
@@ -102,10 +87,9 @@ public static class Cheats
 		}
 	}
 
-	[Cheat(role = Role.Developer), ConCmd("givexp")]
-	public static void GiveXP(int amount)
+	[Cheat(role = Role.None), ConCmd("enable_voip")]
+	public static void EnableVOIP(bool enabled = false)
 	{
-		var osPlayerInfo = (OSPlayerInfo)PlayerInfo.local;
-		osPlayerInfo.GainXP(amount);
+		PlayerInfo.local.voice.Enabled = enabled;
 	}
 }

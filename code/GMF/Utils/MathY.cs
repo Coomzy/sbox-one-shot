@@ -1,6 +1,8 @@
 
 public static class MathY
 {
+	public const float inchToMeter = 0.0254f;
+
 	public static Vector3 MoveTowards(Vector3 current, Vector3 target, float maxDistanceDelta)
 	{
 		Vector3 direction = target - current;

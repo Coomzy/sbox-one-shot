@@ -64,42 +64,6 @@ public class HarpoonGun : Equipment
 		spearModel.RenderOptions.Overlay = isFirstPerson;
 	}
 
-	protected override void OnUpdate()
-	{
-		base.OnUpdate();
-
-		if (IsProxy)
-		{
-			return;
-		}
-
-		//Debuggin.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
-
-		if (Input.Pressed(Inputs.debug))
-		{
-			Reload();
-		}
-	}
-
-	/*public async override void OnNetworkSpawn(Connection connection)
-	{
-		base.OnNetworkSpawn(connection);
-
-		await Task.Frame();
-
-		if (IsProxy)
-		{
-			return;
-		}
-
-		var shadowProxyInst = shadowProxyPrefab.Clone();
-		shadowProxy = shadowProxyInst.Components.Get<HarpoonGun_ShadowProxy>();
-
-		shadowProxy.GameObject.SetParent(owner.osCharacterVisual.thirdPersonEquipmentAttachPoint);
-		shadowProxy.Transform.LocalPosition = Vector3.Zero;
-		shadowProxy.Transform.LocalRotation = Quaternion.Identity;
-	}*/
-
 	public override bool CanFire()
 	{
 		if (!hasAmmo)
@@ -132,6 +96,7 @@ public class HarpoonGun : Equipment
 		var spawnPoint = PlayerCamera.instance.GetPointInFront(70.0f);
 		var spawnRot = PlayerCamera.instance.Transform.Rotation;
 
+		// TODO: Move projectile spawn into base or component?
 		var spearInst = spearPrefab.Clone(spawnPoint, spawnRot);
 		if (spearInst != null)
 		{
@@ -149,7 +114,7 @@ public class HarpoonGun : Equipment
 		gunModel.GameObject.Enabled = true;
 		spearModel.GameObject.Enabled = false;
 
-		var handle = Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);		
+		var handle = Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
 		if (handle != null)
 		{
 			handle.Occlusion = false;
@@ -165,7 +130,9 @@ public class HarpoonGun : Equipment
 		if (!IsProxy)
 			return;
 
-		Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
+		var handle = Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
+		handle.SpacialBlend = 1.0f;
+
 		instigator.body.Shoot();
 	}
 
@@ -183,7 +150,8 @@ public class HarpoonGun : Equipment
 		if (!IsProxy)
 			return;
 
-		Sound.Play("harpoon.dryfire", muzzleSocket.Transform.Position);
+		var handle = Sound.Play("harpoon.dryfire", muzzleSocket.Transform.Position);
+		handle.SpacialBlend = 1.0f;
 	}
 
 	public async void Reload()

@@ -1,4 +1,6 @@
 
+using badandbest.Sprays;
+
 public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 {
 	protected override void ReadyPhaseStart()
@@ -20,5 +22,15 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 	public override (Vector3 spawnPos, Rotation spawnRot) GetSpawnFor(PlayerInfo playerInfo)
 	{
 		return (Vector3.Zero, Rotation.Identity);
+	}
+
+	public override void CleanupRoundInstances()
+	{
+		base.CleanupRoundInstances();
+
+		foreach (var spray in Game.ActiveScene.GetAllComponents<SprayRenderer>())
+		{
+			spray.DestroyGameObject();
+		}
 	}
 }
