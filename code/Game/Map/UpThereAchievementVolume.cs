@@ -12,7 +12,7 @@ public class UpThereAchievementVolume : Component, Component.ITriggerListener
 		if (osCharacter.IsProxy)
 			return;
 
-		Sandbox.Services.Achievements.Unlock("up_there");
+		Sandbox.Services.Achievements.Unlock(Achievement.UP_THERE);
 	}
 
 	public override void Reset()

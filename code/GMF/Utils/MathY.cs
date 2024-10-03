@@ -1,4 +1,6 @@
 
+using System.Numerics;
+
 public static class MathY
 {
 	public const float inchToMeter = 0.0254f;
@@ -51,6 +53,67 @@ public static class MathY
 		return Game.Random.Float(inst.x, inst.y);
 	}
 
+	public static float Clamp(float value, float min, float max)
+	{
+		if (value < min)
+			value = min;
+		else if (value > max)
+			value = max;
+		return value;
+	}
+
+	public static int Clamp(int value, int min, int max)
+	{
+		if (value < min)
+			value = min;
+		else if (value > max)
+			value = max;
+		return value;
+	}
+
+	public static float Clamp01(float value)
+	{
+		if (value < 0F)
+			return 0F;
+		else if (value > 1F)
+			return 1F;
+		else
+			return value;
+	}
+
+	public static float Lerp(float a, float b, float t)
+	{		
+		return a + (b - a) * Clamp01(t);
+	}
+
+	public static float LerpUnclamped(float a, float b, float t)
+	{
+		return a + (b - a) * t;
+	}
+
+	public static float InverseLerp(float a, float b, float v)
+	{
+		if (a != b)
+			return Clamp01((v - a) / (b - a));
+		else
+			return 0.0f;
+	}
+
+	public static float InverseLerpUnclamped(float a, float b, float v)
+	{
+		return (v - a) / (b - a);
+	}
+
+	public static float InverseLerpUnclamped(float max, float v)
+	{
+		return v / max;
+	}
+
+	public static float InverseLerpUnclamped(Vector2 range, float v)
+	{
+		return (v - range.x) / (range.y - range.x);
+	}
+
 	public static float Lerp(this Vector2 vector, float t)
 	{
 		return MathX.Lerp(vector.x, vector.y, t);
@@ -59,34 +122,6 @@ public static class MathY
 	public static float InverseLerp(this Vector2 vector, float t)
 	{
 		return MathX.LerpInverse(t, vector.x, vector.y);
-	}
-
-	public static int Clamp(int value, int max)
-	{
-		return Clamp(value, 0, max);
-	}
-
-	public static int Clamp(int value, int min, int max)
-	{
-		if (max < min)
-		{
-			max = min;
-		}
-		return (int)MathX.Clamp(value, min, max);
-	}
-
-	public static float Clamp(float value, float max)
-	{
-		return Clamp(value, 0, max);
-	}
-
-	public static float Clamp(float value, float min, float max)
-	{
-		if (max < min)
-		{
-			max = min;
-		}
-		return MathX.Clamp(value, min, max);
 	}
 
 	public static int Min(int a, int b)

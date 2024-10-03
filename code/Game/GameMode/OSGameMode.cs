@@ -1,8 +1,13 @@
 
 using badandbest.Sprays;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 {
+	[Group("Runtime"), Property] public bool announcedTenSecsRemaining { get; set; }
+	[Group("Runtime"), Property] public bool announcedThirtySecsRemaining { get; set; }
+	[Group("Runtime"), Property] public bool announcedOneMinRemaining { get; set; }
+
 	protected override void ReadyPhaseStart()
 	{
 		base.ReadyPhaseStart();
@@ -15,6 +20,78 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 			CreatePawn(playerInfo, spawnPoints[playerCount]);
 			playerCount++;
 		}*/
+	}
+
+	public override void OnPlayerDisconnected(PlayerInfo playerInfo)
+	{
+		base.OnPlayerDisconnected(playerInfo);
+	}
+
+	protected override void ActiveRoundStart()
+	{
+		announcedTenSecsRemaining = false;
+		announcedThirtySecsRemaining = false;
+		announcedOneMinRemaining = false;
+
+		base.ActiveRoundStart();
+	}
+
+	protected override void ActiveRoundUpdate()
+	{
+		base.ActiveRoundUpdate();
+
+		// Round can end from base call
+		if (modeState != ModeState.ActiveRound || delayedRoundConditionMet.HasValue)
+		{
+			return;
+		}
+
+		CheckRemainingTimeAnnouncements();
+	}
+
+	void CheckRemainingTimeAnnouncements()
+	{
+		if (remainingStateTime > 60)
+		{
+			return;
+		}
+
+		if (!announcedOneMinRemaining)
+		{
+			announcedOneMinRemaining = true;
+			AnnouncerSystem.QueueSound("announcer.remaining.onemin");
+		}
+
+		if (remainingStateTime > 30)
+		{
+			return;
+		}
+
+		if (!announcedThirtySecsRemaining)
+		{
+			announcedThirtySecsRemaining = true;
+			AnnouncerSystem.QueueSound("announcer.remaining.thirtysecs");
+		}
+
+		if (remainingStateTime > 10)
+		{
+			return;
+		}
+
+		if (!announcedTenSecsRemaining)
+		{
+			announcedTenSecsRemaining = true;
+			AnnouncerSystem.QueueSound("announcer.remaining.tensecs");
+		}
+	}
+
+	public override bool ShouldShowScoreboard()
+	{
+		if (modeState == ModeState.PostMatchResults)
+		{
+			return false;
+		}
+		return base.ShouldShowScoreboard();
 	}
 
 	// TODO: PICK BETTER SPAWNS

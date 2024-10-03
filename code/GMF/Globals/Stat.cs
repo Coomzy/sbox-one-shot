@@ -13,6 +13,11 @@ public enum StatAggregation
 
 public static partial class Stat
 {
+	public const string KILLS = "kills";
+	public const string DEATHS = "deaths";
+	public const string WINS_ROUNDS = "wins-rounds";
+	public const string WINS_MATCHES = "wins-matches";
+
 	public static int GetValue(this Stats.PlayerStats playerStats, string name, StatAggregation aggregation = StatAggregation.Sum)
 	{
 		return (int)GetRawValue(playerStats, name, aggregation);

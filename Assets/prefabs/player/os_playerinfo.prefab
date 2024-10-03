@@ -48,6 +48,12 @@
             "Mode": "AlwaysOn",
             "MorphScale": 3,
             "MorphSmoothTime": 0.1,
+            "owner": {
+              "_type": "component",
+              "component_id": "1d82eccc-349b-4fc3-af41-240183bf276e",
+              "go": "3e023e10-0d92-49f9-b58f-da5b81f35849",
+              "component_type": "OSPlayerInfo"
+            },
             "PushToTalkInput": "voice",
             "Volume": 1,
             "WorldspacePlayback": true

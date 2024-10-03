@@ -4,7 +4,7 @@ using System;
 using System.Reflection.Metadata;
 
 [Group("GMF")]
-public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGameEvents
+public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMatchEvents
 {
 	public static PlayerInfo local { get; private set; }
 	public static List<PlayerInfo> all { get; private set; } = new List<PlayerInfo>();
@@ -30,6 +30,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 	[HostSync, Sync, Property] public int kills { get; set; }
 	[HostSync, Sync, Property] public int deaths { get; set; }
 	[HostSync, Sync, Property] public int wins { get; set; }
+	[HostSync, Sync, Property] public int winsMatches { get; set; }
 
 	[HostSync, Sync, Property] public int deathsRound { get; set; }
 	[HostSync, Sync, Property] public int killsRound { get; set; }
@@ -221,7 +222,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 	[Authority]
 	public virtual void OnScoreKill_Client()
 	{
-		Sandbox.Services.Stats.Increment("kills", 1);
+		Sandbox.Services.Stats.Increment(Stat.KILLS, 1);
 	}
 
 	public virtual void OnScoreRoundWin()
@@ -233,18 +234,19 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 	[Authority]
 	public virtual void OnScoreRoundWin_Client()
 	{
-		Sandbox.Services.Stats.Increment("wins-rounds", 1);
+		Sandbox.Services.Stats.Increment(Stat.WINS_ROUNDS, 1);
 	}
 
-	public virtual void OnScoreGameWin()
+	public virtual void OnScoreMatchWin()
 	{
-		OnScoreGameWin_Client();
+		winsMatches++;
+		OnScoreMatchWin_Client();
 	}
 
 	[Authority]
-	public virtual void OnScoreGameWin_Client()
+	public virtual void OnScoreMatchWin_Client()
 	{
-		Sandbox.Services.Stats.Increment("wins-games", 1);
+		Sandbox.Services.Stats.Increment(Stat.WINS_MATCHES, 1);
 	}
 
 	public virtual void RoundCleanup()
@@ -254,7 +256,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IGam
 	}
 
 	// We'll miss the first callback for this, so don't do anything for initial setup in here
-	public virtual void GameStart()
+	public virtual void MatchStart()
 	{
 		RoundCleanup();
 		deaths = 0;

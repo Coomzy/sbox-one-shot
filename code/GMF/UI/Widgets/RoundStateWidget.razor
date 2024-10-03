@@ -1,5 +1,6 @@
 ﻿@using Sandbox;
 @using Sandbox.UI;
+@using static UI_Colours;
 @inherits PanelComponent
 
 <root>
@@ -14,26 +15,13 @@
 				if (playerInfo == null)
 					continue;
 
-				var borderColor = "#FFA500";
-				var friend = new Friend((long)entry.SteamId);				
-				if (friend.IsFriend)
-				{
-					borderColor = "#006600";
-				}
-				if (entry.PartyId != 0 && entry.PartyId == Connection.Local.PartyId)
-				{
-					borderColor = "#6600cc";
-				}
-				if (entry == Connection.Local)
-				{
-					borderColor = "#0099cc";
-				}
+				var borderColor = PlayerToColour(playerInfo);
 				if (IsFullyValid(GameMode.instance) && GameMode.instance.modeState == ModeState.ActiveRound)
 				{ 
 				}
 				if (isActiveRound && playerInfo.isDead)
 				{
-					borderColor = "red";
+					borderColor = DEAD;
 				}
 				<div class="card" style="background-color: @borderColor;">
 					<div class="avatar" style="background-image: url(avatar:@entry.SteamId)">

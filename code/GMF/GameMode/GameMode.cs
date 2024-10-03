@@ -11,32 +11,32 @@ using badandbest.Sprays;
 
 public enum ModeState
 {
-	PreGame,
+	PreMatch,
 	WaitingForPlayers,
 	PreRound,
 	ReadyPhase,
 	ActiveRound,
 	PostRound,
-	PostGame,
-	PostGameResults
+	PostMatch,
+	PostMatchResults
 }
 
 public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 {
 	public static GameMode instance { get; private set; }
 
-	[Group("Config - Delays"), Order(1), Property] public float initalPreGameDelay { get; set; } = 5.0f;
-	[Group("Config - Delays"), Order(1), Property] public float preGameDelay { get; set; } = 1.0f;
+	[Group("Config - Delays"), Order(1), Property] public float initalPreMatchDelay { get; set; } = 5.0f;
+	[Group("Config - Delays"), Order(1), Property] public float preMatchDelay { get; set; } = 1.0f;
 	[Group("Config - Delays"), Order(1), Property] public float waitingForPlayersDelay { get; set; } = 3.0f;
-	[Group("Config - Delays"), Order(1), Property] public float preRoundDelay { get; set; } = 1.0f;
+	[Group("Config - Delays"), Order(1), Property] public float preRoundDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float readyPhaseDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float roundConditionMetDelay { get; set; } = 1.0f;
 	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 3.0f;
-	[Group("Config - Delays"), Order(1), Property] public float postGameDelay { get; set; } = 3.0f;
-	[Group("Config - Delays"), Order(1), Property] public float postGameResultsDelay { get; set; } = 5.0f;
+	[Group("Config - Delays"), Order(1), Property] public float postMatchDelay { get; set; } = 3.0f;
+	[Group("Config - Delays"), Order(1), Property] public float postMatchResultsDelay { get; set; } = 7.5f;
 
 	[Group("Config"), Order(2), Property, HostSync] public int requiredPlayerCount { get; set; } = 2;
-	[Group("Config"), Order(2), Property, HostSync] public int maxGameRounds { get; set; } = 10;
+	[Group("Config"), Order(2), Property, HostSync] public int maxMatchRounds { get; set; } = 10;
 	[Group("Config"), Order(2), Property, HostSync] public float? roundTime { get; set; } = 180.0f;
 	[Group("Config"), Order(2), Property, HostSync] public bool oneLifeOnly { get; set; } = false;
 	[Group("Config"), Order(2), Property, HostSync] public float defaultRespawnTime { get; set; } = 3.0f;
@@ -44,7 +44,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	public Dictionary<SpawnPoint, float> spawnPointToLastUsedTime = new Dictionary<SpawnPoint, float>();
 
 	[Group("Runtime"), Order(100), Property, HostSync] public int roundCount { get; private set; }
-	[Group("Runtime"), Order(100), Property, HostSync] public int gameCount { get; private set; }
+	[Group("Runtime"), Order(100), Property, HostSync] public int matchCount { get; private set; }
 	[Group("Runtime"), Order(100), Property, HostSync] public ModeState modeState { get; private set; }
 	[Group("Runtime"), Order(100), Property, HostSync] public TimeSince stateTime { get; private set; }
 
@@ -52,10 +52,10 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	[Group("Runtime"), Order(100), Property] public TimeSince metPlayerReqTime { get; private set; }
 
-	[Group("Runtime"), Order(100), Property] SpawnPoint[] allSpawnPoints { get; set; }
+	[Group("Runtime"), Order(100), Property] public SpawnPoint[] allSpawnPoints { get; set; }
 
-	[Group("Runtime"), Order(100), Property] TimeSince? delayedRoundConditionMet { get; set; } = null;
-	[Group("Runtime"), Order(100), Property] int preGameSpawnIndex { get; set; } = 0;
+	[Group("Runtime"), Order(100), Property] public TimeSince? delayedRoundConditionMet { get; set; } = null;
+	[Group("Runtime"), Order(100), Property] public int preMatchSpawnIndex { get; set; } = 0;
 
 	[Group("Runtime"), Order(100), Property] 
 	public float remainingStateTime
@@ -165,19 +165,19 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		//return GMFSettings.instance.pawnPrefab;
 	}
 
-	// Pre Game
-	protected virtual void PreGameStart()
+	// Pre Match
+	protected virtual void PreMatchStart()
 	{
-		gameCount++;
-		preGameSpawnIndex = 0;
+		matchCount++;
+		preMatchSpawnIndex = 0;
 		roundCount = 0;
 
-		IGameEvents.Post(x => x.GameStart());
+		IMatchEvents.Post(x => x.MatchStart());
 	}
 
-	protected virtual void PreGameUpdate()
+	protected virtual void PreMatchUpdate()
 	{
-		var delay = gameCount > 1 ? preGameDelay : initalPreGameDelay;
+		var delay = matchCount > 1 ? preMatchDelay : initalPreMatchDelay;
 		if (stateTime < delay)
 		{
 			return;
@@ -301,37 +301,37 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		}
 	}
 
-	// Post Game
-	protected virtual void PostGameStart()
+	// Post Match
+	protected virtual void PostMatchStart()
 	{
 		AnnouncerSystem.QueueSound("announcer.game.over");
-		CheckGameWinners();
+		CheckMatchWinners();
 	}
 
-	protected virtual void PostGameUpdate()
+	protected virtual void PostMatchUpdate()
 	{
-		if (stateTime < postGameDelay)
+		if (stateTime < postMatchDelay)
 		{
 			return;
 		}
 
-		SetModeState(ModeState.PostGameResults);
+		SetModeState(ModeState.PostMatchResults);
 	}
 
-	// Post Game
-	protected virtual void PostGameResultsStart()
+	// Post Match Results
+	protected virtual void PostMatchResultsStart()
 	{
 		RoundCleanup();
 	}
 
-	protected virtual void PostGameResultsUpdate()
+	protected virtual void PostMatchResultsUpdate()
 	{
-		if (stateTime < postGameResultsDelay)
+		if (stateTime < postMatchResultsDelay)
 		{
 			return;
 		}
 
-		SetModeState(ModeState.PreGame);
+		SetModeState(ModeState.PreMatch);
 	}
 
 	public virtual void TryRespawnPlayers()
@@ -398,13 +398,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 		CheckRoundWinners();
 
-		if (roundCount < maxGameRounds)
+		if (roundCount < maxMatchRounds)
 		{
 			SetModeState(ModeState.PostRound);
 		}
 		else
 		{
-			SetModeState(ModeState.PostGame);
+			SetModeState(ModeState.PostMatch);
 		}
 	}
 
@@ -449,13 +449,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		return winner;
 	}
 
-	public virtual void CheckGameWinners()
+	public virtual void CheckMatchWinners()
 	{
-		var winnerPlayerInfo = PickGameWinner();
+		var winnerPlayerInfo = PickMatchWinner();
 
 		if (IsFullyValid(winnerPlayerInfo))
 		{
-			winnerPlayerInfo.OnScoreGameWin();
+			winnerPlayerInfo.OnScoreMatchWin();
 			lastWinner = winnerPlayerInfo;
 		}
 		else
@@ -464,7 +464,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		}
 	}
 
-	public virtual PlayerInfo PickGameWinner()
+	public virtual PlayerInfo PickMatchWinner()
 	{
 		var sortedPlayers = SortPlayersByWinning(PlayerInfo.allActive);
 
@@ -559,11 +559,12 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	public virtual bool ShouldShowScoreboard()
 	{
-		if (modeState == ModeState.PostGameResults)
+		if (modeState == ModeState.PostMatchResults)
 		{
 			return true;
 		}
-		if (roundCount > 0)
+
+		if (roundCount > 1)
 		{
 			if (modeState == ModeState.PreRound)
 			{
@@ -616,8 +617,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 		switch (modeState)
 		{
-			case ModeState.PreGame:
-				PreGameStart();
+			case ModeState.PreMatch:
+				PreMatchStart();
 				break;
 			case ModeState.PreRound:
 				PreRoundStart();
@@ -631,11 +632,11 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			case ModeState.PostRound:
 				PostRoundStart();
 				break;
-			case ModeState.PostGame:
-				PostGameStart();
+			case ModeState.PostMatch:
+				PostMatchStart();
 				break;
-			case ModeState.PostGameResults:
-				PostGameResultsStart();
+			case ModeState.PostMatchResults:
+				PostMatchResultsStart();
 				break;
 		}
 	}
@@ -659,8 +660,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 		switch (modeState)
 		{
-			case ModeState.PreGame:
-				PreGameUpdate();
+			case ModeState.PreMatch:
+				PreMatchUpdate();
 				break;
 			case ModeState.WaitingForPlayers:
 				WaitingForPlayersUpdate();
@@ -677,11 +678,11 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			case ModeState.PostRound:
 				PostRoundUpdate();
 				break;
-			case ModeState.PostGame:
-				PostGameUpdate();
+			case ModeState.PostMatch:
+				PostMatchUpdate();
 				break;
-			case ModeState.PostGameResults:
-				PostGameResultsUpdate();
+			case ModeState.PostMatchResults:
+				PostMatchResultsUpdate();
 				break;
 			default:
 				Log.Error($"What state is this? modeState: {modeState}");

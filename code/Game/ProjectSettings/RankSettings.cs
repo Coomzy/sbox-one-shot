@@ -77,7 +77,7 @@ public class RankSettings : ProjectSetting<RankSettings>
 		{
 			return null;
 		}
-		rankIndex = MathY.Clamp(rankIndex, instance.rankInfos.Count - 1);
+		rankIndex = MathY.Min(rankIndex, instance.rankInfos.Count - 1);
 		return instance.rankInfos[rankIndex];
 	}
 }

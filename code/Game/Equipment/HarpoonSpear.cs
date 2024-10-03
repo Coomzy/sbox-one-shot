@@ -8,14 +8,11 @@ using System.Diagnostics;
 [Group("GMF")]
 public class HarpoonSpear : Projectile
 {
-	[Property] public Vector3 startPos { get; private set; }
 	List<GameObject> impaledCharacters { get; set; } = new();	
 
 	protected override void OnStart()
 	{
 		base.OnStart();
-
-		startPos = Transform.Position;
 	}
 
 	protected override void OnUpdate()
@@ -43,7 +40,7 @@ public class HarpoonSpear : Projectile
 		}
 		else if (traceResult.Surface.ResourceName == "concrete" || traceResult.Surface.ResourceName == "brick")
 		{
-			Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
+			Sound.Play("harpoon.impact.concrete", traceResult.HitPosition);
 		}
 		else
 		{
@@ -75,7 +72,7 @@ public class HarpoonSpear : Projectile
 		{
 			return;
 		}
-		Debuggin.ToScreen($"impaledCharacters: {impaledCharacters.Count}", 15.0f);
+		//Debuggin.ToScreen($"impaledCharacters: {impaledCharacters.Count}", 15.0f);
 
 		var characterBody = result.GameObject.Components.Get<CharacterBody>();
 		if (characterBody == null)
@@ -110,24 +107,33 @@ public class HarpoonSpear : Projectile
 
 		Stats.SetValue(Stat.FURTHEST_KILL, distance);
 
-		//((OSCharacterBody)characterBody).Impale(this, result.Body.GroupIndex);
-		//characterBody.bodyPhysics
+		// It's not great to hardcode this, however I didn't unlock it with the stat :/
+		if (distance >= 35.0f)
+		{
+			Achievements.Unlock(Achievement.DEADEYE);
+		}
 
-		Debuggin.ToScreen($"impaledCharacters pre-contains count {impaledCharacters.Count}", 15.0f);
 		if (!impaledCharacters.Contains(characterBody.GameObject))
 		{
 			impaledCharacters.Add(characterBody.GameObject);
-			Debuggin.ToScreen($"impaledCharacters added '{characterBody?.GameObject?.Name}' and has count of {impaledCharacters.Count}", 15.0f);
 		}
 		else
 		{
-			Log.Info($"impaledCharacters already had: {characterBody.GameObject}");
+			Log.Warning($"impaledCharacters already had: {characterBody.GameObject}");
 		}
 
 		if (impaledCharacters.Count > 2)
 		{
-			Log.Info($"Unlock double_penetration achievement!");
-			//Sandbox.Services.Achievements.Unlock("double_penetration");
+			Achievements.Unlock(Achievement.DOUBLE_PENETRATION);
+		}
+
+		var multikillMedal = Stat.KillCountToMedal(impaledCharacters.Count);
+		if (!string.IsNullOrEmpty(multikillMedal))
+		{
+			Stats.Increment(multikillMedal, 1);
+
+			// TODO: Medal UI?
+			AnnouncerSystem.QueueSound(multikillMedal);
 		}
 	}
 
