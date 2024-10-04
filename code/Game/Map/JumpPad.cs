@@ -27,7 +27,7 @@ public class JumpPad : Component, Component.ITriggerListener
 			return;
 
 		osPawn.movement.Launch(Vector3.Up * 1000.0f);
-		PlayJumpPadSound(Transform.Position);
+		PlayJumpPadSound(WorldPosition);
 	}
 
 	[Broadcast]

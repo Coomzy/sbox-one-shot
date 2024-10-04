@@ -140,7 +140,7 @@ public class CharacterMovement : Component
 		var newMantlePosition = Vector3.Lerp(mantleStart, mantleEnd, horizontalLerp);
 		newMantlePosition.z = newMantleVerticalPosition.z;
 
-		//GameObject.Transform.Position = newMantlePosition;
+		//GameObject.WorldPosition = newMantlePosition;
 		characterController.MoveTo(newMantlePosition, true);
 
 		if (timeToFinishMantle)
@@ -175,7 +175,7 @@ public class CharacterMovement : Component
 
 		isMantling = true;
 		characterController.Velocity = Vector3.Zero;
-		mantleStart = Transform.Position;
+		mantleStart = WorldPosition;
 		mantleEnd = mantleEndPoint;
 
 		float mantleDistance = Vector3.DistanceBetween(mantleStart, mantleEnd);
@@ -185,7 +185,7 @@ public class CharacterMovement : Component
 	bool debugMantle = false;
 	bool GetMantleSpot(out Vector3 mantleEndPoint)
 	{
-		mantleEndPoint = Transform.Position;
+		mantleEndPoint = WorldPosition;
 
 		float radius = characterController.Radius * 0.8f;
 		var capsule = Capsule.FromHeightAndRadius(5.0f, radius);
@@ -194,7 +194,7 @@ public class CharacterMovement : Component
 		// Ground Buffer Check
 		float maxHeightFromGroundBuffer = 20.0f;
 
-		var groundBufferStart = GameObject.Transform.Position;
+		var groundBufferStart = GameObject.WorldPosition;
 		var groundBufferEnd = groundBufferStart - (GameObject.Transform.World.Up * maxHeightFromGroundBuffer);
 		var groundBufferResult = trace.FromTo(groundBufferStart, groundBufferEnd).Run();
 
@@ -219,7 +219,7 @@ public class CharacterMovement : Component
 		// Above Character Check
 		float aboveHeightCheckDistance = 50.0f;
 
-		var upCheckStart = GameObject.Transform.Position + (GameObject.Transform.World.Up * characterController.Height);
+		var upCheckStart = GameObject.WorldPosition + (GameObject.Transform.World.Up * characterController.Height);
 		var upCheckEnd = upCheckStart + (GameObject.Transform.World.Up * aboveHeightCheckDistance);
 		var upCheckResult = trace.FromTo(upCheckStart, upCheckEnd).Run();
 		if (debugMantle)
@@ -287,7 +287,7 @@ public class CharacterMovement : Component
 
 		if (!wishVelocity.IsNearlyZero())
 		{
-			wishVelocity = new Angles(0, owner.Transform.Rotation.Yaw(), 0).ToRotation() * wishVelocity;
+			wishVelocity = new Angles(0, owner.WorldRotation.Yaw(), 0).ToRotation() * wishVelocity;
 			wishVelocity = wishVelocity.WithZ(0);
 			wishVelocity = wishVelocity.ClampLength(1);
 			wishVelocity *= CurrentMoveSpeed;
@@ -316,7 +316,7 @@ public class CharacterMovement : Component
 		//
 		// Don't walk through other players, let them push you out of the way
 		//
-		var pushVelocity = PlayerPusher.GetPushVector(Transform.Position + Vector3.Up * 40.0f, Scene, GameObject);
+		var pushVelocity = PlayerPusher.GetPushVector(WorldPosition + Vector3.Up * 40.0f, Scene, GameObject);
 		if (!pushVelocity.IsNearlyZero())
 		{
 			var travelDot = cc.Velocity.Dot(pushVelocity.Normal);
@@ -372,7 +372,7 @@ public class CharacterMovement : Component
 	void OnGroundedChange()
 	{
 		var osPawn = (OSCharacter)owner;
-		//osPawn.osCharacterVisual.bodyRenderer.Transform.LocalPosition = Vector3.Zero;
+		//osPawn.osCharacterVisual.bodyRenderer.LocalPosition = Vector3.Zero;
 		//osPawn.osCharacterVisual.bodyRenderer.Transform.ClearInterpolation();
 	}
 
@@ -444,7 +444,7 @@ public class CharacterMovement : Component
 			// places by crouch jumping that we couldn't.
 			if (!characterController.IsOnGround)
 			{
-				var originalPos = Transform.Position;
+				var originalPos = WorldPosition;
 				var moveDelta = Vector3.Up * config.duckHeight;
 				characterController.MoveTo(originalPos + moveDelta, false);
 				Transform.ClearInterpolation();
@@ -471,7 +471,7 @@ public class CharacterMovement : Component
 			// and MoveTo will shove them in the ground
 			if (!characterController.IsOnGround)
 			{
-				var start = Transform.Position;
+				var start = WorldPosition;
 				var end = start - (Vector3.Up * config.duckHeight);
 				var source = Scene.Trace.Ray(start, end);
 				var trace = source.Size(characterController.BoundingBox).IgnoreGameObjectHierarchy(GameObject).WithoutTags(characterController.IgnoreLayers);
@@ -481,9 +481,9 @@ public class CharacterMovement : Component
 				var endResult = result.Hit ? result.HitPosition : end;
 				var moveDist = Vector3.DistanceBetween(start, endResult);
 				var moveDelta = Vector3.Up * moveDist;
-				var moveToPos = Transform.Position - moveDelta;
+				var moveToPos = WorldPosition - moveDelta;
 
-				//characterController.Transform.Position = moveToPos;
+				//characterController.WorldPosition = moveToPos;
 				characterController.MoveTo(moveToPos, true);
 				characterController.Transform.ClearInterpolation();
 				//eyeHeight += moveDist;

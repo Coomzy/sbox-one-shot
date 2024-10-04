@@ -15,8 +15,8 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 	public virtual void SpawnSource(Vector3 source)
 	{
 		// This seems dumb, but it works, but it seems dumb
-		var end = Transform.Position;
-		Transform.Position = source;
+		var end = WorldPosition;
+		WorldPosition = source;
 		DoMoveStep(end);
 	}
 
@@ -25,13 +25,13 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 		if (IsProxy)
 			return;
 
-		startPos = Transform.Position;
+		startPos = WorldPosition;
 	}
 
 	protected override void OnUpdate()
 	{
-		//ExtraDebug.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f), 10.0f);
-		//ExtraDebug.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
+		//ExtraDebug.draw.Line(WorldPosition, WorldPosition + (Transform.World.Forward * 100.0f), 10.0f);
+		//ExtraDebug.draw.Line(WorldPosition, WorldPosition + (Transform.World.Forward * 100.0f));
 		DoMoveStep();
 	}
 
@@ -45,9 +45,9 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 
 		float moveRate = 2500.0f;
 		var moveDelta = Transform.World.Forward * Time.Delta * moveRate;
-		var nextMovePos = Transform.Position + moveDelta;
+		var nextMovePos = WorldPosition + moveDelta;
 
-		var trace = MoveStepTrace(Transform.Position, nextMovePos);
+		var trace = MoveStepTrace(WorldPosition, nextMovePos);
 		var traceResult = trace.Run();
 
 		if (traceResult.Hit)
@@ -73,10 +73,10 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 				Sound.Play("harpoon.impact.metal", traceResult.HitPosition);
 			}
 		}
-		Debuggin.draw.Line(Transform.Position, nextMovePos);
-		DoFlightPlayerHitDetection(Transform.Position, nextMovePos);
+		Debuggin.draw.Line(WorldPosition, nextMovePos);
+		DoFlightPlayerHitDetection(WorldPosition, nextMovePos);
 
-		Transform.Position = nextMovePos;
+		WorldPosition = nextMovePos;
 	}
 
 	public virtual void DoMoveStep(Vector3 moveTo)
@@ -87,7 +87,7 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 		if (IsProxy)
 			return;
 
-		var trace = MoveStepTrace(Transform.Position, moveTo);
+		var trace = MoveStepTrace(WorldPosition, moveTo);
 		var traceResult = trace.Run();
 		var nextMovePos = moveTo;
 
@@ -102,9 +102,9 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 			SpawnImpactEffect(traceResult.HitPosition, -Transform.World.Forward);
 			PlayImpactSound(traceResult);
 		}
-		DoFlightPlayerHitDetection(Transform.Position, nextMovePos);
+		DoFlightPlayerHitDetection(WorldPosition, nextMovePos);
 
-		Transform.Position = nextMovePos;
+		WorldPosition = nextMovePos;
 	}
 
 	// This is not for player penetration, it's for walls and shit

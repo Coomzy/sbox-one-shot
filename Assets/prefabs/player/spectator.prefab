@@ -9,11 +9,62 @@
       {
         "__type": "Spectator",
         "__guid": "41b0c516-7729-4f4d-830f-22af9116cfc2",
+        "inputAngles": "0,0,0",
+        "lastVelocity": "0,0,0",
+        "boom": {
+          "_type": "component",
+          "component_id": "7e9804c7-4491-4859-b053-df58ea9f781b",
+          "go": "7404d2ac-2160-4fe3-9028-e9c27f8f57a2",
+          "component_type": "CameraBoom"
+        },
         "flyMoveSpeed": 500,
+        "initalRotation": "0,0,0,1",
+        "mode": "ThirdPerson",
         "sprintMoveSpeed": 750
       }
     ],
-    "Children": [],
+    "Children": [
+      {
+        "__guid": "7404d2ac-2160-4fe3-9028-e9c27f8f57a2",
+        "Flags": 0,
+        "Name": "Boom",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "CameraBoom",
+            "__guid": "7e9804c7-4491-4859-b053-df58ea9f781b",
+            "inputAngles": "0,0,0",
+            "initalRotation": "0,0,0,1",
+            "roller": {
+              "_type": "gameobject",
+              "go": "3a35f1c8-8815-418c-aaf0-9ae6068905b4"
+            },
+            "socket": {
+              "_type": "gameobject",
+              "go": "cf35f0e7-aeeb-41ca-9eb6-5453cf28c866"
+            }
+          }
+        ],
+        "Children": [
+          {
+            "__guid": "3a35f1c8-8815-418c-aaf0-9ae6068905b4",
+            "Flags": 0,
+            "Name": "Roller",
+            "Position": "0,0,40",
+            "Enabled": true,
+            "Children": [
+              {
+                "__guid": "cf35f0e7-aeeb-41ca-9eb6-5453cf28c866",
+                "Flags": 0,
+                "Name": "Socket",
+                "Position": "-125,0,15",
+                "Enabled": true
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "__variables": []
   },
   "ShowInMenu": false,
@@ -22,5 +73,6 @@
   "DontBreakAsTemplate": false,
   "ResourceVersion": 1,
   "__references": [],
+  "IsValid": true,
   "__version": 1
 }

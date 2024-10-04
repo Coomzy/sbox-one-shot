@@ -33,8 +33,8 @@ public class Pickup : Component, Component.ITriggerListener
 			}
 		}
 
-		var visualPos = visualHolder.Transform.LocalPosition;
-		var visualAngles = visualHolder.Transform.LocalRotation.Angles();
+		var visualPos = visualHolder.LocalPosition;
+		var visualAngles = visualHolder.LocalRotation.Angles();
 
 		float bobRate = 7.5f;
 		float bobAmount = 10.0f;
@@ -44,8 +44,8 @@ public class Pickup : Component, Component.ITriggerListener
 		var spinSpeed = 350.0f;
 		visualAngles.yaw += Time.Delta * spinSpeed;
 
-		visualHolder.Transform.LocalPosition = visualPos;
-		visualHolder.Transform.LocalRotation = visualAngles.ToRotation();
+		visualHolder.LocalPosition = visualPos;
+		visualHolder.LocalRotation = visualAngles.ToRotation();
 	}
 
 
@@ -65,7 +65,7 @@ public class Pickup : Component, Component.ITriggerListener
 	[Broadcast]
 	public void PickedUp()
 	{
-		Sound.Play("pickup.pickedup", Transform.Position);
+		Sound.Play("pickup.pickedup", WorldPosition);
 		visualHolder.Enabled = false;
 		decalRenderer.TintColor = inactiveColor;
 		if (IsProxy)

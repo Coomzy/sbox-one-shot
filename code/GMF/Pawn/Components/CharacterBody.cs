@@ -21,7 +21,7 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 	[Group("Runtime"), Order(100), Property] public PlayerInfo playerInfo { get; set; }
 	[Group("Runtime"), Order(100), Property, Sync, Change] public Character owner { get; set; }
 	[Group("Runtime"), Order(100), Property] public float heightOffset { get; set; } = 0.0f;
-	[Sync, Change] public NetDictionary<int, float?> equippedClothing { get; set; } = new();
+	[Sync, Change("OnRep_equippedClothing")] public NetDictionary<int, float?> equippedClothing { get; set; } = new();
 
 	public CharacterMovement characterMovement => owner?.movement;
 
@@ -143,10 +143,10 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 		SetFirstPersonMode(firstPersonDefaultView && !IsProxy);
 	}
 
-	public void OnequippedClothingChanged(NetDictionary<int, float?> oldValue, NetDictionary<int, float?> newValue)
+	public void OnRep_equippedClothing(NetDictionary<int, float?> oldValue, NetDictionary<int, float?> newValue)
 	{
 		return;
-		Log.Info($"OnequippedClothingChanged() equippedClothing: {equippedClothing.Count}");
+		Log.Info($"OnRep_equippedClothing() equippedClothing: {equippedClothing.Count}");
 
 		var clothingContainer = new ClothingContainer();
 
@@ -202,7 +202,7 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 		var insts = Game.ActiveScene.GetAllComponents<CharacterBody>();
 		foreach (var inst in insts)
 		{
-			inst.OnequippedClothingChanged(null, null);
+			inst.OnRep_equippedClothing(null, null);
 			//inst.LoadClothing();
 		}
 	}
@@ -230,7 +230,7 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 		{
 			equippedClothing[clothingEntry.Clothing.ResourceId] = clothingEntry.Tint;
 		}
-		OnequippedClothingChanged(null, null);
+		OnRep_equippedClothing(null, null);
 	}
 
 	public virtual void SetFirstPersonMode(bool isFirstPerson)
@@ -275,7 +275,7 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 		}
 
 		SetPosition(true);
-		Transform.Rotation = owner.Transform.Rotation;
+		WorldRotation = owner.WorldRotation;
 
 		//Log.Info($"Network.Owner: {Network.Owner}, avatar: {Network.Owner.GetUserData("avatar")}");
 	}
@@ -329,7 +329,7 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 		base.OnFixedUpdate();
 
 		//SetPosition();
-		//Transform.Rotation = owner.Transform.Rotation;
+		//WorldRotation = owner.WorldRotation;
 	}
 
 	public void SetPosition(bool teleport = false)
@@ -339,9 +339,9 @@ public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
 			return;
 		}
 
-		var playerPos = owner.Transform.Position;
+		var playerPos = owner.WorldPosition;
 		playerPos.z -= heightOffset;
-		Transform.Position = playerPos;
+		WorldPosition = playerPos;
 
 		if (teleport)
 		{

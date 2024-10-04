@@ -49,8 +49,8 @@ public class EquipmentProxy : Component, IRoundEvents
 			return;
 		}
 		GameObject.SetParent(target);
-		Transform.LocalPosition = Vector3.Zero;
-		Transform.LocalRotation = Quaternion.Identity;
+		LocalPosition = Vector3.Zero;
+		LocalRotation = Quaternion.Identity;
 	}
 
 	public virtual void Dettach()

@@ -76,13 +76,13 @@ public class ProceduralAnimation : Component
 		}
 
 		//desiredPos = GetAirMovement();
-		Transform.LocalPosition = desiredPos;
-		Transform.LocalRotation = desiredAngles.ToRotation();
+		LocalPosition = desiredPos;
+		LocalRotation = desiredAngles.ToRotation();
 	}
 
 	public virtual Vector3 GetMantlingMovement()
 	{
-		Vector3 localPos = Transform.LocalPosition;
+		Vector3 localPos = LocalPosition;
 		localPos.z = MathY.MoveTowards(localPos.z, 0.0f, Time.Delta * config.mantleCenterZRate);
 		return localPos;
 	}
@@ -92,7 +92,7 @@ public class ProceduralAnimation : Component
 		var mantleLerp = owner.movement.timeToFinishMantle.Fraction;
 		var mantleLerpCurved = config.mantlePitchCurve.Evaluate(mantleLerp);
 
-		Angles localAngles = Transform.LocalRotation.Angles();
+		Angles localAngles = LocalRotation.Angles();
 		float gunLowerTarget = config.mantleMaxGunLower * mantleLerpCurved;
 
 		localAngles.pitch = gunLowerTarget;
@@ -102,14 +102,14 @@ public class ProceduralAnimation : Component
 
 	public virtual Vector3 GetSlidingMovement()
 	{
-		Vector3 localPos = Transform.LocalPosition;
+		Vector3 localPos = LocalPosition;
 		localPos.z = MathY.MoveTowards(localPos.z, 0.0f, Time.Delta * config.slidingCenterZRate);
 		return localPos;
 	}
 
 	public virtual Vector3 GetAirMovement()
 	{
-		Vector3 localPos = Transform.LocalPosition;
+		Vector3 localPos = LocalPosition;
 		var verticalVelocity = owner.controller.Velocity.z;
 		var lerp = MathX.LerpInverse(Math.Abs(verticalVelocity), 0.0f, config.airVerticalMoveCap);
 		var heightTarget = owner.controller.Velocity;
@@ -131,7 +131,7 @@ public class ProceduralAnimation : Component
 
 	public virtual Vector3 GetGroundMovement()
 	{
-		Vector3 localPos = Transform.LocalPosition;
+		Vector3 localPos = LocalPosition;
 		var velocityHorizontal = owner.controller.Velocity.WithZ(0);
 
 		var movementSpeedLerp = config.groundVelocityRange.InverseLerp(velocityHorizontal.Length);

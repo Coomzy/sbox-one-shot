@@ -21,12 +21,12 @@ public class PlayerCamera : Component
 
 	public Vector3 GetPointInFront(float distance)
 	{
-		Vector3 pos = Transform.Position;
+		Vector3 pos = WorldPosition;
 
 		if (cam == null)
 			return pos;
 
-		pos += Transform.Rotation.Forward * distance;
+		pos += WorldRotation.Forward * distance;
 
 		return pos;
 	}

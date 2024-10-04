@@ -90,7 +90,7 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 	{
 		idToPosRot = idToPosRot ?? new Dictionary<Guid, (Vector3, Rotation)>();
 
-		idToPosRot[target.Id] = (target.Transform.Position, target.Transform.Rotation);
+		idToPosRot[target.Id] = (target.WorldPosition, target.WorldRotation);
 
 		foreach (var child in target.Children)
 		{
@@ -102,8 +102,8 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 
 	public void SetPosRot(GameObject target, Dictionary<Guid, (Vector3 pos, Rotation rot)> idToPosRot)
 	{
-		target.Transform.Position = idToPosRot[target.Id].pos;
-		target.Transform.Rotation = idToPosRot[target.Id].rot;
+		target.WorldPosition = idToPosRot[target.Id].pos;
+		target.WorldRotation = idToPosRot[target.Id].rot;
 		target.Flags = GameObjectFlags.ProceduralBone;
 
 		foreach (var child in target.Children)

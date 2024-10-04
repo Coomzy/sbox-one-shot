@@ -131,16 +131,22 @@
           "GroupName": "Movement"
         },
         {
-          "Name": "sbux_menu",
+          "Name": "sbux_screen",
           "KeyboardCode": "P",
           "GamepadCode": "None",
-          "GroupName": "Game"
+          "GroupName": "Menu"
         },
         {
           "Name": "Spray",
           "KeyboardCode": "t",
           "GamepadCode": "None",
           "GroupName": "Actions"
+        },
+        {
+          "Name": "options_screen",
+          "KeyboardCode": "o",
+          "GamepadCode": "None",
+          "GroupName": "Menu"
         }
       ],
       "__guid": "7495c57a-5b4a-44a8-9506-8f95a88d0b32"

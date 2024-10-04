@@ -19,7 +19,7 @@ public class HarpoonSpear : Projectile
 	{
 		base.OnUpdate();
 
-		//ExtraDebug.draw.Line(Transform.Position, Transform.Position + (Transform.World.Forward * 100.0f));
+		//ExtraDebug.draw.Line(WorldPosition, WorldPosition + (Transform.World.Forward * 100.0f));
 	}
 
 	protected override void GetImpactPosition(ref Vector3 nextMovePos, SceneTraceResult traceResult)
@@ -83,7 +83,7 @@ public class HarpoonSpear : Projectile
 
 		characterBody.GameObject.Tags.Add(Tag.IMPALED);
 		Sound.Play("harpoon.impact.flesh", result.HitPosition);
-		var distance = Vector3.DistanceBetween(startPos, Transform.Position) * MathY.inchToMeter;
+		var distance = Vector3.DistanceBetween(startPos, WorldPosition) * MathY.inchToMeter;
 
 		//Log.Info($"collision.Other.Body: {collision.Other.Body}");
 		var osCharacter = (OSCharacter)characterBody.owner;
@@ -94,9 +94,9 @@ public class HarpoonSpear : Projectile
 		damageInfo.hitVelocity = Transform.World.Forward * 100.0f;
 		characterBody.TakeDamage(damageInfo);
 
-		//Log.Info($"Spear Hit Transform.Position: {Transform.Position}");
+		//Log.Info($"Spear Hit WorldPosition: {WorldPosition}");
 		//Debuggin.draw.Sphere(start, 10.0f, 8, 15.0f);
-		//Debuggin.draw.Line(Transform.Position, Transform.Position + damageInfo.hitVelocity, 15.0f);	
+		//Debuggin.draw.Line(WorldPosition, WorldPosition + damageInfo.hitVelocity, 15.0f);	
 
 		if (owner is HarpoonGun harpoonGun)
 		{

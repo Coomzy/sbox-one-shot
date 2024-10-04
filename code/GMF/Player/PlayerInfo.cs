@@ -37,6 +37,8 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMat
 
 	public bool isLocal => this == local;
 
+    public bool isRecentlyDead => isDead && deadTime < 3.0f;
+
 	void OnRep_isActive()
 	{
 		if (isActive)
@@ -124,8 +126,8 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMat
 		if (!IsFullyValid(PlayerCamera.cam))
 			return;
 
-		voice.Transform.Position = PlayerCamera.cam.Transform.Position;
-		voice.Transform.Rotation = PlayerCamera.cam.Transform.Rotation;
+		voice.WorldPosition = PlayerCamera.cam.WorldPosition;
+		voice.WorldRotation = PlayerCamera.cam.WorldRotation;
 	}
 
 	public virtual void OnNetworkSpawn(Connection connection)

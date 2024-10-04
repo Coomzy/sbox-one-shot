@@ -81,8 +81,8 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 		if (IsProxy)
 		{
 			//equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-			//equipmentProxy.Transform.LocalPosition = Vector3.Zero;
-			//equipmentProxy.Transform.LocalRotation = Quaternion.Identity;
+			//equipmentProxy.LocalPosition = Vector3.Zero;
+			//equipmentProxy.LocalRotation = Quaternion.Identity;
 			return;
 		}
 
@@ -91,8 +91,8 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 		proxyInst.NetworkMode = NetworkMode.Never;
 
 		equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-		equipmentProxy.Transform.LocalPosition = Vector3.Zero;
-		equipmentProxy.Transform.LocalRotation = Quaternion.Identity;*/
+		equipmentProxy.LocalPosition = Vector3.Zero;
+		equipmentProxy.LocalRotation = Quaternion.Identity;*/
 
 		model.RenderOptions.Overlay = true;
 		//equipmentProxy.ShadowOnly();
@@ -112,8 +112,8 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 			return;
 
 		GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-		Transform.LocalPosition = Vector3.Zero;
-		Transform.LocalRotation = Quaternion.Identity;
+		LocalPosition = Vector3.Zero;
+		LocalRotation = Quaternion.Identity;
 	}
 
 	public async virtual void OnNetworkSpawn(Connection connection)
@@ -135,7 +135,7 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 	{
 		//Vector3 targetPos = hasFireAltInputDown ? ironSights : hip;
 		//float adsSpeed = 200.0f;
-		//GameObject.Parent.Transform.LocalPosition = MathY.MoveTowards(GameObject.Parent.Transform.LocalPosition, targetPos, Time.Delta * adsSpeed);		
+		//GameObject.Parent.LocalPosition = MathY.MoveTowards(GameObject.Parent.LocalPosition, targetPos, Time.Delta * adsSpeed);		
 	}
 
 	public virtual void FireStart()

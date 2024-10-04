@@ -6,7 +6,7 @@ public class DebugRotation : Component
 	[Button]
 	public void InverseRotation()
 	{		
-		Transform.Rotation = Transform.Rotation.Inverse;
+		WorldRotation = WorldRotation.Inverse;
 	}
 
 	[Button]
@@ -14,6 +14,6 @@ public class DebugRotation : Component
 	{
 		var backward = Transform.World.Backward;
 
-		Transform.Rotation = backward.EulerAngles.ToRotation();
+		WorldRotation = backward.EulerAngles.ToRotation();
 	}
 }

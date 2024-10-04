@@ -84,7 +84,7 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 
 		float killZ = WorldInfo.instance != null ? WorldInfo.instance.killZ : -500.0f;
 
-		if (GameObject.Transform.Position.z <= killZ)
+		if (GameObject.WorldPosition.z <= killZ)
 		{
 			FellOutOfWorld();
 		}
@@ -131,9 +131,9 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		}
 		Debuggin.ToScreen($"damageInfo.hitVelocity: {damageInfo.hitVelocity}, damageInfo.hitVelocity.IsNearlyZero() {damageInfo.hitVelocity.IsNearlyZero()}", 20.0f);
 
-		var cameraPoint = PlayerCamera.cam.Transform.Position - (hitVelocity * 150.0f);
+		var cameraPoint = PlayerCamera.cam.WorldPosition - (hitVelocity * 150.0f);
 		Rotation? hitDirection = Rotation.LookAt(hitVelocity.Normal, Vector3.Up);
-		//Rotation? hitDirection = PlayerCamera.cam.Transform.Rotation;
+		//Rotation? hitDirection = PlayerCamera.cam.WorldRotation;
 
 		if (damageInfo.hitVelocity.IsNearlyZero())
 		{
@@ -156,7 +156,7 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 	[Authority]
 	public virtual void Teleport(Vector3 point)
 	{
-		Transform.Position = point;
+		WorldPosition = point;
 		Transform.ClearInterpolation();
 	}
 

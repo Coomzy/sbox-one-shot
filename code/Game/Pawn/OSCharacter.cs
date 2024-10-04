@@ -23,7 +23,7 @@ public class OSCharacter : Character
 
 		movement.config = movement.config ?? GameSettings.instance.characterMovementConfig;
 
-		eyeAngles = Transform.Rotation.Angles().WithRoll(0).WithPitch(0);
+		eyeAngles = WorldRotation.Angles().WithRoll(0).WithPitch(0);
 	}
 
 	protected override void OnStart()
@@ -54,8 +54,8 @@ public class OSCharacter : Character
 		//equippedItem = harpoonGunInst.Components.Get<Equipment>();
 
 		harpoonGunInst.SetParent(gunHolder);
-		harpoonGunInst.Transform.LocalPosition = Vector3.Zero;
-		harpoonGunInst.Transform.LocalRotation = Quaternion.Identity;
+		harpoonGunInst.LocalPosition = Vector3.Zero;
+		harpoonGunInst.LocalRotation = Quaternion.Identity;
 
 		var crosshairBuilder = Scene.Components.GetInDescendantsOrSelf<CrosshairBuilder>(true);
 		if (crosshairBuilder != null)
@@ -75,7 +75,7 @@ public class OSCharacter : Character
 			return;
 
 		MouseInput();
-		Transform.Rotation = new Angles(0, eyeAngles.yaw, 0);
+		WorldRotation = new Angles(0, eyeAngles.yaw, 0);
 		FireInput();
 
 		UpdateCamera();
@@ -154,35 +154,35 @@ public class OSCharacter : Character
 			{
 				jumpShrinkAmount += heightDelta;
 				//Log.Info($"heightDelta: {heightDelta}");
-				//characterController.MoveTo(Transform.Position += Vector3.Up * heightDelta, false);
+				//characterController.MoveTo(WorldPosition += Vector3.Up * heightDelta, false);
 				//Transform.ClearInterpolation();
 				//characterMovement.eyeHeight -= eyeHeightDelta;
 			}
 			else
 			{
 				jumpShrinkAmount -= heightDelta;
-				//characterController.MoveTo(Transform.Position -= Vector3.Up * heightDelta, false);
+				//characterController.MoveTo(WorldPosition -= Vector3.Up * heightDelta, false);
 				//Transform.ClearInterpolation();
 				//characterMovement.eyeHeight += eyeHeightDelta;
 			}
 		}
 
-		var targetCameraPos = Transform.Position + new Vector3(0, 0, movement.eyeHeight);
+		var targetCameraPos = WorldPosition + new Vector3(0, 0, movement.eyeHeight);
 
 		// smooth view z, so when going up and down stairs or ducking, it's smooth af
 		if (movement.lastUngrounded > 0.2f)
 		{
-			targetCameraPos.z = camera.Transform.Position.z.LerpTo(targetCameraPos.z, RealTime.Delta * 25.0f);
+			targetCameraPos.z = camera.WorldPosition.z.LerpTo(targetCameraPos.z, RealTime.Delta * 25.0f);
 		}
 
 		if (eyeHolder != null && eyeHolder.IsValid)
 		{
-			eyeHolder.Transform.Position = targetCameraPos;
-			eyeHolder.Transform.Rotation = eyeAngles;
+			eyeHolder.WorldPosition = targetCameraPos;
+			eyeHolder.WorldRotation = eyeAngles;
 		}
 
-		camera.Transform.Position = targetCameraPos;
-		camera.Transform.Rotation = eyeAngles;
+		camera.WorldPosition = targetCameraPos;
+		camera.WorldRotation = eyeAngles;
 
 		var fov = Preferences.FieldOfView;
 
@@ -195,8 +195,8 @@ public class OSCharacter : Character
 
 		PlayerCamera.cam.FieldOfView = MathY.MoveTowards(PlayerCamera.cam.FieldOfView, fov, Time.Delta * 350.0f);
 
-		firstPersonArmsHolder.Transform.Position = PlayerCamera.cam.Transform.Position;
-		firstPersonArmsHolder.Transform.Rotation = PlayerCamera.cam.Transform.Rotation;
+		firstPersonArmsHolder.WorldPosition = PlayerCamera.cam.WorldPosition;
+		firstPersonArmsHolder.WorldRotation = PlayerCamera.cam.WorldRotation;
 	}
 
 	protected override void OnDestroy()

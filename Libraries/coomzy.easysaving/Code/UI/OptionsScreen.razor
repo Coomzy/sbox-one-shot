@@ -136,22 +136,6 @@
         }
     }
 
-    [ConCmd("open_options")]
-    public static void OpenOptions()
-    {
-        var inst = Game.ActiveScene.Components.Get<OptionsScreen>(true);
-        if (inst != null)
-        {
-            inst.Enabled = true;
-        }
-        else
-        {
-            var optionsScreenGO = Game.ActiveScene.CreateObject();
-            var screenPanel = optionsScreenGO.Components.Create<ScreenPanel>();
-            var optionsScreen = optionsScreenGO.Components.Create<OptionsScreen>();
-        }
-    }
-
     void ButtonClose()
     {
         var soundHandle = Sound.Play("ui.navigate.back");

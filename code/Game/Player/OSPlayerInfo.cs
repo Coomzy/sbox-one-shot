@@ -64,6 +64,9 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 		if (IsProxy)
 			return;
 
+		if (GameSettings.instance.payToWinGamePass.Has())
+			return;
+
 		if (Input.Pressed(Inputs.sbux_menu))
 		{
 			PromptPayToWinGamePass();

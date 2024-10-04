@@ -1,0 +1,36 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@inherits PanelComponent
+
+<root>	
+    <div class="table">        
+        @{
+            if (Spectator.instance.mode != SpectateMode.ThirdPerson)
+                return;
+
+            var spectateTarget = Spectator.instance.spectateTarget;
+            if (!IsFullyValid(spectateTarget))
+                return;
+
+            this.Dirty();
+
+            <div class="row">
+                <div class="icon"><InputGlyph button="attack1" /></div>
+                <div class="avatar" style="background-image: url(avatar:@spectateTarget.steamId)"></div>
+                <div class="gap"></div>
+                <img class="rank" style="background-image: url(@RankSettings.GetRankIcon(spectateTarget))">
+                <div class="name">@spectateTarget.displayName</div>
+                <div class="icon"><InputGlyph button="attack2" /></div>
+            </div>
+        }
+
+    </label>
+
+</root>
+
+@code
+{
+    protected override int BuildHash() => System.HashCode.Combine(((int)Spectator.instance.mode * 1000) + this.GetDirty());
+    //protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+}

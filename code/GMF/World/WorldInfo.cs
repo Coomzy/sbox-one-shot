@@ -14,6 +14,9 @@ public class WorldInfo : Component, Component.INetworkListener
 
 	[Group("Prefabs"), Property] public GameObject spectatorPrefab { get; set; }
 
+	[Group("Runtime"), Property] public SpectateViewpoint[] spectateViewpoints { get; set; }
+	[Group("Runtime"), Property] public SpawnPoint[] spawnPoints { get; set; }
+
 	[Property] public MapInstance mapInstance { get; set; }
 	[Property] public MapCollider mapCollider { get; set; }
 
@@ -34,6 +37,9 @@ public class WorldInfo : Component, Component.INetworkListener
 	{
 		base.OnStart();
 
+		spectateViewpoints = Scene.GetAllComponents<SpectateViewpoint>().ToArray();
+		spawnPoints = Scene.GetAllComponents<SpawnPoint>().ToArray();
+		
 		GetJumpPads();
 	}
 

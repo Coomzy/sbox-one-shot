@@ -1,0 +1,34 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+
+<root>	
+    <div class="table">
+        <div class="stat">Resume</div>
+        <div class="stat">Options</div>
+        <div class="stat">Controls</div>
+        <div class="stat">Settings (s&box)</div>
+        <div class="stat">Exit</div>
+    </div>
+</root>
+
+@code
+{
+    public bool IsVisible()
+    {
+        return !HasClass("hidden");
+    }
+
+    protected override void OnUpdate()
+    {
+        if (Input.EscapePressed)
+        {
+            SetClass("hidden", IsVisible());
+        }
+    }
+
+    /// <summary>
+    /// update every second
+    /// </summary>
+    protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt());
+}

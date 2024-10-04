@@ -1,0 +1,60 @@
+SpectateWidget {
+	position: absolute;
+	top: 0px;
+	left: -1500px;
+	right: -1500px;
+	bottom: -925px;
+	justify-content: center;
+	align-items: center;
+	font-family: Poppins;
+	font-size: 22px;
+	color: white;
+	z-index: 10;
+
+	.table {
+		flex-direction: column;
+		justify-content: center;
+		padding: 0px 8px;
+
+		.avatar {
+			width: 48px;
+			height: 48px;
+			background-position: center;
+			background-size: cover;
+			position: relative;
+		}
+
+		.rank {
+			width: 32px;
+			height: 48px;
+			align-items: center;
+			background-position: center;
+			background-size: cover;
+		}
+
+		.row {
+			white-space: nowrap;
+			background-color: rgba(0,0,0,0.8);
+
+			> .rank {
+				align-self: center;
+			}
+
+			> .name {
+				flex-grow: 1;
+				align-items: center;
+			}
+
+			> .gap {
+				width: 0px;
+				padding: 0px 2px;
+				justify-content: flex-end;
+				align-items: center;
+			}
+
+			> * {
+				padding: 0px 8px;
+			}
+		}
+	}
+}

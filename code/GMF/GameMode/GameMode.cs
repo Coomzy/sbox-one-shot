@@ -57,6 +57,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Runtime"), Order(100), Property] public TimeSince? delayedRoundConditionMet { get; set; } = null;
 	[Group("Runtime"), Order(100), Property] public int preMatchSpawnIndex { get; set; } = 0;
 
+	[ConVar] public static bool debug_gamemode_state { get; set; }
+
 	[Group("Runtime"), Order(100), Property] 
 	public float remainingStateTime
 	{
@@ -140,7 +142,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// TODO: I renamed Pawn to Character, but I want to go back to Pawn at some point
 	public virtual Character CreatePawn(PlayerInfo playerInfo, SpawnPoint spawnPoint)
 	{
-		return CreatePawn(playerInfo, spawnPoint.Transform.Position, spawnPoint.Transform.Rotation);
+		return CreatePawn(playerInfo, spawnPoint.WorldPosition, spawnPoint.WorldRotation);
 	}
 
 	public virtual Character CreatePawn(PlayerInfo playerInfo, Vector3 spawnPos, Rotation spawnRot)
@@ -162,6 +164,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	protected virtual GameObject GetPawnPrefabForPlayer(PlayerInfo playerInfo)
 	{
 		return WorldInfo.instance.pawnPrefab;
+
+		// NOTE: GameObject in GameResources have deserialization errors in this project...
 		//return GMFSettings.instance.pawnPrefab;
 	}
 
@@ -266,13 +270,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	{
 		if (RoundEndCondition())
 		{
-			RoundOver();
+			//RoundOver();
 			return;
 		}
 
 		if (delayedRoundConditionMet.HasValue)
 		{
-			return;
+			//return;
 		}
 
 		TryRespawnPlayers();
@@ -494,7 +498,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 				continue;
 			}
 
-			float distCurrentSpawn = Vector3.DistanceBetween(spawnPoint.Transform.Position, otherSpawnPoint.Transform.Position);
+			float distCurrentSpawn = Vector3.DistanceBetween(spawnPoint.WorldPosition, otherSpawnPoint.WorldPosition);
 
 			if (distCurrentSpawn >= currentClosestSpawn)
 			{
@@ -645,8 +649,11 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	{
 		base.OnUpdate();
 
-		Debuggin.ToScreen($"modeState: {modeState}", color: Color.Red);
-		Debuggin.ToScreen($"stateTime: {stateTime}", color: Color.Red);
+		if (debug_gamemode_state)
+		{
+			Debuggin.ToScreen($"modeState: {modeState}", color: Color.Red);
+			Debuggin.ToScreen($"stateTime: {stateTime}", color: Color.Red);
+		}
 
 		UpdateModeState();
 	}

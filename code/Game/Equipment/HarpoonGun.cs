@@ -46,8 +46,8 @@ public class HarpoonGun : Equipment
 			await Task.Frame();
 
 		GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-		Transform.LocalPosition = Vector3.Zero;
-		Transform.LocalRotation = Quaternion.Identity;*/
+		LocalPosition = Vector3.Zero;
+		LocalRotation = Quaternion.Identity;*/
 	}
 
 	public override void SetFirstPersonMode(bool isFirstPerson)
@@ -92,9 +92,9 @@ public class HarpoonGun : Equipment
 
 		hasAmmo = false;		
 
-		var camPoint = PlayerCamera.instance.Transform.Position;
+		var camPoint = PlayerCamera.instance.WorldPosition;
 		var spawnPoint = PlayerCamera.instance.GetPointInFront(70.0f);
-		var spawnRot = PlayerCamera.instance.Transform.Rotation;
+		var spawnRot = PlayerCamera.instance.WorldRotation;
 
 		// TODO: Move projectile spawn into base or component?
 		var spearInst = spearPrefab.Clone(spawnPoint, spawnRot);
@@ -104,17 +104,21 @@ public class HarpoonGun : Equipment
 			if (projectile != null)
 			{
 				projectile.owner = this;
-				projectile.SpawnSource(camPoint);
 			}
 
 			spearInst.NetworkSpawn(GameObject.Network.Owner);
+
+			if (projectile != null)
+			{
+				projectile.SpawnSource(camPoint);
+			}
 		}
 
 		model.GameObject.Enabled = false;
 		gunModel.GameObject.Enabled = true;
 		spearModel.GameObject.Enabled = false;
 
-		var handle = Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
+		var handle = Sound.Play("harpoon.fire", muzzleSocket.WorldPosition);
 		if (handle != null)
 		{
 			handle.Occlusion = false;
@@ -130,7 +134,7 @@ public class HarpoonGun : Equipment
 		if (!IsProxy)
 			return;
 
-		var handle = Sound.Play("harpoon.fire", muzzleSocket.Transform.Position);
+		var handle = Sound.Play("harpoon.fire", muzzleSocket.WorldPosition);
 		handle.SpacialBlend = 1.0f;
 
 		instigator.body.Shoot();
@@ -140,7 +144,7 @@ public class HarpoonGun : Equipment
 	{
 		base.DryFire();
 
-		Sound.Play("harpoon.dryfire", muzzleSocket.Transform.Position);
+		Sound.Play("harpoon.dryfire", muzzleSocket.WorldPosition);
 		DryFire_Remote();
 	}
 
@@ -150,7 +154,7 @@ public class HarpoonGun : Equipment
 		if (!IsProxy)
 			return;
 
-		var handle = Sound.Play("harpoon.dryfire", muzzleSocket.Transform.Position);
+		var handle = Sound.Play("harpoon.dryfire", muzzleSocket.WorldPosition);
 		handle.SpacialBlend = 1.0f;
 	}
 
@@ -202,7 +206,7 @@ public class HarpoonGun : Equipment
 			scale.y = config.reloadYAxisCurve.Evaluate(reloadFinish.Fraction);
 			scale.z = config.reloadZAxisCurve.Evaluate(reloadFinish.Fraction);
 
-			target.Transform.LocalScale = scale;
+			target.LocalScale = scale;
 			await Task.Frame();
 		}
 	}
@@ -215,7 +219,7 @@ public class HarpoonGun : Equipment
 			return;
 		}
 
-		var handle = Sound.Play("harpoon.reload", muzzleSocket.Transform.Position);
+		var handle = Sound.Play("harpoon.reload", muzzleSocket.WorldPosition);
 		handle.SpacialBlend = 1.0f;
 
 		HarpoonGun_Proxy proxy = equipmentProxy as HarpoonGun_Proxy;

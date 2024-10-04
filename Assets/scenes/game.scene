@@ -39,6 +39,8 @@
             "_type": "gameobject",
             "prefab": "prefabs/player/os_playerinfo.prefab"
           },
+          "spawnPoints": [],
+          "spectateViewpoints": [],
           "spectatorPrefab": {
             "_type": "gameobject",
             "prefab": "prefabs/player/spectator.prefab"
@@ -66,7 +68,7 @@
           "matchCount": 0,
           "maxMatchRounds": 10,
           "metPlayerReqTime": {
-            "Relative": 232.44614
+            "Relative": 13846.211
           },
           "modeState": "PreMatch",
           "oneLifeOnly": true,
@@ -83,7 +85,7 @@
           "roundCount": 0,
           "roundTime": 180,
           "stateTime": {
-            "Relative": 232.44614
+            "Relative": 13846.211
           },
           "waitingForPlayersDelay": 3
         }
@@ -292,7 +294,7 @@
           "__guid": "d42e78c0-e868-444d-9a0e-d366ca9a53db",
           "shownDuration": 3,
           "shownTime": {
-            "Relative": 232.44614
+            "Relative": 13846.211
           }
         },
         {
@@ -336,6 +338,10 @@
         {
           "__type": "ChatWidget",
           "__guid": "4befcd91-5776-4664-86b6-bb5507ac486f"
+        },
+        {
+          "__type": "SpectateWidget",
+          "__guid": "094bf367-7c59-4d61-9957-63ea527de180"
         }
       ]
     },
