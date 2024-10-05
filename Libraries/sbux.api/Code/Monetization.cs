@@ -12,7 +12,7 @@ public static class Monetization
 	[ConVar( "sbux", Help = "Your s&bux balance.", Saved = true )]
 	private static string _balance { get; set; }
 
-	private static List<string> _gamePass { get; set; }
+	private static List<string> _gamePass { get; set; } = new List<string>();
 
 	private const string URL = "https://sbux.party/";
 

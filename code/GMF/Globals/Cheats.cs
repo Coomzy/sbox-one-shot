@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System;
 using Sandbox;
+using Sandbox.Services;
 
 public enum CheatFlags
 {
@@ -91,5 +92,11 @@ public static partial class Cheats
 	public static void EnableVOIP(bool enabled = false)
 	{
 		PlayerInfo.local.voice.Enabled = enabled;
+	}
+
+	[Cheat(role = Role.Developer), ConCmd]
+	public static void unlock_achievement(string achievementName)
+	{
+		Achievements.Unlock(achievementName);
 	}
 }

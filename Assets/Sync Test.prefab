@@ -1,0 +1,39 @@
+{
+  "RootObject": {
+    "__guid": "429eaac8-ce50-41ce-be61-fed9314c84e0",
+    "Flags": 0,
+    "Name": "Sync Test",
+    "Position": "562.2491,-885.3011,278.4364",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "NetworkOrphaned": 1,
+    "Components": [
+      {
+        "__type": "SyncTest",
+        "__guid": "1caca965-64fc-4d86-ae2a-4a862bc02e99"
+      },
+      {
+        "__type": "Sandbox.ModelRenderer",
+        "__guid": "e5569c59-b7ac-4378-94a9-77b5fc5b1fe9",
+        "BodyGroups": 18446744073709551615,
+        "Model": "models/dev/box.vmdl",
+        "RenderOptions": {
+          "GameLayer": true,
+          "OverlayLayer": false,
+          "BloomLayer": false,
+          "AfterUILayer": false
+        },
+        "RenderType": "On",
+        "Tint": "1,1,1,1"
+      }
+    ]
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "DontBreakAsTemplate": false,
+  "ResourceVersion": 1,
+  "__references": [],
+  "IsValid": true,
+  "__version": 1
+}

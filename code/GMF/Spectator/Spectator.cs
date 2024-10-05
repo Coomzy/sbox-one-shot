@@ -7,6 +7,7 @@ public enum SpectateMode
 {
 	None,
 	Viewpoint,
+	CharacterDeath,
 	ThirdPerson,
 	FreeCam
 }
@@ -23,8 +24,7 @@ public class Spectator : Component
 	[Group("Config"), Property] public float sprintMoveSpeed { get; set; } = 750.0f;
 
 	[Group("Runtime"), Property] public SpectateMode mode { get; private set; } = SpectateMode.Viewpoint;
-
-	[Group("Runtime"), Property] public Vector3 lastVelocity = Vector3.Zero;
+	[Group("Runtime"), Property] public TimeSince stateTime { get; private set; }
 
 	// Viewpoint
 	[Group("Runtime - Viewpoint"), Property] public SpectateViewpoint viewpoint { get; set; }
@@ -36,6 +36,11 @@ public class Spectator : Component
 	[Group("Runtime - Third Person"), Property] public TimeSince lastInput { get; set; }
 	[Group("Runtime - Third Person"), Property] public PlayerInfo spectateTarget { get; set; }
 
+	// Free Cam
+	[Group("Runtime"), Property] public Vector3 lastVelocity = Vector3.Zero;
+
+	// Debug
+	[ConVar] public static bool debug_spectator_mode { get; set; }
 	[ConVar] public static bool debug_spectator_boom { get; set; }
 
 	float currentMoveSpeed
@@ -48,29 +53,16 @@ public class Spectator : Component
 		}
 	}
 
-	public static bool TryCreate()
-	{
-		GetStartingPosAndRot(out var spawnPos, out var spawnRot);
-		return TryCreate(spawnPos, spawnRot);
-	}
-
-	public static bool TryCreate(Vector3 spawnPos, Rotation spawnRot)
-	{
-		if (IsFullyValid(instance))
-		{
-			return false;
-		}
-		var spectatorPrefab = WorldInfo.instance.spectatorPrefab;
-		//var spectatorPrefab = Game.IsRunningInVR ? GMFSettings.instance.spectatorVRPrefab : GMFSettings.instance.spectatorPrefab;
-		var spectatorInst = spectatorPrefab.Clone(spawnPos, spawnRot).BreakPrefab().Components.Get<Spectator>();
-		spectatorInst.GameObject.Name = $"Spectator Pawn";
-		return true;
-	}
-
 	protected override void OnAwake()
 	{
 		instance = this;
-		viewpoint = Game.ActiveScene.Components.GetInDescendantsOrSelf<SpectateViewpoint>();
+		stateTime = 0;
+		mode = SpectateMode.Viewpoint;
+	}
+
+	protected override void OnStart()
+	{
+		viewpoint = viewpoint ?? WorldInfo.instance.spectateViewpoints[0];		
 	}
 
 	protected override void OnDestroy()
@@ -82,10 +74,21 @@ public class Spectator : Component
 	protected override void OnUpdate()
 	{
 		UpdateMode();
+
+		if (debug_spectator_mode)
+		{
+			Debuggin.ToScreen($"Spectator mode: {mode}");
+		}
 	}
 
 	public virtual void SetMode(SpectateMode newMode)
 	{
+		if (debug_spectator_mode)
+		{
+			Debuggin.ToScreen($"Spectator mode: {mode}");
+			Log.Info($"Spectator::SetMode() newMode: {newMode} mode: {mode}");
+		}
+
 		if (mode == newMode)
 			return;
 
@@ -93,39 +96,47 @@ public class Spectator : Component
 		{
 			case SpectateMode.None:
 				Exit_None();
-				return;
+				break;
 			case SpectateMode.Viewpoint:
 				Exit_Viewpoint();
-				return;
+				break;
+			case SpectateMode.CharacterDeath:
+				Exit_CharacterDeath();
+				break;				
 			case SpectateMode.ThirdPerson:
 				Exit_ThirdPerson();
-				return;
+				break;
 			case SpectateMode.FreeCam:
 				Exit_FreeCam();
-				return;
+				break;
 		}
 
 		mode = newMode;
+		stateTime = 0;
 
 		switch (mode)
 		{
 			case SpectateMode.None:
 				Enter_None();
-				return;
+				break;
 			case SpectateMode.Viewpoint:
 				Enter_Viewpoint();
-				return;
+				break; 
+			case SpectateMode.CharacterDeath:
+				Enter_CharacterDeath();
+				break;
 			case SpectateMode.ThirdPerson:
 				Enter_ThirdPerson();
-				return;
+				break;
 			case SpectateMode.FreeCam:
 				Enter_FreeCam();
-				return;
+				break;
 		}
 	}
 
 	protected virtual void Enter_None(){}
 	protected virtual void Enter_Viewpoint(){}
+	protected virtual void Enter_CharacterDeath(){}
 	protected virtual void Enter_ThirdPerson()
 	{
 		NextSpectateTarget();
@@ -134,6 +145,7 @@ public class Spectator : Component
 
 	protected virtual void Exit_None(){}
 	protected virtual void Exit_Viewpoint(){}
+	protected virtual void Exit_CharacterDeath(){}
 	protected virtual void Exit_ThirdPerson(){}
 	protected virtual void Exit_FreeCam(){}
 
@@ -146,6 +158,9 @@ public class Spectator : Component
 				return;
 			case SpectateMode.Viewpoint:
 				Update_Viewpoint();
+				return; 
+			case SpectateMode.CharacterDeath:
+				Update_CharacterDeath();
 				return;
 			case SpectateMode.ThirdPerson:
 				Update_ThirdPerson();
@@ -158,9 +173,6 @@ public class Spectator : Component
 
 	protected virtual void Update_None()
 	{
-		if (IsUsingSpectatorCamera())
-			return;
-
 		if (!IsFullyValid(PlayerCamera.cam))
 			return;
 
@@ -184,67 +196,27 @@ public class Spectator : Component
 		PlayerCamera.cam.FieldOfView = Preferences.FieldOfView;
 	}
 
-	public virtual void PrevSpectateTarget()
+	protected virtual void Update_CharacterDeath()
 	{
-		var currentIndex = PlayerInfo.allAlive.IndexOf(spectateTarget);
-		currentIndex--;
-		if (currentIndex < 0)
+		// TODO: Magic fucking number
+		if (stateTime > 3.0f)
 		{
-			currentIndex = PlayerInfo.allAlive.Count - 1;
+			SetMode(SpectateMode.ThirdPerson);
 		}
-		if (currentIndex == -1)
-		{
-			currentIndex = 0;
-		}
-
-		var newTarget = PlayerInfo.allAlive[currentIndex];
-
-		if (newTarget == spectateTarget)
-			return;
-
-		SetSpectateTargetIndex(newTarget);
-	}
-
-	public virtual void NextSpectateTarget()
-	{
-		var currentIndex = PlayerInfo.allAlive.IndexOf(spectateTarget);
-		currentIndex++;
-		if (currentIndex >= PlayerInfo.allAlive.Count)
-		{
-			currentIndex = 0;
-		}
-		if (currentIndex == -1)
-		{
-			currentIndex = 0;
-		}
-
-		var newTarget = PlayerInfo.allAlive[currentIndex];
-
-		if (newTarget == spectateTarget)
-			return;
-
-		SetSpectateTargetIndex(newTarget);
-	}
-
-	protected virtual void SetSpectateTargetIndex(PlayerInfo target)
-	{
-		spectateTarget = target;
-		inputAngles = new Angles();
-		characterLookPitch = spectateTarget.character.eyeAngles.pitch;
 	}
 
 	// TODO: Give this a look over when it's not 6am
 	protected virtual void Update_ThirdPerson()
 	{
-		if (PlayerInfo.allAlive.Count < 1)
-		{
-			SetMode(SpectateMode.FreeCam);
-			return;
-		}
-
 		if (spectateTarget == null || (spectateTarget.isDead && !spectateTarget.isRecentlyDead))
 		{
 			NextSpectateTarget();
+		}
+
+		if (spectateTarget == null)
+		{
+			SetMode(SpectateMode.Viewpoint);
+			return;
 		}
 
 		if (Input.Pressed(Inputs.attack2))
@@ -315,6 +287,69 @@ public class Spectator : Component
 		}
 	}
 
+	public virtual void PrevSpectateTarget()
+	{
+		var currentIndex = PlayerInfo.allAlive.IndexOf(spectateTarget);
+		currentIndex--;
+		if (currentIndex < 0)
+		{
+			currentIndex = PlayerInfo.allAlive.Count - 1;
+		}
+		if (currentIndex == -1)
+		{
+			currentIndex = 0;
+		}
+
+		PlayerInfo newTarget = null;
+
+		if (PlayerInfo.allAlive.ContainsIndex(currentIndex))
+		{
+			newTarget = PlayerInfo.allAlive[currentIndex];
+		}
+
+		if (newTarget == spectateTarget)
+			return;
+
+		SetSpectateTargetIndex(newTarget);
+	}
+
+	public virtual void NextSpectateTarget()
+	{
+		var currentIndex = PlayerInfo.allAlive.IndexOf(spectateTarget);
+		currentIndex++;
+		if (currentIndex >= PlayerInfo.allAlive.Count)
+		{
+			currentIndex = 0;
+		}
+		if (currentIndex == -1)
+		{
+			currentIndex = 0;
+		}
+
+
+		PlayerInfo newTarget = null;
+
+		if (PlayerInfo.allAlive.ContainsIndex(currentIndex))
+		{
+			newTarget = PlayerInfo.allAlive[currentIndex];
+		}
+
+		if (newTarget == spectateTarget)
+			return;
+
+		SetSpectateTargetIndex(newTarget);
+	}
+
+	public virtual void SetSpectateTargetIndex(PlayerInfo target)
+	{
+		spectateTarget = target;
+		inputAngles = new Angles();
+		if (IsFullyValid(spectateTarget?.character))
+		{
+			characterLookPitch = spectateTarget.character.eyeAngles.pitch;
+		}
+	}
+
 	protected virtual void Update_FreeCam()
 	{
 		if (!AllowedMove())
@@ -375,10 +410,15 @@ public class Spectator : Component
 
 	protected override void OnPreRender()
 	{
-		if (!IsUsingSpectatorCamera())
+		if (mode == SpectateMode.None)
 			return;
 
-		UpdateCamera();
+		if (!IsFullyValid(PlayerCamera.cam))
+			return;
+
+		PlayerCamera.cam.WorldPosition = WorldPosition;
+		PlayerCamera.cam.WorldRotation = WorldRotation;
+		PlayerCamera.cam.FieldOfView = Preferences.FieldOfView;
 	}
 
 	public virtual bool AllowedMove()
@@ -420,43 +460,5 @@ public class Spectator : Component
 
 		PlayerCamera.cam.WorldPosition = instance.WorldPosition;
 		PlayerCamera.cam.WorldRotation = instance.WorldRotation;
-	}
-
-	public static void TeleportToStartingPoint()
-	{
-		GetStartingPosAndRot(out var spawnPos, out var spawnRot);
-		Teleport(spawnPos, spawnRot);
-	}
-
-	public static void GetStartingPosAndRot(out Vector3 spawnPos, out Rotation spawnRot)
-	{
-		spawnPos = Vector3.Zero;
-		spawnRot = Rotation.Identity;
-
-		if (!IsFullyValid(WorldInfo.instance))
-			return;
-
-		if (WorldInfo.instance.spectateViewpoints.Length > 0)
-		{
-			var spectateStartSpot = WorldInfo.instance.spectateViewpoints[0];
-			if (spectateStartSpot != null)
-			{
-				spawnPos = spectateStartSpot.WorldPosition;
-				spawnRot = spectateStartSpot.WorldRotation;
-				return;
-			}
-			return;
-		}
-
-		if (WorldInfo.instance.spawnPoints.Length > 0)
-		{
-			var spawnPoint = WorldInfo.instance.spawnPoints[0];
-			if (spawnPoint != null)
-			{
-				spawnPos = spawnPoint.WorldPosition;
-				spawnRot = spawnPoint.WorldRotation;
-				return;
-			}
-		}
 	}
 }

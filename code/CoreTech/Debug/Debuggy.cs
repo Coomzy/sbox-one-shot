@@ -1,6 +1,7 @@
 
 using Sandbox;
 using Sandbox.Internal;
+using Sandbox.Services;
 using System;
 using System.Numerics;
 using System.Reflection;
@@ -52,5 +53,14 @@ public static class Debuggy
 			Debuggin.ToScreen($"playerInfo: {playerInfo.displayName}");
 		}
 		Debuggin.ToScreen("");
+	}
+
+	[ConCmd]
+	public static void dump_achievements()
+	{
+		foreach (var achievement in Achievements.All)
+		{
+			Log.Info($"achievement '{achievement.Name}' IsUnlocked: {achievement.IsUnlocked} HasProgression: {achievement.HasProgression} ProgressionFraction: {achievement.ProgressionFraction}");
+		}
 	}
 }

@@ -90,7 +90,7 @@ public class Pickup : Component, Component.ITriggerListener
 		if (osPawn.IsProxy)
 			return;
 
-		if (harpoonGun.hasAmmo)
+		if (harpoonGun.hasAmmo || harpoonGun.isReloading)
 			return;
 
 		harpoonGun.Reload();

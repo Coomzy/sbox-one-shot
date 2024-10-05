@@ -8,19 +8,7 @@ using System.Diagnostics;
 [Group("GMF")]
 public class HarpoonSpear : Projectile
 {
-	List<GameObject> impaledCharacters { get; set; } = new();	
-
-	protected override void OnStart()
-	{
-		base.OnStart();
-	}
-
-	protected override void OnUpdate()
-	{
-		base.OnUpdate();
-
-		//ExtraDebug.draw.Line(WorldPosition, WorldPosition + (Transform.World.Forward * 100.0f));
-	}
+	[Property] List<GameObject> impaledCharacters { get; set; } = new();	
 
 	protected override void GetImpactPosition(ref Vector3 nextMovePos, SceneTraceResult traceResult)
 	{
@@ -61,78 +49,95 @@ public class HarpoonSpear : Projectile
 		{
 			trace = trace.IgnoreGameObjectHierarchy(impalee);
 		}
-		var result = trace.Run();
+		var results = trace.RunAll();
 
 		//ExtraDebug.draw.Capsule(capsule);
 		//ExtraDebug.draw.Capsule(capsule);
 		//ExtraDebug.draw.Sphere(start, 100.0f, 8, 15.0f);
 		//Gizmo.Draw.LineSphere(start, 100.0f, 8);
+		string multikillMedal = null;
 
-		if (!result.Hit)
+		foreach (var result in results)
 		{
-			return;
+			if (!result.Hit)
+			{
+				continue;
+			}
+			//Debuggin.ToScreen($"impaledCharacters: {impaledCharacters.Count}", 15.0f);
+
+			var characterBody = result.GameObject.Components.Get<CharacterBody>();
+			if (characterBody == null)
+			{
+				Log.Warning($"Spear hit '{result.GameObject}' but it didn't have a character body?");
+				continue;
+			}
+
+			if (impaledCharacters.Contains(characterBody.GameObject))
+			{
+				continue;
+			}
+
+			characterBody.GameObject.Tags.Add(Tag.IMPALED);
+			Sound.Play("harpoon.impact.flesh", result.HitPosition);
+			var distance = Vector3.DistanceBetween(startPos, WorldPosition) * MathY.inchToMeter;
+
+			//Log.Info($"collision.Other.Body: {collision.Other.Body}");
+			var osCharacter = (OSCharacter)characterBody.owner;
+			DamageInfo damageInfo = new DamageInfo();
+			damageInfo.instigator = owner?.instigator?.owner;
+			damageInfo.damageCauser = this;
+			damageInfo.hitBodyIndex = GetClosestSafeIndex(characterBody.bodyPhysics, result.Body.GroupIndex);
+			damageInfo.hitVelocity = Transform.World.Forward * 100.0f;
+			characterBody.TakeDamage(damageInfo);
+
+			//Log.Info($"Spear Hit WorldPosition: {WorldPosition}");
+			//Debuggin.draw.Sphere(start, 10.0f, 8, 15.0f);
+			//Debuggin.draw.Line(WorldPosition, WorldPosition + damageInfo.hitVelocity, 15.0f);	
+
+			if (owner is HarpoonGun harpoonGun)
+			{
+				harpoonGun.Reload();
+				PlayerInfo.local.OnScoreKill();
+				UIManager.instance.killFeedUpWidget.AddEntry(PlayerInfo.local.displayName, $"{osCharacter?.owner?.displayName} {distance.ToString("F2")}m", "----->");
+			}
+
+			Stats.SetValue(Stat.FURTHEST_KILL, distance);
+
+			// It's not great to hardcode this, however I didn't unlock it with the stat :/
+			if (distance >= 35.0f)
+			{
+				Debuggin.ToScreen($"Unlock Deadeye!");
+				Log.Info($"Unlock Deadeye!");
+				Achievements.Unlock(Achievement.DEADEYE);
+			}
+
+			if (!impaledCharacters.Contains(characterBody.GameObject))
+			{
+				impaledCharacters.Add(characterBody.GameObject);
+			}
+			else
+			{
+				Log.Warning($"impaledCharacters already had: {characterBody.GameObject}");
+			}
+
+			if (impaledCharacters.Count > 2)
+			{
+				Achievements.Unlock(Achievement.DOUBLE_PENETRATION);
+			}
+
+			// TODO: This is a lot of string allocations...
+			multikillMedal = Stat.KillCountToMedal(impaledCharacters.Count);
+			if (!string.IsNullOrEmpty(multikillMedal))
+			{
+				Stats.Increment(multikillMedal, 1);
+
+				// TODO: Medal UI?
+			}
 		}
-		//Debuggin.ToScreen($"impaledCharacters: {impaledCharacters.Count}", 15.0f);
 
-		var characterBody = result.GameObject.Components.Get<CharacterBody>();
-		if (characterBody == null)
-		{
-			Log.Warning($"Spear hit '{result.GameObject}' but it didn't have a character body?");
-			return;
-		}
-
-		characterBody.GameObject.Tags.Add(Tag.IMPALED);
-		Sound.Play("harpoon.impact.flesh", result.HitPosition);
-		var distance = Vector3.DistanceBetween(startPos, WorldPosition) * MathY.inchToMeter;
-
-		//Log.Info($"collision.Other.Body: {collision.Other.Body}");
-		var osCharacter = (OSCharacter)characterBody.owner;
-		DamageInfo damageInfo = new DamageInfo();
-		damageInfo.instigator = owner?.instigator?.owner;
-		damageInfo.damageCauser = this;
-		damageInfo.hitBodyIndex = GetClosestSafeIndex(characterBody.bodyPhysics, result.Body.GroupIndex);
-		damageInfo.hitVelocity = Transform.World.Forward * 100.0f;
-		characterBody.TakeDamage(damageInfo);
-
-		//Log.Info($"Spear Hit WorldPosition: {WorldPosition}");
-		//Debuggin.draw.Sphere(start, 10.0f, 8, 15.0f);
-		//Debuggin.draw.Line(WorldPosition, WorldPosition + damageInfo.hitVelocity, 15.0f);	
-
-		if (owner is HarpoonGun harpoonGun)
-		{
-			harpoonGun.Reload();
-			PlayerInfo.local.OnScoreKill();
-			UIManager.instance.killFeedUpWidget.AddEntry(PlayerInfo.local.displayName, $"{osCharacter?.owner?.displayName} {distance.ToString("F2")}m", "----->");
-		}
-
-		Stats.SetValue(Stat.FURTHEST_KILL, distance);
-
-		// It's not great to hardcode this, however I didn't unlock it with the stat :/
-		if (distance >= 35.0f)
-		{
-			Achievements.Unlock(Achievement.DEADEYE);
-		}
-
-		if (!impaledCharacters.Contains(characterBody.GameObject))
-		{
-			impaledCharacters.Add(characterBody.GameObject);
-		}
-		else
-		{
-			Log.Warning($"impaledCharacters already had: {characterBody.GameObject}");
-		}
-
-		if (impaledCharacters.Count > 2)
-		{
-			Achievements.Unlock(Achievement.DOUBLE_PENETRATION);
-		}
-
-		var multikillMedal = Stat.KillCountToMedal(impaledCharacters.Count);
+		multikillMedal = Stat.KillCountToMedal(impaledCharacters.Count);
 		if (!string.IsNullOrEmpty(multikillMedal))
 		{
-			Stats.Increment(multikillMedal, 1);
-
-			// TODO: Medal UI?
 			AnnouncerSystem.QueueSound(multikillMedal);
 		}
 	}

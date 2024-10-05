@@ -3,7 +3,7 @@ using Sandbox;
 using System;
 
 [Group("GMF")]
-public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
+public class Projectile : Component, IGameModeEvents, Component.INetworkSpawn
 {
 	[Group("Setup"), Property] public GameObject impactEffect { get; set; }
 
@@ -14,6 +14,8 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 
 	public virtual void SpawnSource(Vector3 source)
 	{
+		startPos = WorldPosition;
+
 		// This seems dumb, but it works, but it seems dumb
 		var end = WorldPosition;
 		WorldPosition = source;
@@ -30,12 +32,10 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 
 	protected override void OnUpdate()
 	{
-		//ExtraDebug.draw.Line(WorldPosition, WorldPosition + (Transform.World.Forward * 100.0f), 10.0f);
-		//ExtraDebug.draw.Line(WorldPosition, WorldPosition + (Transform.World.Forward * 100.0f));
 		DoMoveStep();
 	}
 
-	public virtual void DoMoveStep()
+	public virtual void DoMoveStep(Vector3? moveToOverride = null)
 	{
 		if (!isInFlight)
 			return;
@@ -45,47 +45,7 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 
 		float moveRate = 2500.0f;
 		var moveDelta = Transform.World.Forward * Time.Delta * moveRate;
-		var nextMovePos = WorldPosition + moveDelta;
-
-		var trace = MoveStepTrace(WorldPosition, nextMovePos);
-		var traceResult = trace.Run();
-
-		if (traceResult.Hit)
-		{
-			nextMovePos = traceResult.HitPosition;
-			var impactRange = new Vector2(5.0f, 20.0f);
-			var impactDist = impactRange.RandomRange();
-			nextMovePos += Transform.World.Forward * impactDist;
-			isInFlight = false;
-			SpawnImpactEffect(traceResult.HitPosition, -Transform.World.Forward);
-
-			// TODO: Jesus make this better
-			if (traceResult.Surface.ResourceName == "wood" || traceResult.Surface.ResourceName == "wood.sheet")
-			{
-				Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
-			}
-			else if (traceResult.Surface.ResourceName == "concrete" || traceResult.Surface.ResourceName == "brick")
-			{
-				Sound.Play("harpoon.impact.wood", traceResult.HitPosition);
-			}
-			else
-			{
-				Sound.Play("harpoon.impact.metal", traceResult.HitPosition);
-			}
-		}
-		Debuggin.draw.Line(WorldPosition, nextMovePos);
-		DoFlightPlayerHitDetection(WorldPosition, nextMovePos);
-
-		WorldPosition = nextMovePos;
-	}
-
-	public virtual void DoMoveStep(Vector3 moveTo)
-	{
-		if (!isInFlight)
-			return;
-
-		if (IsProxy)
-			return;
+		var moveTo = moveToOverride.HasValue ? moveToOverride.Value : WorldPosition + moveDelta;
 
 		var trace = MoveStepTrace(WorldPosition, moveTo);
 		var traceResult = trace.Run();
@@ -105,6 +65,14 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 		DoFlightPlayerHitDetection(WorldPosition, nextMovePos);
 
 		WorldPosition = nextMovePos;
+	}
+
+	public virtual SceneTrace MoveStepTrace(Vector3 start, Vector3 end)
+	{
+		return Scene.Trace
+			.Ray(start, end)
+			.IgnoreGameObjectHierarchy(GameObject)
+			.WithoutTags(Tag.TRIGGER, Tag.CHARACTER_BODY);
 	}
 
 	// This is not for player penetration, it's for walls and shit
@@ -137,14 +105,6 @@ public class Projectile : Component, IRoundEvents, Component.INetworkSpawn
 		}
 		var inst = impactEffect.Clone(hitPoint, hitNormal.EulerAngles.ToRotation());
 		//impactEffect
-	}
-
-	public virtual SceneTrace MoveStepTrace(Vector3 start, Vector3 end)
-	{
-		return Scene.Trace
-			.Ray(start, end)
-			.IgnoreGameObjectHierarchy(GameObject)
-			.WithoutTags("trigger", Tag.CHARACTER_BODY);
 	}
 
 	public void OnNetworkSpawn(Connection connection)

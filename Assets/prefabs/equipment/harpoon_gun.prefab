@@ -23,10 +23,10 @@
           "prefab": "prefabs/equipment/harpoon_gun_proxy.prefab"
         },
         "fireAltStartTime": {
-          "Relative": 2270.7996
+          "Relative": 10784.389
         },
         "fireStartTime": {
-          "Relative": 2270.7996
+          "Relative": 10784.389
         },
         "gunModel": {
           "_type": "component",
@@ -41,10 +41,10 @@
         "ironSights": "15,0,-8.25",
         "isReloading": false,
         "lastFire": {
-          "Relative": 2270.7996
+          "Relative": 10784.389
         },
         "lastFireAlt": {
-          "Relative": 2270.7996
+          "Relative": 10784.389
         },
         "model": {
           "_type": "component",

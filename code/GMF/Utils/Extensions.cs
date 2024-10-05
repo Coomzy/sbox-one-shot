@@ -9,6 +9,20 @@ public static class Extensions
 		return inst;
 	}
 
+	public static bool ContainsIndex<T>(this List<T> list, int index)
+	{
+		if (list == null)
+			return false;
+
+		if (index < 0)
+			return false;
+
+		if (index >= list.Count)
+			return false;
+
+		return true;
+	}
+
 	public static T Random<T>(this List<T> list)
 	{
 		var index = System.Random.Shared.Next(list.Count);

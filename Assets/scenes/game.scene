@@ -2,22 +2,9 @@
   "__guid": "325a4042-0696-43dd-a79d-dcc314299ba3",
   "GameObjects": [
     {
-      "__guid": "057fadc4-4176-4acb-a30d-564e16b382dd",
-      "Flags": 0,
-      "Name": "Network Manager",
-      "Position": "-126.4292,-187.5311,115.5769",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "NetworkManager",
-          "__guid": "1a12943a-67b4-449e-a329-025d1951dffc"
-        }
-      ]
-    },
-    {
       "__guid": "92548d54-23de-494f-b00d-e54dec9be1aa",
       "Flags": 0,
-      "Name": "World Settings",
+      "Name": "World Info",
       "Position": "-126.4292,-187.5311,115.5769",
       "Enabled": true,
       "Components": [
@@ -40,11 +27,26 @@
             "prefab": "prefabs/player/os_playerinfo.prefab"
           },
           "spawnPoints": [],
+          "spawnPointsGMF": [],
           "spectateViewpoints": [],
           "spectatorPrefab": {
             "_type": "gameobject",
             "prefab": "prefabs/player/spectator.prefab"
-          }
+          },
+          "wrapOriginalSpawnPointsWithGMF": false
+        }
+      ]
+    },
+    {
+      "__guid": "057fadc4-4176-4acb-a30d-564e16b382dd",
+      "Flags": 0,
+      "Name": "Network Manager",
+      "Position": "-126.4292,-187.5311,115.5769",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "NetworkManager",
+          "__guid": "1a12943a-67b4-449e-a329-025d1951dffc"
         }
       ]
     },
@@ -68,7 +70,7 @@
           "matchCount": 0,
           "maxMatchRounds": 10,
           "metPlayerReqTime": {
-            "Relative": 13846.211
+            "Relative": 6145.9985
           },
           "modeState": "PreMatch",
           "oneLifeOnly": true,
@@ -85,97 +87,9 @@
           "roundCount": 0,
           "roundTime": 180,
           "stateTime": {
-            "Relative": 13846.211
+            "Relative": 6145.9985
           },
           "waitingForPlayersDelay": 3
-        }
-      ]
-    },
-    {
-      "__guid": "360e14d2-3b9e-4d6a-8a39-56ba8a94db1d",
-      "Flags": 0,
-      "Name": "Camera",
-      "Position": "212.8338,-1229.103,252.0507",
-      "Rotation": "0.006029047,0.05375014,-0.1113058,0.9923133",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "PlayerCamera",
-          "__guid": "fcca228c-fa77-4e7d-8b15-3256a0310fa6",
-          "camera": {
-            "_type": "component",
-            "component_id": "3fd5495d-f1b8-425f-92bf-ece41815d57d",
-            "go": "360e14d2-3b9e-4d6a-8a39-56ba8a94db1d",
-            "component_type": "CameraComponent"
-          }
-        },
-        {
-          "__type": "Sandbox.CameraComponent",
-          "__guid": "3fd5495d-f1b8-425f-92bf-ece41815d57d",
-          "BackgroundColor": "0.33333,0.46275,0.52157,1",
-          "ClearFlags": "All",
-          "FieldOfView": 60,
-          "IsMainCamera": true,
-          "Orthographic": false,
-          "OrthographicHeight": 1204,
-          "Priority": 1,
-          "RenderExcludeTags": "",
-          "RenderTags": "",
-          "TargetEye": "None",
-          "Viewport": "0,0,1,1",
-          "ZFar": 10000,
-          "ZNear": 5
-        },
-        {
-          "__type": "Sandbox.Bloom",
-          "__guid": "23fc0b78-6f19-42f7-8789-3f705134845c",
-          "BloomColor": {
-            "color": [
-              {
-                "c": "1,1,1,1"
-              },
-              {
-                "t": 1,
-                "c": "1,1,1,1"
-              }
-            ],
-            "alpha": []
-          },
-          "BloomCurve": [
-            {
-              "y": 0.5
-            },
-            {
-              "x": 1,
-              "y": 1
-            }
-          ],
-          "Mode": "Additive",
-          "Strength": 0.5,
-          "Threshold": 0.5,
-          "ThresholdWidth": 0.5
-        },
-        {
-          "__type": "Sandbox.Tonemapping",
-          "__guid": "49dc240c-465b-45f8-bfa2-61fb7fde1154",
-          "__version": 1,
-          "AutoExposureEnabled": true,
-          "ExposureBias": 2,
-          "ExposureCompensation": 0,
-          "ExposureMethod": "RGB",
-          "MaximumExposure": 2,
-          "MinimumExposure": 1,
-          "Mode": "Legacy",
-          "Rate": 1
-        },
-        {
-          "__type": "Sandbox.Sharpen",
-          "__guid": "911fe110-053e-4c59-a6d3-75306fc82efb",
-          "Scale": 0.2
-        },
-        {
-          "__type": "Sandbox.Highlight",
-          "__guid": "85a5092b-d6b6-4dea-b6fe-1280642fe4fc"
         }
       ]
     },
@@ -294,7 +208,7 @@
           "__guid": "d42e78c0-e868-444d-9a0e-d366ca9a53db",
           "shownDuration": 3,
           "shownTime": {
-            "Relative": 13846.211
+            "Relative": 6145.9985
           }
         },
         {
@@ -346,6 +260,101 @@
       ]
     },
     {
+      "__guid": "360e14d2-3b9e-4d6a-8a39-56ba8a94db1d",
+      "Flags": 0,
+      "Name": "Camera",
+      "Position": "212.8338,-1229.103,252.0507",
+      "Rotation": "0.006029047,0.05375014,-0.1113058,0.9923133",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "PlayerCamera",
+          "__guid": "fcca228c-fa77-4e7d-8b15-3256a0310fa6",
+          "camera": {
+            "_type": "component",
+            "component_id": "3fd5495d-f1b8-425f-92bf-ece41815d57d",
+            "go": "360e14d2-3b9e-4d6a-8a39-56ba8a94db1d",
+            "component_type": "CameraComponent"
+          }
+        },
+        {
+          "__type": "Sandbox.CameraComponent",
+          "__guid": "3fd5495d-f1b8-425f-92bf-ece41815d57d",
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "FieldOfView": 60,
+          "IsMainCamera": true,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 5
+        },
+        {
+          "__type": "Sandbox.Bloom",
+          "__guid": "23fc0b78-6f19-42f7-8789-3f705134845c",
+          "BloomColor": {
+            "color": [
+              {
+                "c": "1,1,1,1"
+              },
+              {
+                "t": 1,
+                "c": "1,1,1,1"
+              }
+            ],
+            "alpha": []
+          },
+          "BloomCurve": [
+            {
+              "y": 0.5
+            },
+            {
+              "x": 1,
+              "y": 1
+            }
+          ],
+          "Mode": "Additive",
+          "Strength": 0.5,
+          "Threshold": 0.5,
+          "ThresholdWidth": 0.5
+        },
+        {
+          "__type": "Sandbox.Tonemapping",
+          "__guid": "49dc240c-465b-45f8-bfa2-61fb7fde1154",
+          "__version": 1,
+          "AutoExposureEnabled": true,
+          "ExposureBias": 2,
+          "ExposureCompensation": 0,
+          "ExposureMethod": "RGB",
+          "MaximumExposure": 2,
+          "MinimumExposure": 1,
+          "Mode": "Legacy",
+          "Rate": 1
+        },
+        {
+          "__type": "Sandbox.Sharpen",
+          "__guid": "911fe110-053e-4c59-a6d3-75306fc82efb",
+          "Scale": 0.2
+        },
+        {
+          "__type": "Sandbox.Highlight",
+          "__guid": "85a5092b-d6b6-4dea-b6fe-1280642fe4fc"
+        }
+      ]
+    },
+    {
+      "__guid": "19fa5d88-ac44-4b28-bdab-017d39ec2369",
+      "Flags": 0,
+      "Name": "----------- MAP ---------",
+      "Position": "-1372.219,-1499.866,768.7556",
+      "Enabled": true
+    },
+    {
       "__guid": "1e821a70-48eb-4b68-915c-f2ae3c05248d",
       "Flags": 0,
       "Name": "Map - Dockyard",
@@ -372,116 +381,284 @@
       "Enabled": true,
       "Children": [
         {
-          "__guid": "6c545019-93d4-4f33-a189-48429445717f",
+          "__guid": "9d746d84-3748-4dfe-93c2-590a53cd9d04",
           "Flags": 0,
-          "Name": "Up_There_Volume 1",
-          "Position": "128,-700,825",
-          "Scale": "4.7,12,2.2",
+          "Name": "Up_There",
           "Enabled": true,
-          "Components": [
+          "Children": [
             {
-              "__type": "Sandbox.BoxCollider",
-              "__guid": "91558355-8189-42c9-9934-607eae7d75ed",
-              "Center": "0,0,0",
-              "IsTrigger": true,
-              "Scale": "50,50,50",
-              "Static": false
+              "__guid": "6c545019-93d4-4f33-a189-48429445717f",
+              "Flags": 0,
+              "Name": "Up_There_Volume 1",
+              "Position": "128,-700,825",
+              "Scale": "4.7,12,2.2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "91558355-8189-42c9-9934-607eae7d75ed",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "UpThereAchievementVolume",
+                  "__guid": "16344a0e-fedc-42ab-b096-f00a64a6fbea",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "91558355-8189-42c9-9934-607eae7d75ed",
+                    "go": "6c545019-93d4-4f33-a189-48429445717f",
+                    "component_type": "BoxCollider"
+                  }
+                }
+              ]
             },
             {
-              "__type": "UpThereAchievementVolume",
-              "__guid": "16344a0e-fedc-42ab-b096-f00a64a6fbea",
-              "boxCollider": {
-                "_type": "component",
-                "component_id": "91558355-8189-42c9-9934-607eae7d75ed",
-                "go": "6c545019-93d4-4f33-a189-48429445717f",
-                "component_type": "BoxCollider"
-              }
+              "__guid": "63f53bfc-d87f-400f-9955-2196a4f74af8",
+              "Flags": 0,
+              "Name": "Up_There_Volume 2",
+              "Position": "-638.3349,-1345.236,825",
+              "Scale": "4.7,6.999993,2.2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "675b787c-db64-4b38-8a3a-801be8d8667e",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "UpThereAchievementVolume",
+                  "__guid": "919b5bcb-c2e0-4b9d-9238-ebc3ec078bab",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "675b787c-db64-4b38-8a3a-801be8d8667e",
+                    "go": "63f53bfc-d87f-400f-9955-2196a4f74af8",
+                    "component_type": "BoxCollider"
+                  }
+                }
+              ]
+            },
+            {
+              "__guid": "d909a991-d821-4aed-98c1-dacd0cfc360d",
+              "Flags": 0,
+              "Name": "Up_There_Volume 3",
+              "Position": "-1407.35,-1408.977,825",
+              "Rotation": "0,0,0.7071067,0.7071068",
+              "Scale": "4.7,9.75,2.2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "87a39a49-5e4c-4b32-93fc-90ac62488bdb",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "UpThereAchievementVolume",
+                  "__guid": "271591df-c368-4684-9184-cbecaeb83c9e",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "87a39a49-5e4c-4b32-93fc-90ac62488bdb",
+                    "go": "d909a991-d821-4aed-98c1-dacd0cfc360d",
+                    "component_type": "BoxCollider"
+                  }
+                }
+              ]
+            },
+            {
+              "__guid": "8c1ae53e-f31f-4855-86f3-29b43efdce33",
+              "Flags": 0,
+              "Name": "Up_There_Volume 4",
+              "Position": "-1407.35,-1920,825",
+              "Rotation": "0,0,0.7071067,0.7071068",
+              "Scale": "4.7,9.75,2.2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "cd3c74b9-d3db-48b0-8d20-21c649659fd5",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "UpThereAchievementVolume",
+                  "__guid": "d824e5f3-87c1-43a2-8b0a-190b179a0471",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "cd3c74b9-d3db-48b0-8d20-21c649659fd5",
+                    "go": "8c1ae53e-f31f-4855-86f3-29b43efdce33",
+                    "component_type": "BoxCollider"
+                  }
+                }
+              ]
             }
           ]
         },
         {
-          "__guid": "63f53bfc-d87f-400f-9955-2196a4f74af8",
+          "__guid": "7e327055-c8f5-47ff-9053-3cc6e219c63f",
           "Flags": 0,
-          "Name": "Up_There_Volume 2",
-          "Position": "-638.3349,-1345.236,825",
-          "Scale": "4.7,6.999993,2.2",
+          "Name": "Jump_Plank",
           "Enabled": true,
-          "Components": [
+          "Children": [
             {
-              "__type": "Sandbox.BoxCollider",
-              "__guid": "675b787c-db64-4b38-8a3a-801be8d8667e",
-              "Center": "0,0,0",
-              "IsTrigger": true,
-              "Scale": "50,50,50",
-              "Static": false
+              "__guid": "6995687a-e4ee-490f-87a1-c4e1be335bf9",
+              "Flags": 0,
+              "Name": "Jump_Plank_Volume 1",
+              "Position": "591.6221,447.9512,314.3622",
+              "Rotation": "-0,0,1,-0.00000004371139",
+              "Scale": "4.412903,0.5878833,2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "51aafe34-fc1d-4cf0-9b56-b7c9cc871b63",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "JumpingAchievementVolume",
+                  "__guid": "a8a8ee08-be85-4eb4-94ab-506a04b7dbb5",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "51aafe34-fc1d-4cf0-9b56-b7c9cc871b63",
+                    "go": "6995687a-e4ee-490f-87a1-c4e1be335bf9",
+                    "component_type": "BoxCollider"
+                  },
+                  "jumpAchievementType": "Plank",
+                  "linkedVolume": {
+                    "_type": "component",
+                    "component_id": "372d4889-e3c9-4de8-98f3-0d6ac653acf0",
+                    "go": "3a8d62ed-2092-4da3-bccd-5e062107066a",
+                    "component_type": "JumpingAchievementVolume"
+                  }
+                }
+              ]
             },
             {
-              "__type": "UpThereAchievementVolume",
-              "__guid": "919b5bcb-c2e0-4b9d-9238-ebc3ec078bab",
-              "boxCollider": {
-                "_type": "component",
-                "component_id": "675b787c-db64-4b38-8a3a-801be8d8667e",
-                "go": "63f53bfc-d87f-400f-9955-2196a4f74af8",
-                "component_type": "BoxCollider"
-              }
+              "__guid": "3a8d62ed-2092-4da3-bccd-5e062107066a",
+              "Flags": 0,
+              "Name": "Jump_Plank_Volume 2",
+              "Position": "47.81117,447.9511,314.3622",
+              "Rotation": "-0,0,1,-0.00000004371139",
+              "Scale": "4.412903,0.5878833,2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "799269d3-3054-416e-ad27-fe13a1b85689",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "JumpingAchievementVolume",
+                  "__guid": "372d4889-e3c9-4de8-98f3-0d6ac653acf0",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "799269d3-3054-416e-ad27-fe13a1b85689",
+                    "go": "3a8d62ed-2092-4da3-bccd-5e062107066a",
+                    "component_type": "BoxCollider"
+                  },
+                  "jumpAchievementType": "Plank",
+                  "linkedVolume": {
+                    "_type": "component",
+                    "component_id": "a8a8ee08-be85-4eb4-94ab-506a04b7dbb5",
+                    "go": "6995687a-e4ee-490f-87a1-c4e1be335bf9",
+                    "component_type": "JumpingAchievementVolume"
+                  }
+                }
+              ]
             }
           ]
         },
         {
-          "__guid": "d909a991-d821-4aed-98c1-dacd0cfc360d",
+          "__guid": "b8111736-a82f-4d45-8c5a-b8a84a89a07a",
           "Flags": 0,
-          "Name": "Up_There_Volume 3",
-          "Position": "-1407.35,-1408.977,825",
-          "Rotation": "0,0,0.7071067,0.7071068",
-          "Scale": "4.7,9.75,2.2",
+          "Name": "Jump_Hangar",
           "Enabled": true,
-          "Components": [
+          "Children": [
             {
-              "__type": "Sandbox.BoxCollider",
-              "__guid": "87a39a49-5e4c-4b32-93fc-90ac62488bdb",
-              "Center": "0,0,0",
-              "IsTrigger": true,
-              "Scale": "50,50,50",
-              "Static": false
+              "__guid": "475f82df-e303-48cc-9c5e-c5169c90dda1",
+              "Flags": 0,
+              "Name": "Jump_Hangar_Volume 1",
+              "Position": "-2000.292,-208.382,690.2287",
+              "Rotation": "-0.000000002668512,-0.000000002668512,0.7071068,0.7071068",
+              "Scale": "10.77598,1.813378,2",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "efe212a0-e25e-412f-b731-bd079c8911ae",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "JumpingAchievementVolume",
+                  "__guid": "b6ffca24-fc01-43d9-b0cd-41995b0948ea",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "efe212a0-e25e-412f-b731-bd079c8911ae",
+                    "go": "475f82df-e303-48cc-9c5e-c5169c90dda1",
+                    "component_type": "BoxCollider"
+                  },
+                  "jumpAchievementType": "Hangar",
+                  "linkedVolume": {
+                    "_type": "component",
+                    "component_id": "a341661f-6016-4645-ba9e-22506bbdb710",
+                    "go": "e677c9a1-7671-4a94-85a8-9b6670592b6b",
+                    "component_type": "JumpingAchievementVolume"
+                  }
+                }
+              ]
             },
             {
-              "__type": "UpThereAchievementVolume",
-              "__guid": "271591df-c368-4684-9184-cbecaeb83c9e",
-              "boxCollider": {
-                "_type": "component",
-                "component_id": "87a39a49-5e4c-4b32-93fc-90ac62488bdb",
-                "go": "d909a991-d821-4aed-98c1-dacd0cfc360d",
-                "component_type": "BoxCollider"
-              }
-            }
-          ]
-        },
-        {
-          "__guid": "8c1ae53e-f31f-4855-86f3-29b43efdce33",
-          "Flags": 0,
-          "Name": "Up_There_Volume 4",
-          "Position": "-1407.35,-1920,825",
-          "Rotation": "0,0,0.7071067,0.7071068",
-          "Scale": "4.7,9.75,2.2",
-          "Enabled": true,
-          "Components": [
-            {
-              "__type": "Sandbox.BoxCollider",
-              "__guid": "cd3c74b9-d3db-48b0-8d20-21c649659fd5",
-              "Center": "0,0,0",
-              "IsTrigger": true,
-              "Scale": "50,50,50",
-              "Static": false
-            },
-            {
-              "__type": "UpThereAchievementVolume",
-              "__guid": "d824e5f3-87c1-43a2-8b0a-190b179a0471",
-              "boxCollider": {
-                "_type": "component",
-                "component_id": "cd3c74b9-d3db-48b0-8d20-21c649659fd5",
-                "go": "8c1ae53e-f31f-4855-86f3-29b43efdce33",
-                "component_type": "BoxCollider"
-              }
+              "__guid": "e677c9a1-7671-4a94-85a8-9b6670592b6b",
+              "Flags": 0,
+              "Name": "Jump_Hangar_Volume 2",
+              "Position": "-2815.791,-213.631,722.6091",
+              "Rotation": "-0.000000002668512,-0.000000002668512,0.7071068,0.7071068",
+              "Scale": "6.754107,5.09422,3.115292",
+              "Enabled": true,
+              "Components": [
+                {
+                  "__type": "Sandbox.BoxCollider",
+                  "__guid": "b37af71a-1985-416f-98f9-4527f5f56ff1",
+                  "Center": "0,0,0",
+                  "IsTrigger": true,
+                  "Scale": "50,50,50",
+                  "Static": false
+                },
+                {
+                  "__type": "JumpingAchievementVolume",
+                  "__guid": "a341661f-6016-4645-ba9e-22506bbdb710",
+                  "boxCollider": {
+                    "_type": "component",
+                    "component_id": "b37af71a-1985-416f-98f9-4527f5f56ff1",
+                    "go": "e677c9a1-7671-4a94-85a8-9b6670592b6b",
+                    "component_type": "BoxCollider"
+                  },
+                  "jumpAchievementType": "Hangar",
+                  "linkedVolume": {
+                    "_type": "component",
+                    "component_id": "b6ffca24-fc01-43d9-b0cd-41995b0948ea",
+                    "go": "475f82df-e303-48cc-9c5e-c5169c90dda1",
+                    "component_type": "JumpingAchievementVolume"
+                  }
+                }
+              ]
             }
           ]
         }
@@ -498,207 +675,6 @@
         {
           "__type": "SpectateViewpoint",
           "__guid": "4e1e3122-0b4e-42e5-a838-55fb55a4424f"
-        }
-      ]
-    },
-    {
-      "__guid": "afada0bf-2fa5-41c7-ba10-01de2da53659",
-      "Flags": 0,
-      "Name": "Burst",
-      "Position": "-37.63688,247.2673,11.98845",
-      "Tags": "particles",
-      "Components": [
-        {
-          "__type": "Sandbox.ParticleEffect",
-          "__guid": "b21cfd84-87ce-4edc-938c-70f596a6e996",
-          "__version": 1,
-          "Alpha": {
-            "Type": "Curve",
-            "CurveA": [
-              {
-                "y": 1
-              },
-              {
-                "x": 1
-              }
-            ],
-            "Constants": "1,0,0,0"
-          },
-          "ApplyAlpha": false,
-          "ApplyColor": false,
-          "ApplyRotation": false,
-          "ApplyShape": true,
-          "Bounce": {
-            "Constants": "1,0,0,0"
-          },
-          "Brightness": {
-            "Constants": "1,0,0,0"
-          },
-          "Bumpiness": {},
-          "Collision": false,
-          "CollisionRadius": 1,
-          "Damping": {},
-          "DieOnCollisionChance": {},
-          "Force": false,
-          "ForceDirection": "0,0,-800",
-          "ForceScale": {
-            "Constants": "1,0,0,0"
-          },
-          "Friction": {
-            "Constants": "1,0,0,0"
-          },
-          "Gradient": {
-            "Evaluation": "Particle",
-            "GradientA": {
-              "color": [
-                {
-                  "t": 0.5,
-                  "c": "1,1,1,1"
-                }
-              ],
-              "alpha": []
-            },
-            "GradientB": {
-              "color": [
-                {
-                  "t": 0.5,
-                  "c": "1,1,1,1"
-                }
-              ],
-              "alpha": []
-            },
-            "ConstantA": "1,1,1,1",
-            "ConstantB": "1,1,1,1"
-          },
-          "Lifetime": {
-            "Type": "Range",
-            "Evaluation": "Particle",
-            "Constants": "1,2,0,0"
-          },
-          "MaxParticles": 5000,
-          "OrbitalForce": {},
-          "OrbitalPull": {},
-          "PerParticleTimeScale": {
-            "Constants": "1,0.4,0,0"
-          },
-          "Pitch": {},
-          "PreWarm": 0,
-          "PushStrength": {},
-          "Roll": {
-            "Type": "Range",
-            "Evaluation": "Particle",
-            "Constants": "0,360,0,0"
-          },
-          "Scale": {
-            "Type": "Curve",
-            "CurveA": [
-              {
-                "in": -9.333329,
-                "out": 9.333329
-              },
-              {
-                "x": 0.03325123,
-                "y": 1,
-                "in": -0.056075174,
-                "out": 0.056075174
-              },
-              {
-                "x": 1,
-                "in": 2.9152544,
-                "out": -2.9152544
-              }
-            ],
-            "Constants": "1,0,0,0"
-          },
-          "SequenceId": {},
-          "SequenceSpeed": {
-            "Constants": "1,0,0,0"
-          },
-          "SequenceTime": {
-            "Constants": "1,0,0,0"
-          },
-          "SheetSequence": false,
-          "Space": "World",
-          "StartDelay": {},
-          "StartVelocity": {
-            "Type": "Range",
-            "Evaluation": "Particle",
-            "Constants": "10,70,0,0"
-          },
-          "Stretch": {},
-          "TimeScale": 1,
-          "Tint": "1,1,1,1",
-          "Yaw": {}
-        },
-        {
-          "__type": "Sandbox.ParticleSpriteRenderer",
-          "__guid": "7644f7c6-1381-4448-80ae-de3cbe14d410",
-          "Additive": false,
-          "Alignment": "LookAtCamera",
-          "BlurAmount": 0.5,
-          "BlurOpacity": 0.91,
-          "BlurSpacing": 0.73,
-          "DepthFeather": 0,
-          "FaceVelocity": false,
-          "FogStrength": 1,
-          "LeadingTrail": true,
-          "Lighting": false,
-          "MotionBlur": false,
-          "Opaque": false,
-          "RenderOptions": {
-            "GameLayer": true,
-            "OverlayLayer": false,
-            "BloomLayer": false,
-            "AfterUILayer": false
-          },
-          "RotationOffset": 0,
-          "Scale": 1,
-          "Shadows": false,
-          "SortMode": "Unsorted",
-          "Texture": "materials/particles/shapes/circle1.vtex"
-        },
-        {
-          "__type": "Sandbox.ParticleSphereEmitter",
-          "__guid": "e7a75ff0-8c12-49a7-8f27-3fbaf7d5ba29",
-          "Burst": 1000,
-          "Delay": 0,
-          "DestroyOnEnd": false,
-          "Duration": 5,
-          "Loop": true,
-          "OnEdge": false,
-          "Radius": 10,
-          "Rate": 0,
-          "RateOverDistance": 0,
-          "Velocity": 100
-        }
-      ]
-    },
-    {
-      "__guid": "fbf4a2a5-525b-43d4-90ea-08f6ca2c16d3",
-      "Flags": 0,
-      "Name": "Test",
-      "Position": "501.8346,-911.399,233.0786",
-      "Scale": "0.35,0.35,0.35",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "DebugTest",
-          "__guid": "2faeaf2e-b4c1-4fd1-b784-e46d87dfa9de"
-        },
-        {
-          "__type": "Sandbox.ModelRenderer",
-          "__guid": "fb110e58-c24a-48c3-9f6b-083110fcdc69",
-          "__enabled": false,
-          "BodyGroups": 18446744073709551615,
-          "Model": "models/dev/box.vmdl",
-          "RenderOptions": {
-            "GameLayer": true,
-            "OverlayLayer": false,
-            "BloomLayer": false,
-            "AfterUILayer": false
-          },
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
         }
       ]
     },
@@ -889,7 +865,8 @@
           "__guid": "a7ab5abf-b4b6-47b1-b6e3-88f9e7c9d160",
           "Flags": 0,
           "Name": "Spawn Point",
-          "Position": "212.1888,-79.33903,483.439",
+          "Position": "-128,-1920,128",
+          "Rotation": "0,0,0.7071068,0.7071068",
           "Enabled": true,
           "Components": [
             {
@@ -898,6 +875,147 @@
               "Color": "0.8902,0.31765,0.05098,1"
             }
           ]
+        },
+        {
+          "__guid": "5a7b1cdc-1c6c-40dc-8c51-9f5659ae6209",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "-1792,-1984,256",
+          "Rotation": "0,0,0.7071068,0.7071068",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "e78eb6e4-93f8-40fd-a25f-d78d00689bfe",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        },
+        {
+          "__guid": "1d1c96ae-d61d-432b-805a-56c144c54da2",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "-2016,-192,256",
+          "Rotation": "0,0,0.9238795,0.3826834",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "512b3d50-2489-4352-9270-30d9246202b7",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        },
+        {
+          "__guid": "f6d0cf15-a64a-42a4-ad34-b1570e81c320",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "-352,1280,256",
+          "Rotation": "-0,0,-1,-0.00000004371139",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "25581fd2-2115-4a6a-b562-c79f91204c7b",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        },
+        {
+          "__guid": "7ddbc352-abe1-41c5-9e1f-233b7d45204e",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "1360,816,128",
+          "Rotation": "0,0,1,-0.00000004371139",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "7596a9e7-68f3-4ac0-9666-c078efe40378",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        },
+        {
+          "__guid": "4225b1a2-f9f1-493a-861c-1271b9ed1c34",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "-1856,-192,256",
+          "Rotation": "0,0,0.3826835,0.9238795",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "b24b2cd9-98ff-45fd-8528-2f41d27e63cc",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        },
+        {
+          "__guid": "5993ca79-26ab-4f8a-a75b-6b833202771b",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "1252.753,-1094.299,128",
+          "Rotation": "0,0,0.7071069,0.7071066",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "5a24f4e6-bc9e-440e-8414-592083e4fb1b",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        },
+        {
+          "__guid": "e9021068-acb1-4889-9f34-34c6ab858922",
+          "Flags": 0,
+          "Name": "Spawn Point",
+          "Position": "-797.3804,-575.8828,256",
+          "Rotation": "0,0,1,0",
+          "Enabled": true,
+          "Components": [
+            {
+              "__type": "GMFSpawnPoint",
+              "__guid": "f7f169a3-5d45-43da-9c30-9e722e32c557",
+              "Color": "0.8902,0.31765,0.05098,1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "__guid": "851de350-78c4-43a7-ad8e-b4348e6b70de",
+      "Flags": 0,
+      "Name": "-----------DEBUG ---------",
+      "Position": "-1372.219,-1499.866,768.7556",
+      "Enabled": true
+    },
+    {
+      "__guid": "fbf4a2a5-525b-43d4-90ea-08f6ca2c16d3",
+      "Flags": 0,
+      "Name": "Test",
+      "Position": "501.8346,-911.399,233.0786",
+      "Scale": "0.35,0.35,0.35",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "DebugTest",
+          "__guid": "2faeaf2e-b4c1-4fd1-b784-e46d87dfa9de"
+        },
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "fb110e58-c24a-48c3-9f6b-083110fcdc69",
+          "__enabled": false,
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
         }
       ]
     },
@@ -1808,6 +1926,38 @@
               "Enabled": true
             }
           ]
+        }
+      ]
+    },
+    {
+      "__guid": "c05852c5-0c51-4965-a820-b8a32059c75d",
+      "Flags": 0,
+      "Name": "Cube",
+      "Position": "376.3117,-776.2903,153.7576",
+      "Tags": "projectile",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "1a08f999-d767-4a35-9da4-7e23ae23f6b1",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "Sandbox.BoxCollider",
+          "__guid": "0e08741b-64d8-4584-b49e-3487a6296f23",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "50,50,50",
+          "Static": false
         }
       ]
     }

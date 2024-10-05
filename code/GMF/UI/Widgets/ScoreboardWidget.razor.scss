@@ -1,12 +1,11 @@
 ScoreboardWidget {
 	position: absolute;
-	top: -1500px;
+	top: 0px;
 	left: -1500px;
 	right: -1500px;
-	bottom: -1000px;
+	bottom: 0px;
 	//background-color: #1115;
 	justify-content: center;
-	align-items: center;
 	font-family: Poppins;
 	font-size: 22px;
 	color: white; //#fff;
@@ -17,9 +16,11 @@ ScoreboardWidget {
 	z-index: 10;
 
 	.table {
+		position: relative;
+		top: 250px;
 		flex-direction: column;
 		width: 750px;
-		justify-content: center;
+		//justify-content: flex-start;
 		//mix-blend-mode: lighten;
 
 		.header {

@@ -5,6 +5,7 @@ using System;
 [GameResource("GMF Settings", "gmfs", "GMF Settings")]
 public class GMFSettings : ProjectSetting<GMFSettings>
 {
+	[Property] public bool refresh { get; set; }
 	[Property] public Dictionary<string, Role> userSteamIdToRole { get; set; } = new();
 
 	public Role GetRoleFromID(ulong steamId)

@@ -4,7 +4,7 @@ using System.Reflection.PortableExecutable;
 using static Sandbox.ModelRenderer;
 
 [Group("GMF")]
-public class EquipmentProxy : Component, IRoundEvents
+public class EquipmentProxy : Component, IGameModeEvents
 {
 	[Group("Setup"), Property] public ModelRenderer model {  get; set; }
 	[Group("Setup"), Property] public GameObject twoHandedGrip { get; set; }

@@ -17,6 +17,8 @@ public static partial class Stat
 	public const string DEATHS = "deaths";
 	public const string WINS_ROUNDS = "wins-rounds";
 	public const string WINS_MATCHES = "wins-matches";
+	public const string PLAYED_ROUNDS = "played-rounds";
+	public const string PLAYED_MATCHES = "played-matches";
 
 	public static int GetValue(this Stats.PlayerStats playerStats, string name, StatAggregation aggregation = StatAggregation.Sum)
 	{

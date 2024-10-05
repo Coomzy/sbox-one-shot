@@ -45,14 +45,12 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	[Group("Runtime"), Order(100), Property, HostSync] public int roundCount { get; private set; }
 	[Group("Runtime"), Order(100), Property, HostSync] public int matchCount { get; private set; }
-	[Group("Runtime"), Order(100), Property, HostSync] public ModeState modeState { get; private set; }
+	[Group("Runtime"), Order(100), Property, HostSync, Change("OnRep_modeState")] public ModeState modeState { get; private set; }
 	[Group("Runtime"), Order(100), Property, HostSync] public TimeSince stateTime { get; private set; }
 
 	[Group("Runtime"), Order(100), HostSync, Property] public PlayerInfo lastWinner { get; set; }
 
 	[Group("Runtime"), Order(100), Property] public TimeSince metPlayerReqTime { get; private set; }
-
-	[Group("Runtime"), Order(100), Property] public SpawnPoint[] allSpawnPoints { get; set; }
 
 	[Group("Runtime"), Order(100), Property] public TimeSince? delayedRoundConditionMet { get; set; } = null;
 	[Group("Runtime"), Order(100), Property] public int preMatchSpawnIndex { get; set; } = 0;
@@ -85,42 +83,27 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		}
 	}
 
+	void OnRep_modeState(ModeState oldValue, ModeState newValue)
+	{
+		IGameModeEvents.Post(x => x.ModeStateChange(oldValue, newValue));
+	}
+
 	protected override void OnAwake()
 	{
 		instance = this;
-
-		stateTime = 0.0f;
 	}
 
 	protected override void OnStart()
 	{
-		var mapInstance = WorldInfo.instance?.mapInstance;
-		if (mapInstance != null)
-		{
-			mapInstance.OnMapLoaded += OnMapLoaded;
+		if (IsProxy)
+			return;
 
-			if (mapInstance.IsLoaded)
-			{
-				OnMapLoaded();
-			}
-		}
+		stateTime = 0.0f;
 	}
 
 	protected override void OnDestroy()
 	{
 		instance = null;
-
-		var mapInstance = WorldInfo.instance?.mapInstance;
-		if (mapInstance != null)
-		{
-			mapInstance.OnMapLoaded -= OnMapLoaded;
-		}
-	}
-
-	protected virtual void OnMapLoaded()
-	{
-		allSpawnPoints = Scene.GetAllComponents<SpawnPoint>().ToArray();
-		Debuggin.ToScreen($"OnMapLoaded() allSpawnPoints: {allSpawnPoints.Length}", 15.0f);
 	}
 
 	public virtual void OnPlayerConnected(PlayerInfo playerInfo)
@@ -140,8 +123,10 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	}
 
 	// TODO: I renamed Pawn to Character, but I want to go back to Pawn at some point
-	public virtual Character CreatePawn(PlayerInfo playerInfo, SpawnPoint spawnPoint)
+	public virtual Character CreatePawn(PlayerInfo playerInfo, GMFSpawnPoint spawnPoint)
 	{
+		spawnPoint.lastUsed = 0;
+		spawnPoint.lastUsedBy = playerInfo;
 		return CreatePawn(playerInfo, spawnPoint.WorldPosition, spawnPoint.WorldRotation);
 	}
 
@@ -176,7 +161,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		preMatchSpawnIndex = 0;
 		roundCount = 0;
 
-		IMatchEvents.Post(x => x.MatchStart());
+		IGameModeEvents.Post(x => x.MatchStart());
 	}
 
 	protected virtual void PreMatchUpdate()
@@ -239,12 +224,14 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Ready Phase
 	protected virtual void ReadyPhaseStart()
 	{
-		var spawnPoints = Scene.GetAllComponents<SpawnPoint>().ToArray();
-		spawnPoints.Shuffle();
+		var validSpawnPoints = WorldInfo.instance.spawnPointsGMF.Where(x => x.Enabled);
+		var validSpawnPointsList = validSpawnPoints.ToList();
+		validSpawnPointsList.Shuffle();
+
 		int playerCount = 0;
 		foreach (var playerInfo in PlayerInfo.allActive)
 		{
-			CreatePawn(playerInfo, spawnPoints[playerCount]);
+			CreatePawn(playerInfo, validSpawnPointsList[playerCount]);
 			playerCount++;
 		}
 	}
@@ -268,15 +255,18 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	protected virtual void ActiveRoundUpdate()
 	{
+		//TryRespawnPlayers();
+		//return;
+
 		if (RoundEndCondition())
 		{
-			//RoundOver();
+			RoundOver();
 			return;
 		}
 
 		if (delayedRoundConditionMet.HasValue)
 		{
-			//return;
+			return;
 		}
 
 		TryRespawnPlayers();
@@ -285,7 +275,8 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Post Round
 	protected virtual void PostRoundStart()
 	{
-		AnnouncerSystem.QueueSound("announcer.round.over");
+		AnnouncerSystem.QueueOverrideSound("announcer.round.over");
+		RoundOverClient();
 	}
 
 	protected virtual void PostRoundUpdate()
@@ -308,7 +299,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Post Match
 	protected virtual void PostMatchStart()
 	{
-		AnnouncerSystem.QueueSound("announcer.game.over");
+		AnnouncerSystem.QueueOverrideSound("announcer.game.over");
+		RoundOverClient();
+		MatchOverClient();
 		CheckMatchWinners();
 	}
 
@@ -346,23 +339,22 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			if (!CanRespawn(playerInfo))
 				continue;
 
-			var randomSpawn = Game.Random.FromArray(allSpawnPoints);
-			if (randomSpawn == null)
+			var spawnPoint = PickSpawnForPlayer(playerInfo);
+			if (spawnPoint == null)
 			{
 				continue;
 			}
-			CreatePawn(playerInfo, randomSpawn);
+
+			CreatePawn(playerInfo, spawnPoint);
 		}
 	}
 
-	public virtual SpawnPoint PickSpawnForPlayer(PlayerInfo playerInfo)
+	public virtual GMFSpawnPoint PickSpawnForPlayer(PlayerInfo playerInfo)
 	{
-		var randomSpawn = Game.Random.FromArray(allSpawnPoints);
-		if (randomSpawn != null)
-		{			
-			//spawnInfo
-		}
+		if (!IsFullyValid(WorldInfo.instance?.spawnPointsGMF))
+			return null;
 
+		var randomSpawn = Game.Random.FromArray(WorldInfo.instance.spawnPointsGMF);
 		return randomSpawn;
 	}
 
@@ -451,6 +443,18 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		}
 
 		return winner;
+	}
+
+	[Broadcast]
+	protected virtual void RoundOverClient()
+	{
+		Sandbox.Services.Stats.Increment(Stat.PLAYED_ROUNDS, 1);
+	}
+
+	[Broadcast]
+	protected virtual void MatchOverClient()
+	{
+		Sandbox.Services.Stats.Increment(Stat.PLAYED_MATCHES, 1);
 	}
 
 	public virtual void CheckMatchWinners()
@@ -593,15 +597,16 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Broadcast]
 	public virtual void TeleportSpectatorsToStartingPoint()
 	{
-		Spectator.TeleportToStartingPoint();
+		Spectator.instance.SetMode(SpectateMode.Viewpoint);
+		//Spectator.TeleportToStartingPoint();
 	}
 
 	[Broadcast]
 	public virtual void CleanupRoundInstances()
 	{
-		//Scene.RunEvent<IRoundEvents>(x => x.Cleanup());
-		IRoundEvents.Post(x => x.RoundCleanup());
-		/*var restartables = Scene.GetAllComponents<IRoundEvents>();
+		//Scene.RunEvent<IGameModeEvents>(x => x.Cleanup());
+		IGameModeEvents.Post(x => x.RoundCleanup());
+		/*var restartables = Scene.GetAllComponents<IGameModeEvents>();
 		foreach (var restartable in restartables)
 		{
 			if (restartable == null)

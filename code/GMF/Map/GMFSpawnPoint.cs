@@ -1,5 +1,5 @@
 
-public class GMFSpawnPoint : Component, IRoundEvents
+public class GMFSpawnPoint : Component, IGameModeEvents
 {
 	[Property] public Color Color { get; set; } = "#E3510D";
 

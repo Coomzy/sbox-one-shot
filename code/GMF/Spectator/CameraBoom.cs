@@ -22,6 +22,16 @@ public class CameraBoom : Component
 
 	void Test()
 	{
+		if (PlayerInfo.allAlive.Count < 1)
+		{
+			return;
+		}
+		if (!IsFullyValid(PlayerInfo.allAlive[0]?.character?.body))
+		{
+			return;
+		}
+
+		// TODO: this shouldn't choose IT'S spectate target, get told
 		var spectateTarget = PlayerInfo.allAlive[0].character.body;
 
 		var targetPos = spectateTarget.WorldPosition;

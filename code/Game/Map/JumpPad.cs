@@ -18,7 +18,6 @@ public class JumpPad : Component, Component.ITriggerListener
 
 	public void OnTriggerEnter(Collider other)
 	{
-		Log.Info($"JumpPad::OnTriggerEnter() other: {other?.GameObject?.Name}");
 		var osPawn = other.Components.Get<OSCharacter>();
 		if (osPawn == null)
 			return;

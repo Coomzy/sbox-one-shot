@@ -26,6 +26,17 @@ public class AnnouncerSystem : GameObjectSystem
 		soundsToAnnounce.Add(soundName);
 	}
 
+	[Authority]
+	public static void QueueOverrideSound(string soundName)
+	{
+		soundsToAnnounce.Clear();
+		if (IsFullyValid(soundHandle))
+		{
+			soundHandle.Stop();
+		}
+		soundsToAnnounce.Add(soundName);
+	}
+
 	void FinishUpdate()
 	{
 		if (soundHandle == null || !soundHandle.IsPlaying)

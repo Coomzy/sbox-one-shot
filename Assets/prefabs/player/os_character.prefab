@@ -3,10 +3,10 @@
     "__guid": "6b2f3f57-2231-41e7-b954-58c14e4b0114",
     "Flags": 0,
     "Name": "os_character",
-    "Tags": "player",
+    "Tags": "character",
     "Enabled": true,
     "NetworkMode": 1,
-    "OwnerTransfer": 2,
+    "NetworkInterpolation": false,
     "Components": [
       {
         "__type": "OSCharacter",
@@ -52,6 +52,10 @@
         "playerBodyPrefab": {
           "_type": "gameobject",
           "prefab": "prefabs/player/os_character_body.prefab"
+        },
+        "testPrefab": {
+          "_type": "gameobject",
+          "prefab": "sync test.prefab"
         }
       },
       {
@@ -64,7 +68,7 @@
         "IgnoreLayers": "",
         "Radius": 16,
         "StepHeight": 18,
-        "UseCollisionRules": false
+        "UseCollisionRules": true
       },
       {
         "__type": "CharacterMovement",
@@ -81,19 +85,19 @@
         "isMantling": false,
         "isSliding": false,
         "lastGrounded": {
-          "Relative": 2215.2395
+          "Relative": 6398.354
         },
         "lastJump": {
-          "Relative": 2215.2395
+          "Relative": 6398.354
         },
         "lastMantleEnd": {
-          "Relative": 2215.2395
+          "Relative": 6398.354
         },
         "lastMantleInput": {
-          "Relative": 2215.2395
+          "Relative": 6398.354
         },
         "lastUngrounded": {
-          "Relative": 2215.2395
+          "Relative": 6398.354
         },
         "mantleEnd": "0,0,0",
         "mantleStart": "0,0,0",
@@ -104,12 +108,12 @@
           "component_type": "OSCharacter"
         },
         "slideStart": {
-          "Relative": 2215.2395
+          "Relative": 6398.354
         },
         "slideVelocity": "0,0,0",
         "timeToFinishMantle": {
-          "Relative": -2215.2395,
-          "Passed": 2215.2395,
+          "Relative": -6398.354,
+          "Passed": 6398.354,
           "Fraction": 1
         },
         "wishCrouch": false,

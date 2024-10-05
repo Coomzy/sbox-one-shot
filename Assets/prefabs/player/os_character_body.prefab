@@ -3,7 +3,7 @@
     "__guid": "bc2bb9cf-be29-417e-b4cb-66e03bd1df73",
     "Flags": 0,
     "Name": "os_character_body",
-    "Tags": "player_hitbox",
+    "Tags": "character_body",
     "Enabled": true,
     "NetworkMode": 1,
     "OwnerTransfer": 0,
@@ -36,7 +36,10 @@
           "_type": "gameobject",
           "go": "a6de72cd-cc34-442c-ac3f-7362b585ccd0"
         },
-        "voiceTransmitter": null
+        "voipSocket": {
+          "_type": "gameobject",
+          "go": "5025661c-6711-4cbe-b1e1-8c35557fdfcc"
+        }
       },
       {
         "__type": "Sandbox.SkinnedModelRenderer",

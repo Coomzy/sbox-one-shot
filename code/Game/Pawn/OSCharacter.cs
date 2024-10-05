@@ -80,11 +80,12 @@ public class OSCharacter : Character
 
 		UpdateCamera();
 
-		if (Input.Pressed("Spray"))
+		if (Input.Pressed(Inputs.spray))
 		{
 			Spray.Place();
 		}
 	}
+	[Property] public GameObject testPrefab { get; set; }
 
 	void MouseInput()
 	{

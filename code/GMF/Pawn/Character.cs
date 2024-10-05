@@ -6,7 +6,7 @@ using System.Numerics;
 using static Sandbox.ModelRenderer;
 
 [Group("GMF")]
-public class Character : Component, IRoundEvents//, Component.INetworkSpawn
+public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 {
 	public PlayerInfo owner => PlayerInfo.GetOwner(GameObject);
 	public bool hasOwner => owner != null;
@@ -45,6 +45,13 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		equippedItem.equipmentProxy.AttachTo(body.thirdPersonEquipmentAttachPoint);
 	}
 
+	protected override void OnAwake()
+	{
+		base.OnAwake();
+
+		Slomo();
+	}
+
 	protected override void OnStart()
 	{
 		if (IsProxy)
@@ -56,9 +63,21 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		{
 			GameObject.Tags.Add("local");
 			GameObject.Tags.Remove("remote");
+
+			Spectator.instance.SetMode(SpectateMode.None);
+			Spectator.Teleport(WorldPosition, WorldRotation);
 		}
 
 		TryAttachEquippedItem();
+	}
+
+	async void Slomo()
+	{
+		Scene.TimeScale = 0.05f;
+
+		await Task.DelayRealtimeSeconds(3.0f);
+
+		Scene.TimeScale = 1.0f;
 	}
 
 	public virtual void OnPossess(PlayerInfo playerInfo)
@@ -103,14 +122,10 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		Die(damageInfo);
 	}
 
-	//[Authority]
 	public virtual void Die(DamageInfo damageInfo)
 	{
-		Log.Info($"Character::Die() damageInfo.damageCauser: {damageInfo.damageCauser}");
 		if (IsProxy)
-		{
 			return;
-		}
 
 		if (isDead)
 			return;
@@ -125,22 +140,16 @@ public class Character : Component, IRoundEvents//, Component.INetworkSpawn
 		owner.OnDie();
 
 		var hitVelocity = damageInfo.hitVelocity.Normal;
-		if (damageInfo.hitVelocity.IsNearlyZero())
-		{
-			//hitVelocity = GameObject.Transform.World.Forward;
-		}
-		Debuggin.ToScreen($"damageInfo.hitVelocity: {damageInfo.hitVelocity}, damageInfo.hitVelocity.IsNearlyZero() {damageInfo.hitVelocity.IsNearlyZero()}", 20.0f);
-
 		var cameraPoint = PlayerCamera.cam.WorldPosition - (hitVelocity * 150.0f);
 		Rotation? hitDirection = Rotation.LookAt(hitVelocity.Normal, Vector3.Up);
-		//Rotation? hitDirection = PlayerCamera.cam.WorldRotation;
 
 		if (damageInfo.hitVelocity.IsNearlyZero())
 		{
-			//hitDirection = null;
+			hitDirection = null;
 		}
 
 		Spectator.Teleport(cameraPoint, hitDirection);
+		Spectator.instance.SetMode(SpectateMode.CharacterDeath);
 
 		DestroyRequest();
 	}

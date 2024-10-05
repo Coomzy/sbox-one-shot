@@ -9,7 +9,8 @@ using Sandbox;
 public struct ScreenLog
 {
 	public string message { get; set; }
-	public TimeUntil lifeTime { get; set; }
+	public float lifeTime { get; set; }
+	public DateTime startTime { get; set; }
 	public Color? color { get; set; }
 	public Color? backgroundColor { get; set; }
 }
@@ -48,6 +49,7 @@ public class Debuggin : GameObjectSystem
 		var screenLog = new ScreenLog();
 		screenLog.message = log;
 		screenLog.lifeTime = logLifeTime;
+		screenLog.startTime = DateTime.UtcNow;
 		screenLog.color = color;
 		screenLog.backgroundColor = backgroundColor;
 		screenLogs.Add(screenLog);
@@ -129,12 +131,16 @@ public class Debuggin : GameObjectSystem
 			Gizmo.Draw.ScreenText(message.message, screenPos, "Consolas", textSize, TextFlag.LeftCenter);
 			count++;
 		}
-
+				
 		for (int i = screenLogs.Count - 1; i >= 0; i--)
 		{
 			var message = screenLogs[i];
-			if (!message.lifeTime)
+			TimeSpan elapsedTime = DateTime.UtcNow - message.startTime;
+
+			if (elapsedTime.TotalSeconds < message.lifeTime)
+			{
 				continue;
+			}
 			screenLogs.RemoveAt(i);
 		}
 		Gizmo.Draw.Color = originalColor;

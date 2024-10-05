@@ -49,6 +49,29 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 		CheckRemainingTimeAnnouncements();
 	}
 
+	public override void RoundOver()
+	{
+		CheckForAce();
+		base.RoundOver();
+	}
+
+	protected void CheckForAce()
+	{
+		if (PlayerInfo.allAlive.Count != 1)
+		{
+			return;
+		}
+
+		var osPlayerInfo = PlayerInfo.allAlive[0] as OSPlayerInfo;
+		if (!IsFullyValid(osPlayerInfo))
+			return;
+
+		if (osPlayerInfo.killsRound < 5)
+			return;
+
+		osPlayerInfo.ScoreAce();
+	}
+
 	void CheckRemainingTimeAnnouncements()
 	{
 		if (remainingStateTime > 60)

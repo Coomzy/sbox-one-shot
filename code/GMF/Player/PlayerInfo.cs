@@ -1,10 +1,11 @@
 
 using Sandbox;
+using Sandbox.Diagnostics;
 using System;
 using System.Reflection.Metadata;
 
 [Group("GMF")]
-public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMatchEvents
+public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 {
 	public static PlayerInfo local { get; private set; }
 	public static List<PlayerInfo> all { get; private set; } = new List<PlayerInfo>();
@@ -13,27 +14,28 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMat
 	public static List<PlayerInfo> allAlive { get; private set; } = new List<PlayerInfo>();
 	public static List<PlayerInfo> allDead { get; private set; } = new List<PlayerInfo>();
 
-	[Group("Setup"), Order(-100), Property] public GMFVoice voice { get; set; }
+	[Group("Setup"), Order(-100), Property] public GameObject voicePrefab { get; set; }
 
-	[HostSync, Sync, Property] public string displayName { get; set; }
-	[HostSync, Property] public ulong steamId { get; set; }
-	[HostSync, Property] public Role role { get; set; }
-	[HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
+	[Property, HostSync, Sync] public string displayName { get; set; }
+	[Property, HostSync] public ulong steamId { get; set; }
+	[Property, HostSync] public Role role { get; set; }
+	[Property, HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
+	[Property, Sync] public GMFVoice voice { get; set; }
 
-	[HostSync, Sync, Property] public Character character { get; set; }
+	[Property, HostSync, Sync] public Character character { get; set; }
 
-	[HostSync,Sync, Property, Change("OnRep_isActive")] public bool isActive { get; private set; } = true;
-	[HostSync, Sync, Property, Change("OnRep_isDead")] public bool isDead { get; private set; } = true;
-	[HostSync, Sync, Property] public TimeSince aliveTime { get; private set; }
-	[HostSync, Sync, Property] public TimeSince deadTime { get; private set; }
+	[Property, HostSync, Sync, Change("OnRep_isActive")] public bool isActive { get; private set; } = true;
+	[Property, HostSync, Sync, Change("OnRep_isDead")] public bool isDead { get; private set; } = true;
+	[Property, HostSync, Sync] public TimeSince aliveTime { get; private set; }
+	[Property, HostSync, Sync] public TimeSince deadTime { get; private set; }
 
-	[HostSync, Sync, Property] public int kills { get; set; }
-	[HostSync, Sync, Property] public int deaths { get; set; }
-	[HostSync, Sync, Property] public int wins { get; set; }
-	[HostSync, Sync, Property] public int winsMatches { get; set; }
+	[Property, HostSync, Sync] public int kills { get; set; }
+	[Property, HostSync, Sync] public int deaths { get; set; }
+	[Property, HostSync, Sync] public int wins { get; set; }
+	[Property, HostSync, Sync] public int winsMatches { get; set; }
 
-	[HostSync, Sync, Property] public int deathsRound { get; set; }
-	[HostSync, Sync, Property] public int killsRound { get; set; }
+	[Property, HostSync, Sync] public int deathsRound { get; set; }
+	[Property, HostSync, Sync] public int killsRound { get; set; }
 
 	public bool isLocal => this == local;
 
@@ -95,39 +97,18 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMat
 	{
 		OnRep_isActive();
 
-		if (!IsProxy)
-		{
-			local = this;
-			Spectator.TryCreate();
-		}
-	}
-
-	protected override void OnUpdate()
-	{
-		UpdateVoice();
-	}
-
-	protected virtual void UpdateVoice()
-	{
-		if (voice == null)
+		if (IsProxy)
 			return;
 
-		if (AudioPreferences.instance.voipMode == VOIPMode.Off)
-		{
-			voice.Mode = Voice.ActivateMode.Manual;
-			return;
-		}
+		local = this;
 
-		// TODO: Remove magic number
-		voice.WorldspacePlayback = !isDead || deadTime < 3.0f;
-		voice.Renderer = character?.body?.bodyRenderer;
-		voice.Mode = AudioPreferences.instance.voipMode == VOIPMode.PushToTalk ? Voice.ActivateMode.PushToTalk : Voice.ActivateMode.AlwaysOn;
-
-		if (!IsFullyValid(PlayerCamera.cam))
+		if (!IsFullyValid(voicePrefab))
 			return;
 
-		voice.WorldPosition = PlayerCamera.cam.WorldPosition;
-		voice.WorldRotation = PlayerCamera.cam.WorldRotation;
+		var voiceInst = voicePrefab.Clone();
+		voice = voiceInst.GetComponent<GMFVoice>();
+		voice.owner = this;
+		voiceInst.NetworkSpawn(Connection.Local);
 	}
 
 	public virtual void OnNetworkSpawn(Connection connection)
@@ -135,7 +116,6 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMat
 		if (connection.IsHost)
 		{
 			local = this;
-			Spectator.TryCreate();
 		}
 		displayName = connection.DisplayName;
 
@@ -209,6 +189,15 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IRoundEvents, IMat
 		deaths++;
 		deathsRound++;
 		isDead = true;
+
+		if (!IsProxy)
+		{
+			Sandbox.Services.Stats.Increment(Stat.DEATHS, 1);
+		}
+		else
+		{
+			Log.Warning($"Tried to increment death stat but was on proxy!");
+		}
 
 		Unpossess();
 	}

@@ -4,7 +4,7 @@ using System;
 using System.Numerics;
 
 [Group("GMF")]
-public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
+public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
 {
 	[Group("Setup"), Property] public SkinnedModelRenderer model { get; set; }
 	[Group("Setup"), Property] public ProceduralAnimation procAnim { get; set; }
@@ -25,10 +25,12 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireInputDown { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince fireStartTime { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince lastFire { get; set; }
+	[Group("Runtime"), Property, ReadOnly] public TimeSince lastDryFire { get; set; }
 
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireAltInputDown { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince fireAltStartTime { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince lastFireAlt { get; set; }
+	[Group("Runtime"), Property, ReadOnly] public TimeSince lastDryFireAlt { get; set; }
 
 	protected override void OnAwake()
 	{
@@ -190,12 +192,12 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 
 	public virtual void DryFire()
 	{
-		lastFire = 0;
+		lastDryFire = 0;
 	}
 
 	public virtual void DryFireAlt()
 	{
-		lastFireAlt = 0;
+		lastDryFireAlt = 0;
 	}
 
 	public virtual bool CanFire()
@@ -215,7 +217,7 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 
 	public virtual bool CanDryFire()
 	{
-		if (lastFire < attackCooldownTime)
+		if (lastDryFire < attackCooldownTime)
 		{
 			return false;
 		}
@@ -231,30 +233,22 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 	
 	public virtual void Drop(Vector3 force)
 	{
+		Drop_Remote();
+
+		rigidbody.ApplyImpulse(force);
+		var weaponRandomTorque = Game.Random.Float(1500.0f, 3500.0f);
+		rigidbody.ApplyTorque(Game.Random.VectorInSphere().Normal * weaponRandomTorque * 5000.0f);
+	}
+
+	[Broadcast]
+	protected virtual void Drop_Remote()
+	{
 		GameObject.SetParent(null, true);
 
 		collisionChild.Enabled = true;
 		procAnim.Enabled = false;
 		rigidbody.Enabled = true;
 
-		rigidbody.ApplyImpulse(force);
-		var weaponRandomTorque = Game.Random.Float(1500.0f, 3500.0f);
-		rigidbody.ApplyTorque(Game.Random.Rotation().Forward * weaponRandomTorque);
-
-		model.RenderOptions.Overlay = false;
-		model.GameObject.Enabled = true;
-
-		if (equipmentProxy != null)
-		{
-			equipmentProxy.SetVisibility(false);
-		}
-
-		Drop_Remote();
-	}
-
-	[Broadcast]
-	public void Drop_Remote()
-	{
 		model.RenderOptions.Overlay = false;
 		model.Enabled = true;
 
@@ -264,7 +258,7 @@ public class Equipment : Component, IRoundEvents, Component.INetworkSpawn
 		}
 	}
 
-	public void RoundCleanup()
+	public virtual void RoundCleanup()
 	{
 		if (IsProxy)
 			return;

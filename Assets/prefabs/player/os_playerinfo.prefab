@@ -11,10 +11,16 @@
       {
         "__type": "OSPlayerInfo",
         "__guid": "1d82eccc-349b-4fc3-af41-240183bf276e",
-        "aliveTime": {},
-        "deadTime": {},
+        "aliveTime": {
+          "Relative": 177.5135
+        },
+        "clothing": {},
+        "deadTime": {
+          "Relative": 177.5135
+        },
         "deaths": 0,
         "deathsRound": 0,
+        "hasSixDegreesAchievement": false,
         "isActive": true,
         "isDead": true,
         "isPromptingPayToWin": false,
@@ -23,44 +29,17 @@
         "rank": 0,
         "role": "None",
         "steamId": 0,
-        "voice": {
-          "_type": "component",
-          "component_id": "8b839c7c-8cef-48e5-a074-98aee71db329",
-          "go": "de2ea4c0-5163-4e6c-9195-0e14d10268ef",
-          "component_type": "GMFVoice"
+        "voice": null,
+        "voicePrefab": {
+          "_type": "gameobject",
+          "prefab": "prefabs/player/gmf voice.prefab"
         },
         "wins": 0,
+        "winsMatches": 0,
         "xp": 0
       }
     ],
-    "Children": [
-      {
-        "__guid": "de2ea4c0-5163-4e6c-9195-0e14d10268ef",
-        "Flags": 0,
-        "Name": "Voice",
-        "Enabled": true,
-        "Components": [
-          {
-            "__type": "GMFVoice",
-            "__guid": "8b839c7c-8cef-48e5-a074-98aee71db329",
-            "excludedPlayers": [],
-            "Loopback": false,
-            "Mode": "AlwaysOn",
-            "MorphScale": 3,
-            "MorphSmoothTime": 0.1,
-            "owner": {
-              "_type": "component",
-              "component_id": "1d82eccc-349b-4fc3-af41-240183bf276e",
-              "go": "3e023e10-0d92-49f9-b58f-da5b81f35849",
-              "component_type": "OSPlayerInfo"
-            },
-            "PushToTalkInput": "voice",
-            "Volume": 1,
-            "WorldspacePlayback": true
-          }
-        ]
-      }
-    ],
+    "Children": [],
     "__variables": []
   },
   "ShowInMenu": false,

@@ -1,0 +1,50 @@
+{
+  "RootObject": {
+    "__guid": "80484858-cc08-4b34-b93b-ac6b66d6e5ff",
+    "Flags": 0,
+    "Name": "gmf voice",
+    "Enabled": true,
+    "NetworkMode": 1,
+    "NetworkInterpolation": false,
+    "Components": [
+      {
+        "__type": "GMFVoice",
+        "__guid": "2fb0599a-dd38-4f67-92ce-c2e46b6bf929",
+        "excludedPlayers": [],
+        "proxy": {
+          "_type": "component",
+          "component_id": "b6cf00c4-7486-40c9-a98f-ddf391539f7c",
+          "go": "80484858-cc08-4b34-b93b-ac6b66d6e5ff",
+          "component_type": "GMFVoiceProxy"
+        }
+      },
+      {
+        "__type": "GMFVoiceProxy",
+        "__guid": "b6cf00c4-7486-40c9-a98f-ddf391539f7c",
+        "Loopback": false,
+        "Mode": "AlwaysOn",
+        "MorphScale": 3,
+        "MorphSmoothTime": 0.1,
+        "owner": {
+          "_type": "component",
+          "component_id": "2fb0599a-dd38-4f67-92ce-c2e46b6bf929",
+          "go": "80484858-cc08-4b34-b93b-ac6b66d6e5ff",
+          "component_type": "GMFVoice"
+        },
+        "PushToTalkInput": "voice",
+        "Volume": 1,
+        "WorldspacePlayback": true
+      }
+    ],
+    "Children": [],
+    "__variables": []
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "DontBreakAsTemplate": false,
+  "ResourceVersion": 1,
+  "__references": [],
+  "IsValid": true,
+  "__version": 1
+}

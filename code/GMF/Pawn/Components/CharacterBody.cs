@@ -7,13 +7,13 @@ using static Sandbox.ModelRenderer;
 using static Sandbox.PhysicsContact;
 
 [Group("GMF")]
-public class CharacterBody : Component, IRoundEvents, Component.INetworkSpawn
+public class CharacterBody : Component, IGameModeEvents, Component.INetworkSpawn
 {
 	[Group("Setup"), Order(-100), Property] public ModelPhysics bodyPhysics { get; set; }
 	[Group("Setup"), Order(-100), Property] public ModelCollider bodyCollider { get; set; }
 	[Group("Setup"), Order(-100), Property] public SkinnedModelRenderer bodyRenderer { get; set; }
 	[Group("Setup"), Order(-100), Property] public CitizenAnimationHelper thirdPersonAnimationHelper { get; set; }
-	[Group("Setup"), Order(-100), Property] public Voice voiceTransmitter { get; set; }
+	[Group("Setup"), Order(-100), Property] public GameObject voipSocket { get; set; }
 	[Group("Setup"), Order(-100), Property] public GameObject thirdPersonEquipmentAttachPoint { get; set; }
 
 	[Group("Config"), Order(0), Property] public bool firstPersonDefaultView { get; set; } = true;

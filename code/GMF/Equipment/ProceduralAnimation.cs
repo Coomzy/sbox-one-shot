@@ -34,6 +34,9 @@ public class ProceduralAnimation : Component
 	[Group("Runtime"), Order(100), Property] public bool isDownBob { get; set; } = true;
 	[Group("Runtime"), Order(100), Property] public float bobRate { get; set; }
 
+	[Group("Runtime"), Order(100), Property] public Angles lastAnglesInput = new Angles();
+	[Group("Runtime"), Order(100), Property] public Angles lastAngles = new Angles();
+
 	public Character owner => equipment?.instigator;
 
 	protected override void OnStart()
@@ -41,6 +44,7 @@ public class ProceduralAnimation : Component
 		config = config ?? new ProceduralAnimationConfig();
 	}
 
+	// TODO: I think ideally, everything would take a ref of desiredPos/desiredAngles and adjust it as needed
 	protected override void OnUpdate()
 	{
 		if (owner == null)
@@ -48,9 +52,10 @@ public class ProceduralAnimation : Component
 
 		Vector3 desiredPos = Vector3.Zero;
 		Angles desiredAngles = Angles.Zero;
+
 		if (owner.movement.isMantling)
 		{
-			desiredPos = GetSlidingMovement();
+			desiredPos = GetMantlingMovement();
 			desiredAngles = GetMantlingRotation();
 		}
 		else if (owner.movement.isSliding)
@@ -66,16 +71,15 @@ public class ProceduralAnimation : Component
 			desiredPos = GetGroundMovement();
 		}
 
+		ApplyRecoil(ref desiredPos, ref desiredAngles);
+
 		if (!owner.movement.isMantling)
 		{
-			var ungroundedLerp = MathX.LerpInverse(owner.movement.lastUngrounded, 0.0f, config.ungroundedBumpTime);
-			if (owner.movement.isGrounded && ungroundedLerp < 1.0f)
-			{
-				desiredPos.z -= Time.Delta * config.ungroundedBumpRate;
-			}
+			desiredAngles = GetSway();
+
+			DoGroundBump(ref desiredPos);
 		}
 
-		//desiredPos = GetAirMovement();
 		LocalPosition = desiredPos;
 		LocalRotation = desiredAngles.ToRotation();
 	}
@@ -175,5 +179,46 @@ public class ProceduralAnimation : Component
 		localPos.z = MathY.MoveTowards(localPos.z, bobTarget, Time.Delta * bobRate);
 		//Debuggin.ToScreen($"localPos.z: {localPos.z}");
 		return localPos;
+	}
+
+	public virtual void ApplyRecoil(ref Vector3 desiredPos, ref Angles desiredAngles)
+	{
+		if (!IsFullyValid(owner.equippedItem))
+			return;
+
+		var lastFire = owner.equippedItem.lastFire;
+
+		var recoilPct = MathY.InverseLerp(0.15f, 0.0f, lastFire);
+
+		float amount = 10.0f;
+
+		desiredPos.x = -amount * recoilPct;
+	}
+
+	public virtual Angles GetSway()
+	{
+		var inputScalar = 3.5f;
+		var maxInputRange = 3.5f;
+		var inputSmoothRate = 5.0f;
+		var smoothRate = 70.0f;
+		var deltaTime = MathY.Min(Time.Delta, 60.0f / 1.0f);
+
+		var input = Input.AnalogLook * inputScalar;
+		input.yaw = MathY.Min(input.yaw, maxInputRange);
+		input.pitch = MathY.Min(input.pitch, maxInputRange);
+
+		lastAnglesInput = Angles.Lerp(lastAnglesInput, input, Time.Delta * inputSmoothRate);
+		lastAngles = Angles.Lerp(lastAngles, lastAnglesInput, Time.Delta * smoothRate);
+
+		return lastAngles;
+	}
+
+	public virtual void DoGroundBump(ref Vector3 desiredPos)
+	{
+		var ungroundedLerp = MathX.LerpInverse(owner.movement.lastUngrounded, 0.0f, config.ungroundedBumpTime);
+		if (owner.movement.isGrounded && ungroundedLerp < 1.0f)
+		{
+			desiredPos.z -= Time.Delta * config.ungroundedBumpRate;
+		}
 	}
 }

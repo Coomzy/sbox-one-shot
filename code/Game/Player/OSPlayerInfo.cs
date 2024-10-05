@@ -64,9 +64,6 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 		if (IsProxy)
 			return;
 
-		if (GameSettings.instance.payToWinGamePass.Has())
-			return;
-
 		if (Input.Pressed(Inputs.sbux_menu))
 		{
 			PromptPayToWinGamePass();
@@ -75,6 +72,9 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 
 	async void PromptPayToWinGamePass()
 	{
+		if (GameSettings.instance.payToWinGamePass.Has())
+			return;
+
 		if (isPromptingPayToWin)
 			return;
 
@@ -134,5 +134,11 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 			// TODO: Move this to a interface IRankStatus and do a post event
 			UIManager.instance.rankUpWidget.Show();
 		}
+	}
+
+	[Authority]
+	public void ScoreAce()
+	{
+		Stats.Increment(Stat.ACES, 1);
 	}
 }
