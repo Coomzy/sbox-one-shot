@@ -9,6 +9,8 @@ public class NetworkManager : Component, Component.INetworkListener
 {
 	public static NetworkManager instance { get; private set; }
 
+	[ConVar] public static bool debug_networkmanager { get; set; }
+
 	protected override void OnAwake()
 	{
 		instance = this;
@@ -33,9 +35,10 @@ public class NetworkManager : Component, Component.INetworkListener
 
 	public void OnActive(Connection connection)
 	{
-		Log.Info($"Player '{connection.DisplayName}' is becoming active");
-
-		//Log.Info($"NetworkManager::OnActive() 1 connection: {connection} connection avatar: {connection.GetUserData("avatar")}");
+		if (debug_networkmanager)
+		{
+			Log.Info($"Player '{connection.DisplayName}' is becoming active");
+		}
 
 		var playerInfo = FindExistingPlayerInfo(connection);
 		bool rejoined = playerInfo != null;
@@ -67,12 +70,18 @@ public class NetworkManager : Component, Component.INetworkListener
 
 	public void OnConnected(Connection connection)
 	{
-		Log.Info($"Player '{connection.DisplayName}' connected");
+		if (debug_networkmanager)
+		{
+			Log.Info($"Player '{connection.DisplayName}' connected");
+		}
 	}
 
 	public void OnDisconnected(Connection connection)
 	{
-		Log.Info($"Player '{connection.DisplayName}' disconnected");
+		if (debug_networkmanager)
+		{
+			Log.Info($"Player '{connection.DisplayName}' disconnected");
+		}
 
 		if (!PlayerInfo.TryFromConnection(connection, out var leavingPlayerInfo))
 		{
@@ -87,7 +96,10 @@ public class NetworkManager : Component, Component.INetworkListener
 
 	public void OnBecameHost(Connection previousHost)
 	{
-		Log.Info($"You are now host, player '{previousHost.DisplayName}' disconnected");
+		if (debug_networkmanager)
+		{
+			Log.Info($"You are now host, player '{previousHost.DisplayName}' disconnected");
+		}
 		//PlayerInfo.local.OnBecameHost(PlayerInfo.FromConnection(previousHost));
 	}
 

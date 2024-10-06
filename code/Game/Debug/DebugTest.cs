@@ -1,28 +1,10 @@
-public class DebugTest : Component, Component.INetworkSnapshot
+public class DebugTest : Component
 {	
 	public static bool isEnabled { get; set; }
 
 	protected override void OnAwake()
 	{
 		isEnabled = Application.IsEditor;
-	}
-
-	void INetworkSnapshot.WriteSnapshot(ref ByteStream writer)
-	{
-		Log.Info($"INetworkSnapshot.WriteSnapshot() isEnabled: {isEnabled}, Application.IsEditor: {Application.IsEditor}");
-		if (!Application.IsEditor)
-		{
-			writer.Write(false);
-			return;
-		}
-
-		writer.Write(isEnabled);
-	}
-
-	void INetworkSnapshot.ReadSnapshot(ref ByteStream reader)
-	{
-		isEnabled = reader.Read<bool>();
-		Log.Info($"INetworkSnapshot.ReadSnapshot() isEnabled: {isEnabled}, Application.IsEditor: {Application.IsEditor}");
 	}
 
 	[Button]

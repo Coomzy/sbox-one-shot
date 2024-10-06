@@ -26,6 +26,7 @@ public class ProceduralAnimationConfig : GameResource
 	[Group("Ground Impact"), Property] public float ungroundedBumpRate { get; set; } = 30.0f;
 }
 
+[Group("GMF")]
 public class ProceduralAnimation : Component
 {
 	[Group("Setup"), Property] public Equipment equipment { get; set; }
@@ -47,7 +48,7 @@ public class ProceduralAnimation : Component
 	// TODO: I think ideally, everything would take a ref of desiredPos/desiredAngles and adjust it as needed
 	protected override void OnUpdate()
 	{
-		if (owner == null)
+		if (!IsFullyValid(owner))
 			return;
 
 		Vector3 desiredPos = Vector3.Zero;

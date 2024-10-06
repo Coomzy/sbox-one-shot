@@ -65,10 +65,10 @@
         "Bounciness": 0,
         "GroundAngle": 45,
         "Height": 64,
-        "IgnoreLayers": "",
+        "IgnoreLayers": "character_body,equipment",
         "Radius": 16,
         "StepHeight": 18,
-        "UseCollisionRules": true
+        "UseCollisionRules": false
       },
       {
         "__type": "CharacterMovement",
@@ -85,19 +85,19 @@
         "isMantling": false,
         "isSliding": false,
         "lastGrounded": {
-          "Relative": 6398.354
+          "Relative": 5501.836
         },
         "lastJump": {
-          "Relative": 6398.354
+          "Relative": 5501.836
         },
         "lastMantleEnd": {
-          "Relative": 6398.354
+          "Relative": 5501.836
         },
         "lastMantleInput": {
-          "Relative": 6398.354
+          "Relative": 5501.836
         },
         "lastUngrounded": {
-          "Relative": 6398.354
+          "Relative": 5501.836
         },
         "mantleEnd": "0,0,0",
         "mantleStart": "0,0,0",
@@ -108,12 +108,12 @@
           "component_type": "OSCharacter"
         },
         "slideStart": {
-          "Relative": 6398.354
+          "Relative": 5501.836
         },
         "slideVelocity": "0,0,0",
         "timeToFinishMantle": {
-          "Relative": -6398.354,
-          "Passed": 6398.354,
+          "Relative": -5501.836,
+          "Passed": 5501.836,
           "Fraction": 1
         },
         "wishCrouch": false,

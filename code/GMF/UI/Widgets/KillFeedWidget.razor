@@ -1,5 +1,6 @@
 ﻿@using Sandbox;
 @using Sandbox.UI;
+@implements IUIEvents;
 @inherits PanelComponent
 
 <root>
@@ -32,6 +33,11 @@
     public void Example()
     {
         AddEntry("Killer", "Victim", "----->");
+    }
+
+    public void AddKillFeedEntry(string killer, string victim, string message)
+    {
+        AddEntry(killer, victim, message);
     }
 
     [Broadcast]

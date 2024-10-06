@@ -1,5 +1,4 @@
 using Sandbox.Audio;
-using System;
 
 public enum VOIPMode
 {
@@ -28,6 +27,11 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		voipMode = VOIPMode.PushToTalk;
 	}
 
+	protected override void OnLoad()
+	{		
+		ApplyVolumesToMixers();
+	}
+
 	public void ApplyVolumesToMixers()
 	{
 		var mixerGame = Mixer.FindMixerByName("Game");
@@ -50,7 +54,7 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		if (mixerAnnouncer != null)
 		{
 			mixerAnnouncer.Volume = announcerVolume;
-		}		
+		}
 	}
 
 	public void MuteMusic(bool mute)
@@ -68,30 +72,35 @@ public class AudioPreferences : EasySave<AudioPreferences>
 	{
 		muteMusic = value;
 		ApplyVolumesToMixers();
+		Save();
 	}
 
 	void SetGameVolumeValue(float value)
 	{
 		gameVolume = value;
 		ApplyVolumesToMixers();
+		Save();
 	}
 
 	void SetMusicVolumeValue(float value)
 	{
 		musicVolume = value;
 		ApplyVolumesToMixers();
+		Save();
 	}
 
 	void SetUIVolumeValue(float value)
 	{
 		uiVolume = value;
 		ApplyVolumesToMixers();
+		Save();
 	}
 
 	void SetAnnouncerVolumeValue(float value)
 	{
-		uiVolume = value;
+		announcerVolume = value;
 		ApplyVolumesToMixers();
+		Save();
 	}
 
 	protected override UITab OnBuildUI()
@@ -107,10 +116,10 @@ public class AudioPreferences : EasySave<AudioPreferences>
 		// Add Group Volumes
 		var groupVolumes = tab.AddGroup("Volumes");
 
-		groupVolumes.AddSlider("Game Volume", () => gameVolume, SetGameVolumeValue);
-		//groupVolumes.AddSlider("Music Volume", () => musicVolume, SetMusicVolumeValue);
-		groupVolumes.AddSlider("UI Volume", () => uiVolume, SetUIVolumeValue);
-		groupVolumes.AddSlider("Announcer Volume", () => uiVolume, SetAnnouncerVolumeValue);
+		groupVolumes.AddSlider("Game Volume", () => gameVolume, SetGameVolumeValue, step: 0.05f);
+		//groupVolumes.AddSlider("Music Volume", () => musicVolume, SetMusicVolumeValue, step: 0.05f);
+		groupVolumes.AddSlider("UI Volume", () => uiVolume, SetUIVolumeValue, step: 0.05f);
+		groupVolumes.AddSlider("Announcer Volume", () => announcerVolume, SetAnnouncerVolumeValue, step: 0.05f);
 
 		// Add Group VOIP
 		var groupVOIP = tab.AddGroup("VOIP");

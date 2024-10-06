@@ -19,22 +19,8 @@ public class GMFSettings : ProjectSetting<GMFSettings>
 		return Role.None;
 	}
 
+	// TODO: For some reason GameObjects in a gameresource are throwing a deserialize error in this project
 	//[Group("Prefabs")] public GameObject playerInfoPrefab { get; set; }
-
-	//[Group("Prefabs"), Property] public GameObject playerInfoPrefab { get; set; }
-	//[Group("Prefabs"), Property] public GameObject pawnPrefab { get; set; }
-
-	//[Group("Prefabs"), Property] public GameObject spectatorPrefab { get; set; }
-	//[Group("Prefabs"), Property] public GameObject spectatorVRPrefab { get; set; }
-
-	// I used to think I'd need to spawn this, but now I'm not sure I do
-	//[Group("Prefabs"), Property] public GameObject gameModePrefab { get; set; }
-}
-
-[GameResource("GMF Settings v2", "gmfss", "GMF Settings v2")]
-public class GMFSettings2 : GameResource
-{
-	//public GameObject testPrefab { get; set; }
 
 	//[Group("Prefabs"), Property] public GameObject playerInfoPrefab { get; set; }
 	//[Group("Prefabs"), Property] public GameObject pawnPrefab { get; set; }

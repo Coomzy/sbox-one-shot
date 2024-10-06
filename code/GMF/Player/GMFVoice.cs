@@ -1,6 +1,7 @@
-
+using Sandbox;
 using Sandbox.Diagnostics;
 
+[Group("GMF")]
 public class GMFVoice : Component
 {
 	[Group("Setup"), Property] public GMFVoiceProxy proxy { get; set; }
@@ -37,6 +38,8 @@ public class GMFVoice : Component
 
 	protected virtual void UpdateVoice()
 	{
+		Debuggin.ToScreen($"'{owner.displayName}' isDead: {owner.isDead}, isRecentlyDead: {owner.isRecentlyDead}");
+
 		proxy.WorldspacePlayback = !owner.isDead || owner.isRecentlyDead;
 
 		if (IsFullyValid(owner?.character?.body))

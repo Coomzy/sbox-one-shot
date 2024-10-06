@@ -103,7 +103,8 @@ public class HarpoonGun : Equipment
 			var projectile = spearInst.Components.Get<Projectile>();
 			if (projectile != null)
 			{
-				projectile.owner = this;
+				projectile.instigator = this;
+				projectile.velocity = projectile.WorldTransform.Forward * 2500.0f;
 			}
 
 			spearInst.NetworkSpawn(GameObject.Network.Owner);

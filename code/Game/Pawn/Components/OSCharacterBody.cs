@@ -1,23 +1,11 @@
 
-using Sandbox;
-using Sandbox.Citizen;
 using System;
-using System.Text.Json.Serialization;
-using static Sandbox.ModelRenderer;
 
 [Group("OS")]
-public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
+public class OSCharacterBody : CharacterBody
 {
 	[Group("Runtime"), Order(100), Property, Sync] public HarpoonSpear impaledByHarpoonSpear { get; set; }
 	[Group("Runtime"), Order(100), Property, Sync] public int impaledPhysicsBodyIndex { get; set; } = -1;
-
-	protected override void OnAwake()
-	{
-		base.OnAwake();
-
-		thirdPersonAnimationHelper.Handedness = CitizenAnimationHelper.Hand.Both;
-		thirdPersonAnimationHelper.HoldType = CitizenAnimationHelper.HoldTypes.Rifle;
-	}
 
 	protected override void OnFixedUpdate()
 	{
@@ -63,9 +51,6 @@ public class OSCharacterBody : CharacterBody, Component.INetworkSpawn
 
 	public void Impale(Component spear, int bodyIndex)
 	{
-		if (owner?.equippedItem != null)
-			owner.equippedItem.Drop(Vector3.Zero);
-
 		bodyPhysics.Enabled = true;
 		bodyPhysics.MotionEnabled = true;
 		GameObject.Tags.Set("ragdoll", true);

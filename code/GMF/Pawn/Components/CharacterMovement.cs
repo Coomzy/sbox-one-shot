@@ -16,6 +16,7 @@ public class CharacterMovement : Component
 	[Group("Runtime"), Property, Sync] public bool isCrouching { get; set; }
 	[Group("Runtime"), Property, Sync] public Vector3 wishVelocity { get; set; }
 	[Group("Runtime"), Property, Sync] public Vector3 slideVelocity { get; set; }
+	[Group("Runtime"), Property] public float slideVelocityReduction { get; set; }
 
 	[Group("Runtime"), Property] public bool wishCrouch { get; set; }
 	[Group("Runtime"), Property] public float eyeHeight { get; set; }
@@ -32,7 +33,10 @@ public class CharacterMovement : Component
 
 	[Group("Runtime"), Property] public TimeSince lastJump { get; set; }
 	[Group("Runtime"), Property] public TimeSince slideStart { get; set; }
-		
+
+	[ConVar] public static bool debug_character_movement { get; set; }
+	public static bool cheat_remove_slide_vel_cap { get; set; }
+
 	float CurrentMoveSpeed
 	{
 		get
@@ -55,6 +59,25 @@ public class CharacterMovement : Component
 		isSliding = false;
 		isMantling = false;
 		isCrouching = false;
+	}
+
+	float heighestVel = 0.0f;
+	protected override void OnUpdate()
+	{
+		if (debug_character_movement)
+		{
+			var vel = characterController.Velocity.WithZ(0).Length;
+			vel = characterController.Velocity.Length;
+			if (isSliding)
+			{
+				if (heighestVel < vel)
+				{
+					heighestVel = vel;
+				}
+			}
+			Debuggin.ToScreen($"characterController.Velocity: {vel}");
+			Debuggin.ToScreen($"heighestVel: {heighestVel}");
+		}
 	}
 
 	protected override void OnFixedUpdate()
@@ -102,6 +125,14 @@ public class CharacterMovement : Component
 	{
 		float slideSpeedScalar = MathX.LerpInverse(slideStart, 0.0f, config.slideTime);
 		slideSpeedScalar = config.slideFalloffCurve.Evaluate(slideSpeedScalar);
+
+		if (slideSpeedScalar > 1.0f)
+		{
+			var slideSpeedScalarBonus = slideSpeedScalar - 1.0f;
+			slideSpeedScalarBonus = slideSpeedScalarBonus * slideVelocityReduction;
+			slideSpeedScalar = slideSpeedScalar - slideSpeedScalarBonus;
+		}
+
 		Vector3 curSlideVelocity = slideVelocity * slideSpeedScalar;
 
 		characterController.Velocity = curSlideVelocity;
@@ -417,6 +448,13 @@ public class CharacterMovement : Component
 			return;
 
 		isSliding = true;
+		
+		slideVelocityReduction = MathY.InverseLerp(config.sprintMoveSpeed * 2, config.sprintMoveSpeed * 3, characterController.Velocity.Length);
+		if (cheat_remove_slide_vel_cap)
+		{
+			slideVelocityReduction = 0.0f;
+		}
+		Debuggin.ToScreen($"slideVelocityReduction: {slideVelocityReduction}", 5.0f);
 		slideVelocity = characterController.Velocity;
 		slideStart = 0;
 	}

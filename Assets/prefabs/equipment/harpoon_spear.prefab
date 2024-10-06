@@ -10,12 +10,26 @@
       {
         "__type": "HarpoonSpear",
         "__guid": "b30f385b-5468-4dcd-b0bb-c7a030893f78",
+        "coyoteTime": 0.35,
+        "flare": {
+          "_type": "component",
+          "component_id": "de9bb1cc-1804-4b95-be76-3f4ac42c6178",
+          "go": "fd38653c-8a5b-4663-a325-a82e30fa89e9",
+          "component_type": "HarpoonSpearFlare"
+        },
+        "gravityRate": 350,
         "impactEffect": {
           "_type": "gameobject",
           "prefab": "vfx/sparks.prefab"
         },
+        "impaledCharacters": [],
         "isInFlight": true,
-        "startPos": "0,0,0"
+        "startFlightTime": {
+          "Relative": 61.303345
+        },
+        "startPos": "0,0,0",
+        "usesGravity": true,
+        "velocity": "0,0,0"
       }
     ],
     "Children": [
@@ -62,58 +76,6 @@
               }
             ],
             "Children": [
-              {
-                "__guid": "57e350ba-1c94-49f6-8b8a-288da86f6a6a",
-                "Flags": 0,
-                "Name": "Prong",
-                "Position": "39.04791,2.353088,-4.299423",
-                "Components": [
-                  {
-                    "__type": "Sandbox.CapsuleCollider",
-                    "__guid": "3c29903d-520e-4229-bf3b-17a7edad7f5f",
-                    "End": "-4,0,1.800007",
-                    "IsTrigger": false,
-                    "Radius": 0.35,
-                    "Start": "0,0,0",
-                    "Static": false,
-                    "Surface": "surfaces/metal.weapon.surface"
-                  },
-                  {
-                    "__type": "Sandbox.CapsuleCollider",
-                    "__guid": "395b3ecb-d919-4094-bbdc-c814a5a414dc",
-                    "End": "-4,0,-1.8",
-                    "IsTrigger": false,
-                    "Radius": 0.35,
-                    "Start": "0,0,0",
-                    "Static": false,
-                    "Surface": "surfaces/metal.weapon.surface"
-                  }
-                ]
-              },
-              {
-                "__guid": "f3657711-5751-421f-aab6-088f8cf85291",
-                "Flags": 0,
-                "Name": "Player Collision",
-                "Position": "39.04791,2.353088,-4.299423",
-                "Tags": "projectile_player",
-                "Components": [
-                  {
-                    "__type": "Sandbox.CapsuleCollider",
-                    "__guid": "b037afb1-9ecf-4457-98db-b1a2fda1da09",
-                    "End": "-7.5,0,0",
-                    "IsTrigger": false,
-                    "Radius": 5,
-                    "Start": "-2.5,0,0",
-                    "Static": false
-                  },
-                  {
-                    "__type": "HarpoonSpearPlayerCollision",
-                    "__guid": "4fc283e5-523c-43b7-8575-83a9a7c0dc3e",
-                    "isInFlight": true,
-                    "startPos": "0,0,0"
-                  }
-                ]
-              },
               {
                 "__guid": "a7113f68-28a4-48ea-aef6-fc9365681639",
                 "Flags": 0,
@@ -168,6 +130,52 @@
                       }
                     ],
                     "Wireframe": false
+                  }
+                ]
+              },
+              {
+                "__guid": "fd38653c-8a5b-4663-a325-a82e30fa89e9",
+                "Flags": 0,
+                "Name": "Flare Root",
+                "Position": "39.43682,0,0",
+                "Enabled": true,
+                "Components": [
+                  {
+                    "__type": "HarpoonSpearFlare",
+                    "__guid": "de9bb1cc-1804-4b95-be76-3f4ac42c6178",
+                    "flareRenderer": {
+                      "_type": "component",
+                      "component_id": "5161c845-00cc-403f-876e-fb65f8c677f7",
+                      "go": "70757f0b-68d6-496c-87b2-892d823b8da7",
+                      "component_type": "ModelRenderer"
+                    }
+                  }
+                ],
+                "Children": [
+                  {
+                    "__guid": "70757f0b-68d6-496c-87b2-892d823b8da7",
+                    "Flags": 0,
+                    "Name": "Flare Plane",
+                    "Rotation": "0,0.7071067,0,0.7071068",
+                    "Scale": "0.3,0.3,0.3",
+                    "Enabled": true,
+                    "Components": [
+                      {
+                        "__type": "Sandbox.ModelRenderer",
+                        "__guid": "5161c845-00cc-403f-876e-fb65f8c677f7",
+                        "BodyGroups": 18446744073709551615,
+                        "MaterialOverride": "vfx/flare/tbcustomflare_bw.vmat",
+                        "Model": "models/dev/plane.vmdl",
+                        "RenderOptions": {
+                          "GameLayer": true,
+                          "OverlayLayer": false,
+                          "BloomLayer": false,
+                          "AfterUILayer": false
+                        },
+                        "RenderType": "Off",
+                        "Tint": "1,1,1,1"
+                      }
+                    ]
                   }
                 ]
               }

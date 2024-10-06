@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System;
 using Sandbox;
 using Sandbox.Services;
+using System.Numerics;
+using Sandbox.Utility;
+using Sandbox.Diagnostics;
 
 public enum CheatFlags
 {
@@ -11,7 +14,8 @@ public enum CheatFlags
 	//AllowInPackaged = 1,
 }
 
-[CodeGenerator(CodeGeneratorFlags.WrapMethod | CodeGeneratorFlags.Static, "CheatAttribute.OnCheatInvoked")]
+[CodeGenerator(CodeGeneratorFlags.WrapMethod | CodeGeneratorFlags.Static, "CheatAttribute.Wrapper_Cheat_Method")]
+//[CodeGenerator(CodeGeneratorFlags.WrapPropertySet | CodeGeneratorFlags.Static, "CheatAttribute.Wrapper_Cheat_Property", -1)]
 public class CheatAttribute : Attribute
 {
 	public CheatFlags flags { get; set; }
@@ -23,12 +27,12 @@ public class CheatAttribute : Attribute
 		this.role = role;
 	}
 
-	public static void OnCheatInvoked(WrappedMethod method, params object[] args)
+	public static void Wrapper_Cheat_Method(WrappedMethod method, params object[] args)
 	{		
 		var cheatAttribute = method.Attributes.OfType<CheatAttribute>().FirstOrDefault();
 		if (cheatAttribute == null)
 		{
-			Log.Warning($"CheatAttribute::OnCheatInvoked() called but CheatAttribute was missing? method: {method.MethodName}");
+			Log.Warning($"CheatAttribute::Wrapper_Cheat_Method() called but CheatAttribute was missing? method: {method.MethodName}");
 			return;
 		}
 
@@ -47,12 +51,49 @@ public class CheatAttribute : Attribute
 
 		method.Resume();
 	}
+
+	// This doesn't work and I'm not sure it should
+	public static void Wrapper_Cheat_Property<T>(WrappedPropertySet<T> property)
+	{
+		var cheatAttribute = property.Attributes.OfType<CheatAttribute>().FirstOrDefault();
+		if (cheatAttribute == null)
+		{
+			Log.Warning($"CheatAttribute::Wrapper_Cheat_Property() called but CheatAttribute was missing? property: {property.PropertyName} type: {property.TypeName}");
+			
+			property.Setter(property.Value);
+			return;
+		}
+
+		var role = IsFullyValid(PlayerInfo.local) ? PlayerInfo.local.role : Role.None;
+		if (role < cheatAttribute.role)
+		{
+			Log.Warning($"Cannot use '{property.PropertyName}' because it requires the role '{cheatAttribute.role}'");
+
+			var currentValueObject = ReflectionUtils.GetStaticPropertyValue(property.TypeName, property.PropertyName);
+			T currentValue = property.Value;
+
+			try
+			{
+				currentValue = (T)currentValueObject;
+			}
+			catch (Exception exception)
+			{
+				Log.Warning($"Failed to cast '{property.PropertyName}' exception: {exception}");
+			}
+
+			Log.Warning($"'{property.PropertyName}' currentValue: {currentValue}");
+			property.Setter(currentValue);
+			return;
+		}
+
+		property.Setter(property.Value);
+	}
 }
 
 public static partial class Cheats
 {
 	[Cheat(CheatFlags.Broadcast), ConCmd("timescale")]
-	public static void SetTimescale(float timescale = 1.0f)
+	public static void timescale(float timescale = 1.0f)
 	{
 		if (Game.ActiveScene == null)
 			return;
@@ -61,7 +102,7 @@ public static partial class Cheats
 	}
 
 	[Cheat(role = Role.None), ConCmd("suicide")]
-	public static void Suicide()
+	public static void suicide()
 	{
 		if (!IsFullyValid(PlayerInfo.local.character))
 			return;
@@ -72,8 +113,8 @@ public static partial class Cheats
 		PlayerInfo.local.character.Die(damageInfo);
 	}
 
-	[Cheat, ConCmd("teleport_players")]
-	public static void TeleportPlayers()
+	[Cheat, ConCmd]
+	public static void teleport_players()
 	{
 		var teleportPoint = PlayerCamera.instance.GetPointInFront(150.0f);
 		foreach (var playerInfo in PlayerInfo.allActive)
@@ -89,7 +130,7 @@ public static partial class Cheats
 	}
 
 	[Cheat(role = Role.None), ConCmd("enable_voip")]
-	public static void EnableVOIP(bool enabled = false)
+	public static void enable_voip(bool enabled = false)
 	{
 		PlayerInfo.local.voice.Enabled = enabled;
 	}
@@ -98,5 +139,63 @@ public static partial class Cheats
 	public static void unlock_achievement(string achievementName)
 	{
 		Achievements.Unlock(achievementName);
+	}
+
+	[Cheat, ConCmd]
+	public static void dump_players()
+	{
+		foreach (var player in PlayerInfo.all)
+		{
+			Log.Info($"{player.displayName} - steamID: {player.steamId}");
+		}
+	}
+
+	[Cheat, ConCmd(Help = "use dump_players for SteamIDs and Role: None, Tester, Privileged, Moderator, Administrator, Developer")]
+	public static void set_player_role(ulong steamId, Role newRole)
+	{
+		PlayerInfo targetPlayer = null;
+		foreach (var player in PlayerInfo.all)
+		{
+			if (player.steamId != steamId)
+				continue;
+
+			targetPlayer = player;
+			break;
+		}
+
+		if (!IsFullyValid(targetPlayer))
+		{
+			Log.Info($"steamID: {steamId}, newRole: {newRole}");
+			return;
+		}
+
+		using (Rpc.FilterInclude(c => c.SteamId == steamId))
+		{
+			set_player_role_local(newRole);
+		}
+	}
+
+	static void set_player_role_local(Role newRole)
+	{
+		PlayerInfo.local.role = newRole;
+		IUIEvents.Post(x => x.AddAdminText($"New Role: {newRole}"));
+	}
+
+	[Cheat, ConCmd]
+	public static void remove_slide_vel_cap(bool remove = true)
+	{
+		CharacterMovement.cheat_remove_slide_vel_cap = remove;
+	}
+
+	[Cheat(role = Role.None), ConCmd("suicide")]
+	public static void Kill(ulong steamId)
+	{
+		if (!IsFullyValid(PlayerInfo.local.character))
+			return;
+
+		DamageInfo damageInfo = new DamageInfo();
+		damageInfo.instigator = PlayerInfo.local;
+		damageInfo.damageCauser = PlayerInfo.local.character.equippedItem;
+		PlayerInfo.local.character.Die(damageInfo);
 	}
 }

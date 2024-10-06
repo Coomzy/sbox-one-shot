@@ -56,6 +56,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Runtime"), Order(100), Property] public int preMatchSpawnIndex { get; set; } = 0;
 
 	[ConVar] public static bool debug_gamemode_state { get; set; }
+	[ConVar] public static bool debug_gamemode_connections { get; set; }
 
 	[Group("Runtime"), Order(100), Property] 
 	public float remainingStateTime
@@ -109,17 +110,26 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	public virtual void OnPlayerConnected(PlayerInfo playerInfo)
 	{
 		// Assign team and all the bollocks
-		Log.Info($"GameMode::OnPlayerConnected() player: {playerInfo?.displayName}");
+		if (debug_gamemode_connections)
+		{
+			Log.Info($"GameMode::OnPlayerConnected() player: {playerInfo?.displayName}");
+		}
 	}
 
 	public virtual void OnPlayerRejoined(PlayerInfo playerInfo)
 	{
-		Log.Info($"GameMode::OnPlayerRejoined() player: {playerInfo?.displayName}");
+		if (debug_gamemode_connections)
+		{
+			Log.Info($"GameMode::OnPlayerRejoined() player: {playerInfo?.displayName}");
+		}
 	}
 
 	public virtual void OnPlayerDisconnected(PlayerInfo playerInfo)
 	{
-		Log.Info($"GameMode::OnPlayerDisconnected() player: {playerInfo?.displayName}");
+		if (debug_gamemode_connections)
+		{
+			Log.Info($"GameMode::OnPlayerDisconnected() player: {playerInfo?.displayName}");
+		}
 	}
 
 	// TODO: I renamed Pawn to Character, but I want to go back to Pawn at some point
@@ -256,6 +266,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	protected virtual void ActiveRoundUpdate()
 	{
 		//TryRespawnPlayers();
+		//if (PlayerInfo.allAlive.Count == 1)
 		//return;
 
 		if (RoundEndCondition())

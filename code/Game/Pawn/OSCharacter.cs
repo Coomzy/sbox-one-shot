@@ -1,6 +1,7 @@
 using badandbest.Sprays;
 using Sandbox;
 using Sandbox.Citizen;
+using Sandbox.Services;
 using System;
 using System.Numerics;
 using System.Threading.Channels;
@@ -16,6 +17,7 @@ public class OSCharacter : Character
 	[Group("Setup"), Property] public GameObject harpoonGunPrefab { get; set; }
 
 	[Group("Runtime"), Property] float jumpShrinkAmount { get; set; } = 0.0f;
+	[Group("Runtime"), Property] bool isTrackingGottaGoFast { get; set; } = true;
 
 	protected override void OnAwake()
 	{
@@ -57,11 +59,7 @@ public class OSCharacter : Character
 		harpoonGunInst.LocalPosition = Vector3.Zero;
 		harpoonGunInst.LocalRotation = Quaternion.Identity;
 
-		var crosshairBuilder = Scene.Components.GetInDescendantsOrSelf<CrosshairBuilder>(true);
-		if (crosshairBuilder != null)
-		{
-			crosshairBuilder.Enabled = true;
-		}
+		IUIEvents.Post(x => x.EnableCrosshair());
 	}
 
 	protected override void OnUpdate()
@@ -84,8 +82,23 @@ public class OSCharacter : Character
 		{
 			Spray.Place();
 		}
+
+		CheckForGottaGoFastAchievement();
 	}
-	[Property] public GameObject testPrefab { get; set; }
+
+	void CheckForGottaGoFastAchievement()
+	{
+		if (!isTrackingGottaGoFast)
+			return;
+
+		if (!movement.isSliding)
+			return;
+
+		if (controller.Velocity.Length < 750.0f)
+			return;
+
+		Achievements.Unlock(Achievement.GOTTA_GO_FAST);
+	}
 
 	void MouseInput()
 	{
@@ -194,10 +207,16 @@ public class OSCharacter : Character
 			fov *= 0.6f;
 		}
 
-		PlayerCamera.cam.FieldOfView = MathY.MoveTowards(PlayerCamera.cam.FieldOfView, fov, Time.Delta * 350.0f);
+		PlayerCamera.cam.FieldOfView = MathY.MoveTowards(PlayerCamera.cam.FieldOfView, fov, Time.Delta * 500.0f);
 
 		firstPersonArmsHolder.WorldPosition = PlayerCamera.cam.WorldPosition;
 		firstPersonArmsHolder.WorldRotation = PlayerCamera.cam.WorldRotation;
+	}
+
+	public override void Die(DamageInfo damageInfo)
+	{
+		IUIEvents.Post(x => x.DisableCrosshair());
+		base.Die(damageInfo);
 	}
 
 	protected override void OnDestroy()
@@ -208,11 +227,7 @@ public class OSCharacter : Character
 			return;
 		}
 
-		var crosshairBuilder = Scene.Components.GetInDescendantsOrSelf<CrosshairBuilder>(true);
-		if (crosshairBuilder != null)
-		{
-			crosshairBuilder.Enabled = false;
-		}
+		IUIEvents.Post(x => x.DisableCrosshair());
 
 		base.OnDestroy();
 	}

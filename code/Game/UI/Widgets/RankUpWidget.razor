@@ -3,6 +3,7 @@
 @using Sandbox.Utility;
 @using Sandbox.Audio;
 @using System;
+@implements IUIEvents;
 @inherits PanelComponent
 
 <root>
@@ -21,6 +22,8 @@
 	{
 		Hide();
 	}
+
+	public void OnRankUp() => Show();
 
 	[Button]
 	public void Show()

@@ -41,9 +41,9 @@ public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
 		equipmentProxy = clone.Components.Get<EquipmentProxy>();
 		equipmentProxy.equipment = this;
 		clone.NetworkMode = NetworkMode.Never;
-	}
+	}	
 
-	protected async override void OnStart()
+	protected override void OnStart()
 	{
 		SetFirstPersonMode(!IsProxy);
 
@@ -51,11 +51,6 @@ public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
 		{
 			OnRep_instigator(null, instigator);
 		}
-
-		while (instigator == null)
-			await Task.Frame();
-
-		OnRep_instigator(null, instigator);
 	}
 
 	public virtual void SetFirstPersonMode(bool isFirstPerson)
@@ -67,39 +62,7 @@ public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
 		procAnim.Enabled = isFirstPerson;
 	}
 
-	public virtual void OnRep_instigator(Character oldValue, Character newValue)
-	{
-		return;
-		if (IsFullyValid(equipmentProxy, instigator?.body?.thirdPersonEquipmentAttachPoint))
-		{
-			Log.Info($"OninstigatorChanged() attempted valid attach! Yay");
-			equipmentProxy.AttachTo(instigator.body.thirdPersonEquipmentAttachPoint);
-		}
-		else if (IsFullyValid(newValue))
-		{
-			Log.Error($"OninstigatorChanged() and have an instigator '{newValue}' but something is null equipmentProxy '{equipmentProxy}' body '{newValue?.body}' thirdPersonEquipmentAttachPoint '{newValue?.body?.thirdPersonEquipmentAttachPoint}'");
-		}
-
-		if (IsProxy)
-		{
-			//equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-			//equipmentProxy.LocalPosition = Vector3.Zero;
-			//equipmentProxy.LocalRotation = Quaternion.Identity;
-			return;
-		}
-
-		/*var proxyInst = equipmentProxyPrefab.Clone();
-		equipmentProxy = proxyInst.Components.Get<EquipmentProxy>();
-		proxyInst.NetworkMode = NetworkMode.Never;
-
-		equipmentProxy.GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
-		equipmentProxy.LocalPosition = Vector3.Zero;
-		equipmentProxy.LocalRotation = Quaternion.Identity;*/
-
-		model.RenderOptions.Overlay = true;
-		//equipmentProxy.ShadowOnly();
-		//Network.DisableInterpolation();
-	}
+	public virtual void OnRep_instigator(Character oldValue, Character newValue){}
 
 	[ConCmd]
 	public static void LocalBroadcastAttach()
@@ -229,7 +192,6 @@ public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
 	{
 		return false;
 	}
-
 	
 	public virtual void Drop(Vector3 force)
 	{

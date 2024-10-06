@@ -49,20 +49,20 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 	{
 		base.OnAwake();
 
-		Slomo();
+		//Slomo();
 	}
 
 	protected override void OnStart()
 	{
 		if (IsProxy)
 		{
-			GameObject.Tags.Add("remote");
-			GameObject.Tags.Remove("local");
+			GameObject.Tags.Add(Tag.CHARACTER_REMOTE);
+			GameObject.Tags.Remove(Tag.CHARACTER);
 		}
 		else
 		{
-			GameObject.Tags.Add("local");
-			GameObject.Tags.Remove("remote");
+			GameObject.Tags.Add(Tag.CHARACTER);
+			GameObject.Tags.Remove(Tag.CHARACTER_REMOTE);
 
 			Spectator.instance.SetMode(SpectateMode.None);
 			Spectator.Teleport(WorldPosition, WorldRotation);
@@ -114,7 +114,6 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		if (!IsFullyValid(this))
 			return;
 
-		Log.Info($"Character::TakeDamage() damageInfo.damageCauser: {damageInfo.damageCauser}");
 		if (IsProxy)
 		{
 			return;

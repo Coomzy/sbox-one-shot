@@ -3,6 +3,7 @@ public static partial class Achievement
 {
 	public const string PAY_TO_WIN = "pay_to_win";
 	public const string DEADEYE = "deadeye";
+	public const string GOTTA_GO_FAST = "gotta_go_fast";
 	public const string DOUBLE_PENETRATION = "double_pen";
 	public const string SIX_DEGREES_OF_SEPARATION = "six_degrees";
 

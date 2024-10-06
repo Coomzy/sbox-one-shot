@@ -20,6 +20,8 @@
 	protected Panel progressBar;
 	protected Panel progressValue;
 
+	[Group("Setup"), Property] public RankUpWidget rankUpWidget { get; private set; }
+
 	[Property] public int currentXP { get; set; } = 0;
 	[Property] public int currentRankXP { get; set; } = 0;
 	[Property] public int nextRankXP { get; set; } = 0;
@@ -69,7 +71,7 @@
 			return true;	
 		}
 
-		if (UIManager.instance.rankUpWidget.IsVisible())
+		if (IsFullyValid(rankUpWidget) && rankUpWidget.IsVisible())
 		{
 			return true;
 		}

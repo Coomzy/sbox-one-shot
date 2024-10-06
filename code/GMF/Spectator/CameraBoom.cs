@@ -17,7 +17,7 @@ public class CameraBoom : Component
 	{
 		base.OnUpdate();
 
-		Test();
+		//Test();
 	}
 
 	void Test()

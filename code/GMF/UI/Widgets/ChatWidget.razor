@@ -2,6 +2,7 @@
 @using Sandbox.UI;
 @inherits PanelComponent
 @implements Component.INetworkListener
+@implements IUIEvents
 
 <root>
 
@@ -60,13 +61,18 @@
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        AddText( text );
+        BroadcastChatText(text);
+    }
+
+    public void AddChatLocal(string message)
+    {
+
     }
 
     [Broadcast]
-    public void AddText( string message )
+    public void BroadcastChatText(string message)
     {
-        message = message.Truncate( 300 );
+        message = message.Truncate(300);
 
         if (string.IsNullOrWhiteSpace(message))
             return;
@@ -74,13 +80,18 @@
         var author = Rpc.Caller.DisplayName;
         var steamid = Rpc.Caller.SteamId;
 
-		//Log.Info($"{author}: {message}");
+        //Log.Info($"{author}: {message}");
 
         Entries.Add(new Entry(steamid, author, message, 0.0f));
-		StateHasChanged();
-	}
+        StateHasChanged();
+    }
 
     [Broadcast]
+    public void BroadcastSystemText(string message)
+    {
+        AddSystemText(message);
+    }
+
     public void AddSystemText(string message)
     {
         message = message.Truncate(300);
@@ -92,17 +103,34 @@
         StateHasChanged();
     }
 
+    [Broadcast]
+    public void BroadcastAdminText(string message)
+    {
+        AddAdminText(message);
+    }
+
+    public void AddAdminText(string message)
+    {
+        message = message.Truncate(300);
+
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        Entries.Add(new Entry(0, "🛡️", message, 0.0f));
+        StateHasChanged();
+    }
+
 	void Component.INetworkListener.OnConnected( Connection channel )
 	{
 		if ( IsProxy ) return;
 
-		AddSystemText( $"{channel.DisplayName} has joined the game" );
-	}
+        BroadcastSystemText($"{channel.DisplayName} has joined the game");
+    }
 
 	void Component.INetworkListener.OnDisconnected( Connection channel )
 	{
 		if ( IsProxy ) return;
 
-		AddSystemText( $"{channel.DisplayName} has left the game" );
-	}
+        BroadcastSystemText($"{channel.DisplayName} has left the game");
+    }
 }

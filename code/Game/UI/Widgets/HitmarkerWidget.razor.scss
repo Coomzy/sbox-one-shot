@@ -1,0 +1,29 @@
+HitmarkerWidget {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	padding: 0;
+	transition: all 0.1s ease-out;
+	pointer-events: none;
+	justify-content: center;
+	align-items: center;
+
+	.rank {
+		width: 48px;
+		height: 48px;
+		align-self: center;
+		align-items: center;
+		background-position: center;
+		background-size: cover;
+	}
+
+	&.visible {
+		opacity: 1;
+	}
+
+	&.hidden {
+		opacity: 0;
+		transition: all 0.2s ease-in;
+	}
+}

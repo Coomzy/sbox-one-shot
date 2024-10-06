@@ -1,4 +1,5 @@
 
+[Group("GMF")]
 public class GMFVoiceProxy : Voice
 {
 	[Property] public GMFVoice owner { get; set; }

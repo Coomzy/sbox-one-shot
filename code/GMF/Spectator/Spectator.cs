@@ -267,7 +267,10 @@ public class Spectator : Component
 		var targetPos = boom.socket.WorldPosition;
 
 		var capsule = Capsule.FromHeightAndRadius(5.0f, 5.0f);
-		var trace = Scene.Trace.Capsule(capsule).FromTo(boom.roller.WorldPosition, targetPos).IgnoreGameObjectHierarchy(GameObject).WithoutTags("trigger", Tag.CHARACTER_BODY);
+		var trace = Scene.Trace.Capsule(capsule)
+			.FromTo(boom.roller.WorldPosition, targetPos)
+			.IgnoreGameObjectHierarchy(GameObject)
+			.WithoutTags(Tag.TRIGGER, Tag.CHARACTER_BODY, Tag.CHARACTER_BODY_REMOTE);
 		var traceResult = trace.Run();
 
 		if (traceResult.Hit)

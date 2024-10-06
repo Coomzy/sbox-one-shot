@@ -1,61 +1,71 @@
 ﻿@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.Utility;
-@using System;
+@implements IUIEvents
+@implements Component.INetworkListener
 @inherits PanelComponent
 
-<!--Not sure I can be bothered with medal UI-->
 <root>
-	<div class="container">
-		<img class="medal" style="background-image: url(@RankSettings.GetRankIcon(PlayerInfo.local))">
+	<div class="output">
+		@foreach (var entry in Entries)
+		{
+            <div class="chat_entry">
+                <div class="medal" style="background-image: url(@entry.img)"></div>
+			</div>
+		}
 	</div>
+	
 </root>
 
 @code
 {
-	[Property] public float shownDuration { get; set; } = 3.0f;
-	[Property] public TimeSince shownTime { get; set; }
+    public record Entry(string img, RealTimeSince timeSinceAdded);
+    List<Entry> Entries = new();
 
-	protected override void OnStart()
-	{
-		Hide();
-	}
+    protected override void OnUpdate()
+    {
+        if (Entries.RemoveAll( x => x.timeSinceAdded > 5.0f ) > 0)
+        {
+            StateHasChanged();
+        }
 
-	[Button]
-	public void Show()
-	{
-		shownTime = 0;
-		SetClass("visible", true);
-		SetClass("hidden", false);
+        /*if (Entries.Count == 0)
+        {
+            AddExample();
+        }*/
+    }
 
-		Sound.Play("ui.rankup");
-	}
+    public void AddMedalEntry(string img) => AddEntry(img);
 
-	public void Hide()
-	{
-		SetClass("visible", false);
-		SetClass("hidden", true);
-	}
+    public void AddEntry(string img)
+    {
+        if (string.IsNullOrWhiteSpace(img))
+            return;
 
-	public bool IsVisible()
-	{
-		return HasClass("visible");
-	}
+        Entries.Add(new Entry(img, 0.0f));
+        StateHasChanged();
+    }    
 
-	protected override void OnUpdate()
-	{
-		if (!IsVisible())
-		{
-			return;
-		}
+    int exampleIndex = 2;
+    [Button]
+    public void AddExample()
+    {
+        var medal = Stat.KillCountToMedal(exampleIndex);
+        exampleIndex++;
+        if (exampleIndex > 7)
+            exampleIndex = 2;
 
-		if (shownTime >= shownDuration)
-		{
-			Hide();	
-		}
+        IUIEvents.Post(x => x.AddMedalEntry($"ui/multikills/{medal}.png"));
+    }
 
-		this.Dirty();
-	}
+    [Button]
+    public void AddExample_Ace()
+    {
+        var medal = Stat.KillCountToMedal(exampleIndex);
+        exampleIndex++;
+        if (exampleIndex > 7)
+            exampleIndex = 2;
 
-	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+        IUIEvents.Post(x => x.AddMedalEntry($"ui/ace.png"));
+    }  
+
 }

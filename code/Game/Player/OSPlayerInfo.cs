@@ -25,6 +25,9 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 			if (achievement.Name != Achievement.SIX_DEGREES_OF_SEPARATION)
 				continue;
 
+			if (!achievement.IsUnlocked)
+				continue;
+
 			hasSixDegreesAchievement = true;
 			BroadcastSixDegreesAchievement();
 		}
@@ -131,8 +134,7 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 		{
 			rank = newRank;
 
-			// TODO: Move this to a interface IRankStatus and do a post event
-			UIManager.instance.rankUpWidget.Show();
+			IUIEvents.Post(x => x.OnRankUp());
 		}
 	}
 
@@ -140,5 +142,6 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 	public void ScoreAce()
 	{
 		Stats.Increment(Stat.ACES, 1);
+		IUIEvents.Post(x => x.AddMedalEntry("ui/ace.png"));
 	}
 }

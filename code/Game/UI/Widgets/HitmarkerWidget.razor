@@ -1,0 +1,63 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.Utility;
+@using Sandbox.Audio;
+@using System;
+@implements IUIEvents;
+@inherits PanelComponent
+
+<root>
+	<img class="rank" style="background-image: url(ui/hitmarker.png)">
+</root>
+
+@code
+{
+	[Property] public float shownDuration { get; set; } = 0.1f;
+	[Property] public TimeSince shownTime { get; set; }
+
+	protected override void OnStart()
+	{
+		Hide();
+	}
+
+	public void OnDamagedEnemy() => Show();
+
+	[Button]
+	public void Show()
+	{
+		shownTime = 0;
+		SetClass("visible", true);
+		SetClass("hidden", false);
+
+		var mixerUI = Mixer.FindMixerByName("UI");
+		Sound.Play("ui.hitmarker", mixerUI);
+	}
+
+	public void Hide()
+	{
+		SetClass("visible", false);
+		SetClass("hidden", true);
+	}
+
+	public bool IsVisible()
+	{
+		return HasClass("visible");
+	}
+
+	protected override void OnUpdate()
+	{
+		if (!IsVisible())
+		{
+			return;
+		}
+
+		if (shownTime >= shownDuration)
+		{
+			Hide();	
+		}
+
+		this.Dirty();
+	}
+
+	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+}
