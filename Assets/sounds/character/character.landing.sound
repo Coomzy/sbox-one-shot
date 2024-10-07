@@ -4,9 +4,7 @@
   "Pitch": "1",
   "Decibels": 70,
   "SelectionMode": "Random",
-  "Sounds": [
-    "sounds/equipment/harpoon/reload/boing.vsnd"
-  ],
+  "Sounds": null,
   "Occlusion": true,
   "AirAbsorption": true,
   "Transmission": true,

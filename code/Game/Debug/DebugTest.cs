@@ -1,10 +1,17 @@
+using Sandbox.Services;
+
 public class DebugTest : Component
 {	
 	public static bool isEnabled { get; set; }
 
 	protected override void OnAwake()
 	{
-		isEnabled = Application.IsEditor;
+		//Log.Info($"GameSettings.instance.payToWinGamePass.Has(): {GameSettings.instance.payToWinGamePass.Has()}");
+	}
+
+	protected override void OnStart()
+	{
+		//Log.Info($"GameSettings.instance.payToWinGamePass.Has(): {GameSettings.instance.payToWinGamePass.Has()}");
 	}
 
 	[Button]

@@ -32,6 +32,7 @@ public class OSCharacter : Character
 	{
 		base.OnStart();
 
+		Log.Info($"GameObject: {GameObject}, IsProxy: {IsProxy}");
 		//Log.Info($"Network.Owner: {Network.Owner}, Network.OwnerId: {Network.OwnerId}, PlayerInfo: {PlayerInfo.connectionToPlayerInfos[Network.OwnerId]}");
 
 		//Log.Info($"OSPawn::OnStart() '{GameObject.Name}', IsOwner: {GameObject.Network.IsOwner},  IsCreator: {GameObject.Network.IsCreator}, OwnerConnection: {GameObject.Network.Owner}, IsHost: {Networking.IsHost}");
@@ -44,6 +45,7 @@ public class OSCharacter : Character
 		var playerBodyInst = playerBodyPrefab.Clone();
 		body = playerBodyInst.Components.Get<CharacterBody>();
 		body.owner = this;
+		body.GameObject.Name = $"Body ({owner?.displayName})";
 		playerBodyInst.NetworkSpawn(GameObject.Network.Owner);
 		//playerBody = playerBodyInst.Components.Get<PlayerBody>();
 
@@ -136,8 +138,14 @@ public class OSCharacter : Character
 		}
 	}
 
+	// TODO: Move this into the base... also I kind of hate it, but maybe just don't look
 	void UpdateCamera()
 	{
+		if (PlayerInfo.local.spectateMode != SpectateMode.None)
+		{
+			return;
+		}
+
 		var camera = PlayerCamera.cam;
 		if (camera == null || !camera.IsValid) return;
 
@@ -151,7 +159,6 @@ public class OSCharacter : Character
 		{
 			targetEyeHeight = movement.config.eyeHeightCrouching;
 		}
-
 
 		var previousHeight = movement.eyeHeight;
 		var heightTarget = movement.isCrouching ? movement.config.crouchHeight : movement.config.characterHeight;

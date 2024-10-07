@@ -15,6 +15,10 @@ public class Pickup : Component, Component.ITriggerListener
 	[Group("Runtime"), Property, HostSync] public bool isActive { get; set; } = true;
 	[Group("Runtime"), Property] public TimeSince lastPickup { get; set; }
 
+	// TODO: This is shite, this whole thing needs to be DE-OneShot-ifyied
+	[Group("Runtime"), Property] public OSCharacter trackingCharacter { get; set; }
+	[Group("Runtime"), Property] public HarpoonGun trackingGun { get; set; }
+
 	protected override void OnAwake()
 	{
 		if (IsProxy)
@@ -33,6 +37,13 @@ public class Pickup : Component, Component.ITriggerListener
 			}
 		}
 
+		CheckTrackingCharacter();
+
+		UpdateVisuals();
+	}
+
+	protected virtual void UpdateVisuals()
+	{
 		var visualPos = visualHolder.LocalPosition;
 		var visualAngles = visualHolder.LocalRotation.Angles();
 
@@ -48,9 +59,28 @@ public class Pickup : Component, Component.ITriggerListener
 		visualHolder.LocalRotation = visualAngles.ToRotation();
 	}
 
+	protected virtual void CheckTrackingCharacter()
+	{
+		if (!IsFullyValid(trackingCharacter, trackingGun))
+		{
+			trackingCharacter = null;
+			trackingGun = null;
+			return;
+		}
+
+		if (trackingCharacter.isDead)
+		{
+			trackingCharacter = null;
+			trackingGun = null;
+			return;
+		}
+
+		TryPickup();
+	}
+
 
 	[Broadcast]
-	public void Replenish()
+	public virtual void Replenish()
 	{
 		visualHolder.Enabled = true;
 		decalRenderer.TintColor = activeColor;
@@ -63,7 +93,7 @@ public class Pickup : Component, Component.ITriggerListener
 	}
 
 	[Broadcast]
-	public void PickedUp()
+	public virtual void PickedUp()
 	{
 		Sound.Play("pickup.pickedup", WorldPosition);
 		visualHolder.Enabled = false;
@@ -77,23 +107,60 @@ public class Pickup : Component, Component.ITriggerListener
 		lastPickup = 0;
 	}
 
-	public void OnTriggerEnter(Collider other)
+	public virtual void OnTriggerEnter(Collider other)
 	{
-		if (!isActive)
+		var osCharacter = other.Components.Get<OSCharacter>();
+
+		if (osCharacter.IsProxy)
 			return;
 
-		var osPawn = other.Components.Get<OSCharacter>();
-		var harpoonGun = (HarpoonGun)osPawn?.equippedItem;
+		var harpoonGun = (HarpoonGun)osCharacter?.equippedItem;
 		if (harpoonGun == null)
 			return;
 
-		if (osPawn.IsProxy)
+		trackingCharacter = osCharacter;
+		trackingGun = harpoonGun;
+
+		TryPickup();
+	}
+
+	public virtual void OnTriggerExit(Collider other)
+	{
+		var osCharacter = other.Components.Get<OSCharacter>();
+		if (osCharacter != trackingCharacter)
 			return;
 
-		if (harpoonGun.hasAmmo || harpoonGun.isReloading)
+		var harpoonGun = (HarpoonGun)osCharacter?.equippedItem;
+		if (harpoonGun != trackingGun)
 			return;
 
-		harpoonGun.Reload();
+		trackingCharacter = null;
+		trackingGun = null;
+	}
+
+	public virtual bool CanPickup()
+	{
+		if (!IsFullyValid(trackingCharacter, trackingGun))
+			return false;
+
+		if (!isActive)
+			return false;
+
+		if (trackingCharacter.isDead)
+			return false;
+
+		if (trackingGun.hasAmmo || trackingGun.isReloading)
+			return false;
+
+		return true;
+	}
+
+	public virtual void TryPickup()
+	{
+		if (!CanPickup())
+			return;
+
+		trackingGun.Reload();
 		PickedUp();
 	}
 

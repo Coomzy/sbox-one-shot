@@ -1,0 +1,55 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@inherits PanelComponent
+
+<root>	
+    <div class="table">        
+        @{
+            this.Dirty();
+            foreach (var playerInfo in PlayerInfo.allActive)
+            {
+                if (!IsFullyValid(playerInfo))
+                    continue;
+
+                var totalShowTime = 0.35f;
+                var fullBeansTime = 0.1f;
+
+                var timeSinceLastVOIP = playerInfo.voice.proxy.LastPlayed;
+                if (Application.IsEditor && voipTime.HasValue)
+                {
+                    timeSinceLastVOIP = voipTime.Value;
+                }
+                var alpha = MathY.InverseLerp(totalShowTime, fullBeansTime, timeSinceLastVOIP);
+                alpha = EasingY.OutSine(alpha);
+
+                <div class="row" style="opacity: @alpha">
+                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
+                    <div class="name">@playerInfo.displayName</div>
+                </div>
+
+                <!--<div class="row" style="opacity: @alpha">
+                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
+                    <div class="name">Timmy ssssssss</div>
+                </div>
+                <div class="row" style="opacity: @alpha">
+                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
+                    <div class="name">Timmysssssss</div>
+                </div>
+                <div class="row" style="opacity: @alpha">
+                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
+                    <div class="name">Timmyssssssss</div>
+                </div>-->
+            }
+        }
+
+    </div>
+
+</root>
+
+@code
+{
+    [Property, Range(0.0f, 0.35f)] public float? voipTime { get; set; }
+
+    protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+}

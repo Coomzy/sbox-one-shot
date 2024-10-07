@@ -14,7 +14,7 @@
 
 @code {
 	public readonly TaskCompletionSource<bool> Purchased;
-	
+
 	public Prompt( string URL )
 	{
 		Url = URL;
@@ -29,19 +29,19 @@
 
 		Parent = panel.GetPanel();
 	}
-	
+
 	public override void OnDeleted()
 	{
 		if ( !Game.ActiveScene.Components.TryGet( out ScreenPanel panel ) )
 		{
 			return;
 		}
-		
+
 		if ( panel.GetPanel().HasChildren )
 		{
 			return;
 		}
-		
+
 		panel.Destroy();
 	}
 
@@ -50,7 +50,7 @@
 		// This was the only way I could think of to get the
 		// Steam browser to send data back data to the game.
 		// If you have a better way let me know.
-		
+
 		switch ( Surface.PageTitle )
 		{
 			case "finished": Delete();

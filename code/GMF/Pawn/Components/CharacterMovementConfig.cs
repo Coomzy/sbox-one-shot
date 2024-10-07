@@ -38,4 +38,7 @@ public class CharacterMovementConfig : GameResource
 	[Group("Eye Height"), Property] public float eyeHeightCrouching { get; set; } = 28;
 	[Group("Eye Height"), Property] public float duckHeightOffset { get; set; } = 36;
 	[Group("Eye Height"), Property, JsonIgnore, ReadOnly] public float duckHeight => eyeHeight - duckHeightOffset;
+
+	[Group("Ground Impact"), Property] public float minVelForGroundImpact { get; set; } = 350.0f;
+	[Group("Ground Impact"), Property] public float soundOverrideForMetalImpact { get; set; } = 2.0f;
 }

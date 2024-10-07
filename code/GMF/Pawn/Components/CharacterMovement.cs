@@ -1,8 +1,10 @@
 
 using Sandbox;
+using Sandbox.ModelEditor;
 using Sandbox.Utility;
 using System;
 using System.ComponentModel.DataAnnotations;
+using static Sandbox.VertexLayout;
 
 [Group("GMF")]
 public class CharacterMovement : Component
@@ -33,6 +35,8 @@ public class CharacterMovement : Component
 
 	[Group("Runtime"), Property] public TimeSince lastJump { get; set; }
 	[Group("Runtime"), Property] public TimeSince slideStart { get; set; }
+
+	[Group("Runtime"), Property] public Vector3 lastVelocity { get; set; }
 
 	[ConVar] public static bool debug_character_movement { get; set; }
 	public static bool cheat_remove_slide_vel_cap { get; set; }
@@ -110,7 +114,8 @@ public class CharacterMovement : Component
 		}
 
 		UpdateGrounding();
-		GetMantleSpot(out var mantleEndPoint);
+		//GetMantleSpot(out var mantleEndPoint);
+		lastVelocity = characterController.Velocity;
 	}	
 
 	float GetFriction()
@@ -213,6 +218,7 @@ public class CharacterMovement : Component
 		timeToFinishMantle = config.mantleMoveDistanceRemap.Evaluate(mantleDistance);
 	}
 
+	// TODO: Lots of magic numbers in here
 	bool debugMantle = false;
 	bool GetMantleSpot(out Vector3 mantleEndPoint)
 	{
@@ -285,6 +291,7 @@ public class CharacterMovement : Component
 			Debuggin.draw.Capsule(downCheckStart, downCheckEnd, radius, Game.ActiveScene.FixedDelta, downCheckResult.Hit ? Color.Red : Color.Green);
 		}
 
+
 		if (downCheckResult.Hit)
 		{
 			var mantlePoint = downCheckResult.HitPosition - (Vector3.Up * radius);
@@ -293,9 +300,48 @@ public class CharacterMovement : Component
 			{
 				Debuggin.draw.Sphere(mantlePoint, radius, 8, Game.ActiveScene.FixedDelta, Color.Yellow);
 			}
+
+			if (IsMetal(downCheckResult.Surface))
+			{
+				//BroadcastSound(downCheckResult.Surface.Sounds.ImpactSoft, downCheckResult.HitPosition, config.soundOverrideForMetalImpact);
+			}
+			else
+			{
+				//BroadcastSound(downCheckResult.Surface.Sounds.ImpactSoft, downCheckResult.HitPosition);
+			}
 		}
 
 		return downCheckResult.Hit;
+	}
+
+	bool IsMetal(Surface surface)
+	{
+		if (surface.ResourceName == "metal" || surface.ResourceName == "metal.sheet" || surface.ResourceName == "metal.weapon")
+			return true;
+
+		return false;
+	}
+
+	[Broadcast]
+	public void BroadcastGroundSlamSound(string sound, Vector3 position, float? volume = null)
+	{
+		var handle = Sound.Play(sound, position);
+		if (volume.HasValue)
+		{
+			handle.Volume = volume.Value;
+			handle.SetParent(GameObject);
+			handle.Position = position;
+		}
+	}
+
+	[Broadcast]
+	public void BroadcastSound(string sound, Vector3 position, float? volume = null)
+	{
+		var handle = Sound.Play(sound, position);
+		if (volume.HasValue)
+		{
+			handle.Volume = volume.Value;
+		}
 	}
 
 	void MovementInput()
@@ -402,9 +448,34 @@ public class CharacterMovement : Component
 
 	void OnGroundedChange()
 	{
-		var osPawn = (OSCharacter)owner;
-		//osPawn.osCharacterVisual.bodyRenderer.LocalPosition = Vector3.Zero;
-		//osPawn.osCharacterVisual.bodyRenderer.Transform.ClearInterpolation();
+		if (!isGrounded)
+			return;
+
+		var verticalVel = MathF.Abs(lastVelocity.z);
+		Debuggin.ToScreen($"OnGroundedChange() verticalVel: {verticalVel}, config.minVelForGroundImpact: {config.minVelForGroundImpact}", 10.0f);
+		if (verticalVel < config.minVelForGroundImpact)
+			return;
+
+		var start = WorldPosition + (Transform.World.Up * 0.5f);
+		var end = WorldPosition - (Transform.World.Up * 5.0f);
+		var trace = Game.ActiveScene.Trace
+			.Capsule(Capsule.FromHeightAndRadius(3.5f, characterController.Radius * 0.75f))
+			.FromTo(start, end)
+			.IgnoreGameObjectHierarchy(GameObject)
+			.WithoutTags(Tag.TRIGGER, Tag.CHARACTER_BODY, Tag.CHARACTER_BODY_REMOTE);//, Tag.PLAYER_CLIP, Tag.SKY);
+		var result = trace.Run();
+
+		if (result.Hit)
+		{
+			if (IsMetal(result.Surface))
+			{
+				//BroadcastGroundSlamSound(result.Surface.Sounds.ImpactSoft, result.HitPosition, config.soundOverrideForMetalImpact);
+			}
+			else
+			{
+				//BroadcastGroundSlamSound(result.Surface.Sounds.ImpactSoft, result.HitPosition);//, 0.05f);
+			}
+		}
 	}
 
 	bool CanJump()
@@ -423,8 +494,11 @@ public class CharacterMovement : Component
 		if (!isCrouching) 
 			return true;
 
-		var tr = characterController.TraceDirection(Vector3.Up * config.duckHeight);
-		return !tr.Hit; // hit nothing - we can!
+		var traceResult = characterController.TraceDirection(Vector3.Up * config.duckHeight);
+		if (traceResult.Hit)
+			return false;
+
+		return true;
 	}
 
 	void SlideInput()
@@ -454,7 +528,6 @@ public class CharacterMovement : Component
 		{
 			slideVelocityReduction = 0.0f;
 		}
-		Debuggin.ToScreen($"slideVelocityReduction: {slideVelocityReduction}", 5.0f);
 		slideVelocity = characterController.Velocity;
 		slideStart = 0;
 	}

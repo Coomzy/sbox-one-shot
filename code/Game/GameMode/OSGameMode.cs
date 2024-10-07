@@ -82,7 +82,7 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 		if (!announcedOneMinRemaining)
 		{
 			announcedOneMinRemaining = true;
-			AnnouncerSystem.QueueSound("announcer.remaining.onemin");
+			AnnouncerSystem.BroadcastQueueSound("announcer.remaining.onemin");
 		}
 
 		if (remainingStateTime > 30)
@@ -93,7 +93,7 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 		if (!announcedThirtySecsRemaining)
 		{
 			announcedThirtySecsRemaining = true;
-			AnnouncerSystem.QueueSound("announcer.remaining.thirtysecs");
+			AnnouncerSystem.BroadcastQueueSound("announcer.remaining.thirtysecs");
 		}
 
 		if (remainingStateTime > 10)
@@ -104,7 +104,7 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 		if (!announcedTenSecsRemaining)
 		{
 			announcedTenSecsRemaining = true;
-			AnnouncerSystem.QueueSound("announcer.remaining.tensecs");
+			AnnouncerSystem.BroadcastQueueSound("announcer.remaining.tensecs");
 		}
 	}
 
@@ -115,13 +115,6 @@ public class OSGameMode : GameMode, Component.INetworkListener, IHotloadManaged
 			return false;
 		}
 		return base.ShouldShowScoreboard();
-	}
-
-	// TODO: PICK BETTER SPAWNS
-	// I might do this for sensible "deathmatch" spawns in the base
-	public override (Vector3 spawnPos, Rotation spawnRot) GetSpawnFor(PlayerInfo playerInfo)
-	{
-		return (Vector3.Zero, Rotation.Identity);
 	}
 
 	public override void CleanupRoundInstances()

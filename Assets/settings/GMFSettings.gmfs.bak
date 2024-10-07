@@ -1,8 +1,8 @@
 {
+  "refresh": true,
   "userSteamIdToRole": {
-    "76561198035887310": "Administrator",
-    "PlayboyItachi": "Administrator",
-    "A": "None"
+    "76561198035887310": "Developer",
+    "PlayboyItachi": "Administrator"
   },
   "__references": [],
   "IsValid": true,

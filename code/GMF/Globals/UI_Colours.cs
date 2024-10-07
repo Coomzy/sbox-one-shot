@@ -6,9 +6,20 @@ public static partial class UI_Colours
 	public const string FRIEND = "#006600";
 	public const string PLAYER = "#FFA500";
 	public const string DEAD = "red";
+	public const string INACTIVE = "grey";
 
 	public static string PlayerToColour(PlayerInfo player)
 	{
+		if (!IsFullyValid(player))
+		{
+			return INACTIVE;
+		}
+
+		if (player.Network.Active is false ||  player.Network.Owner == null)
+		{
+			return INACTIVE;
+		}
+
 		if (player == PlayerInfo.local)
 		{
 			return SELF;
@@ -19,7 +30,7 @@ public static partial class UI_Colours
 			return PARTY;
 		}
 
-		var friend = new Friend((long)player.steamId);
+		var friend = new Friend((long)player.steamID);
 		if (friend.IsFriend)
 		{
 			return FRIEND;

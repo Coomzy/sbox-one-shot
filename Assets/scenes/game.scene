@@ -66,11 +66,11 @@
           "announcedTenSecsRemaining": false,
           "announcedThirtySecsRemaining": false,
           "defaultRespawnTime": 3,
-          "initalPreMatchDelay": 5,
+          "initalPreMatchDelay": 2,
           "matchCount": 0,
           "maxMatchRounds": 10,
           "metPlayerReqTime": {
-            "Relative": 2628.1638
+            "Relative": 4461.7666
           },
           "modeState": "PreMatch",
           "oneLifeOnly": true,
@@ -78,7 +78,6 @@
           "postMatchResultsDelay": 7.5,
           "postRoundDelay": 3,
           "preMatchDelay": 1,
-          "preMatchSpawnIndex": 0,
           "preRoundDelay": 3,
           "readyPhaseDelay": 3,
           "remainingStateTime": 0,
@@ -87,7 +86,7 @@
           "roundCount": 0,
           "roundTime": 180,
           "stateTime": {
-            "Relative": 2628.1638
+            "Relative": 4461.7666
           },
           "waitingForPlayersDelay": 3
         }
@@ -108,46 +107,6 @@
           "Scale": 1,
           "ScaleStrategy": "ConsistentHeight",
           "ZIndex": 100
-        },
-        {
-          "__type": "UIManager",
-          "__guid": "60f64b7b-e76d-4e40-b028-63c7177333e2",
-          "gameResultsWidget": {
-            "_type": "component",
-            "component_id": "77cd3f87-aa7e-4cbb-836c-a1715e062152",
-            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
-            "component_type": "GameResultsWidget"
-          },
-          "killFeedUpWidget": {
-            "_type": "component",
-            "component_id": "0d104a0c-e5aa-4839-bc8a-7e8839569e26",
-            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
-            "component_type": "KillFeedWidget"
-          },
-          "rankUpWidget": {
-            "_type": "component",
-            "component_id": "d42e78c0-e868-444d-9a0e-d366ca9a53db",
-            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
-            "component_type": "RankUpWidget"
-          },
-          "roundCountWidget": {
-            "_type": "component",
-            "component_id": "19040153-a019-4d89-aa63-bcdf3c53c9ed",
-            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
-            "component_type": "RoundCountWidget"
-          },
-          "roundStateUpWidget": {
-            "_type": "component",
-            "component_id": "cdeddf35-7440-4ede-84a7-7a3ab835a4d3",
-            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
-            "component_type": "RoundStateWidget"
-          },
-          "scoreboardUpWidget": {
-            "_type": "component",
-            "component_id": "3948b805-86d1-4245-ab6c-9fab9301ba2f",
-            "go": "c57666e2-eddf-4744-9da3-cab93ea9b985",
-            "component_type": "ScoreboardWidget"
-          }
         },
         {
           "__type": "ScoreboardWidget",
@@ -190,7 +149,7 @@
           "__guid": "d42e78c0-e868-444d-9a0e-d366ca9a53db",
           "shownDuration": 3,
           "shownTime": {
-            "Relative": 2628.1638
+            "Relative": 4461.7666
           }
         },
         {
@@ -225,12 +184,16 @@
           "__guid": "0f1b0b5e-30e2-4f1a-b1a9-4262b041c49d",
           "shownDuration": 0.1,
           "shownTime": {
-            "Relative": 2628.1638
+            "Relative": 4461.7666
           }
         },
         {
           "__type": "MedalsWidget",
           "__guid": "0e7ae969-5c91-4a63-9276-53726bafe680"
+        },
+        {
+          "__type": "VoiceChatWidget",
+          "__guid": "4cb68df9-df69-4901-bfd3-a73a10a3a34f"
         },
         {
           "__type": "CrosshairWidget",

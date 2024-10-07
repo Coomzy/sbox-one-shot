@@ -92,7 +92,7 @@ public class CheatAttribute : Attribute
 
 public static partial class Cheats
 {
-	[Cheat(CheatFlags.Broadcast), ConCmd("timescale")]
+	[Cheat(CheatFlags.Broadcast), ConCmd]
 	public static void timescale(float timescale = 1.0f)
 	{
 		if (Game.ActiveScene == null)
@@ -101,7 +101,7 @@ public static partial class Cheats
 		Game.ActiveScene.TimeScale = timescale;
 	}
 
-	[Cheat(role = Role.None), ConCmd("suicide")]
+	[Cheat(role = Role.None), ConCmd]
 	public static void suicide()
 	{
 		if (!IsFullyValid(PlayerInfo.local.character))
@@ -111,6 +111,32 @@ public static partial class Cheats
 		damageInfo.instigator = PlayerInfo.local;
 		damageInfo.damageCauser = PlayerInfo.local.character.equippedItem;
 		PlayerInfo.local.character.Die(damageInfo);
+	}
+
+	[Cheat, ConCmd]
+	public static void teleport()
+	{
+		if (!IsFullyValid(PlayerInfo.local?.character?.GameObject))
+		{
+			return;
+		}
+
+		var start = PlayerCamera.instance.GetPointInFront(0.0f);
+		var end = PlayerCamera.instance.GetPointInFront(9999.0f);
+		var trace = Game.ActiveScene.Trace
+			.Ray(start, end)
+			.IgnoreGameObjectHierarchy(PlayerInfo.local.character.GameObject)
+			.WithoutTags(Tag.TRIGGER, Tag.CHARACTER_BODY, Tag.CHARACTER_BODY_REMOTE);//, Tag.PLAYER_CLIP, Tag.SKY);
+		var result = trace.Run();
+
+		var teleportPoint = result.Hit ? result.HitPosition : end;
+
+		var radius = PlayerInfo.local.character.controller.Radius;
+		//var height = PlayerInfo.local.character.controller.Height;
+
+		teleportPoint -= (end - start).Normal * radius;
+
+		PlayerInfo.local.character.Teleport(teleportPoint);
 	}
 
 	[Cheat, ConCmd]
@@ -146,7 +172,7 @@ public static partial class Cheats
 	{
 		foreach (var player in PlayerInfo.all)
 		{
-			Log.Info($"{player.displayName} - steamID: {player.steamId}");
+			Log.Info($"{player.displayName} - steamID: {player.steamID}");
 		}
 	}
 
@@ -156,7 +182,7 @@ public static partial class Cheats
 		PlayerInfo targetPlayer = null;
 		foreach (var player in PlayerInfo.all)
 		{
-			if (player.steamId != steamId)
+			if (player.steamID != steamId)
 				continue;
 
 			targetPlayer = player;
@@ -187,8 +213,8 @@ public static partial class Cheats
 		CharacterMovement.cheat_remove_slide_vel_cap = remove;
 	}
 
-	[Cheat(role = Role.None), ConCmd("suicide")]
-	public static void Kill(ulong steamId)
+	[Cheat(role = Role.None), ConCmd]
+	public static void kill(ulong steamId)
 	{
 		if (!IsFullyValid(PlayerInfo.local.character))
 			return;
@@ -197,5 +223,11 @@ public static partial class Cheats
 		damageInfo.instigator = PlayerInfo.local;
 		damageInfo.damageCauser = PlayerInfo.local.character.equippedItem;
 		PlayerInfo.local.character.Die(damageInfo);
+	}
+
+	[Cheat, ConCmd(Help = "SpectateMode: None, Viewpoint, CharacterDeath, ThirdPerson, FreeCam")]
+	public static void set_spectatemode(SpectateMode spectateMode)
+	{
+		PlayerInfo.local.SetSpectateMode(spectateMode);
 	}
 }

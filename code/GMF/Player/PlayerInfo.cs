@@ -3,6 +3,7 @@ using Sandbox;
 using Sandbox.Diagnostics;
 using System;
 using System.Reflection.Metadata;
+using System.Text.Json.Serialization;
 
 [Group("GMF")]
 public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
@@ -16,13 +17,15 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 
 	[Group("Setup"), Order(-100), Property] public GameObject voicePrefab { get; set; }
 
+	[Property, HostSync] public Guid networkID { get; set; }
+	[Property, HostSync] public ulong steamID { get; set; }
 	[Property, HostSync, Sync] public string displayName { get; set; }
-	[Property, HostSync] public ulong steamId { get; set; }
 	[Property, HostSync] public Role role { get; set; }
 	[Property, HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
 	[Property, Sync] public GMFVoice voice { get; set; }
 
 	[Property, HostSync, Sync] public Character character { get; set; }
+	[Property, HostSync, Sync, Change("OnRep_spectateMode")] public SpectateMode spectateMode { get; private set; } = SpectateMode.Viewpoint;
 
 	[Property, HostSync, Sync, Change("OnRep_isActive")] public bool isActive { get; private set; } = true;
 	[Property, HostSync, Sync, Change("OnRep_isDead")] public bool isDead { get; private set; } = true;
@@ -37,9 +40,9 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 	[Property, HostSync, Sync] public int deathsRound { get; set; }
 	[Property, HostSync, Sync] public int killsRound { get; set; }
 
-	public bool isLocal => this == local;
-
-    public bool isRecentlyDead => isDead && deadTime < 3.0f;
+	[Group("Runtime"), Property, JsonIgnore] public bool isLocal => this == local;
+	[Group("Runtime"), Property, JsonIgnore] public Connection connection => Connection.Find(networkID);
+	[Group("Runtime"), Property, JsonIgnore] public bool isRecentlyDead => isDead && deadTime < 3.0f;
 
 	void OnRep_isActive()
 	{
@@ -77,6 +80,14 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 		}
 	}
 
+	void OnRep_spectateMode(SpectateMode oldValue, SpectateMode newValue)
+	{
+		if (IsProxy)
+			return;
+
+		Spectator.instance.SetMode(oldValue, newValue);
+	}
+
 	protected override void OnAwake()
 	{
 		all.Add(this);
@@ -101,6 +112,8 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 			return;
 
 		local = this;
+		// TODO: This won't work if the spectator already thinks it's the same mode
+		Spectator.instance.SetMode(SpectateMode.Viewpoint, spectateMode);
 
 		if (!IsFullyValid(voicePrefab))
 			return;
@@ -181,7 +194,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 		if (oldCharacter != null)
 		{
 			oldCharacter.DestroyRequest();
-		}
+		}		
 	}
 
 	public virtual void OnDie()
@@ -255,6 +268,11 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 		wins = 0;
 	}
 
+	public virtual void SetSpectateMode(SpectateMode newSpectateMode)
+	{
+		spectateMode = newSpectateMode;
+	}
+
 	public static bool TryFromConnection(Connection connection, out PlayerInfo playerInfo) => TryFromConnection<PlayerInfo>(connection, out playerInfo);
 	public static bool TryFromConnection<T>(Connection connection, out T playerInfo) where T : PlayerInfo
 	{
@@ -270,11 +288,10 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 			if (!IsFullyValid(playerInfo))
 				continue;
 
-			if (!playerInfo.Network.Active || playerInfo.Network.OwnerId == Guid.Empty)
+			if (playerInfo.networkID != connection.Id)
 				continue;
 
-			if (connection.Id == playerInfo.Network.OwnerId)
-				return playerInfo as T;
+			return playerInfo as T;
 		}
 
 		return null;

@@ -171,6 +171,12 @@ public class HarpoonGun : Equipment
 		isReloading = true;
 
 		Sound.Play("harpoon.reload");
+		var handle = Sound.Play("harpoon.reload", muzzleSocket.WorldPosition);
+		if (handle != null)
+		{
+			handle.Occlusion = false;
+			handle.SpacialBlend = 0.0f;
+		}
 
 		model.GameObject.Enabled = false;
 		gunModel.GameObject.Enabled = true;
@@ -220,8 +226,7 @@ public class HarpoonGun : Equipment
 			return;
 		}
 
-		var handle = Sound.Play("harpoon.reload", muzzleSocket.WorldPosition);
-		handle.SpacialBlend = 1.0f;
+		Sound.Play("harpoon.reload", muzzleSocket.WorldPosition);
 
 		HarpoonGun_Proxy proxy = equipmentProxy as HarpoonGun_Proxy;
 		if (proxy != null)

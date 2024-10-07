@@ -55,6 +55,7 @@ public class NetworkManager : Component, Component.INetworkListener
 		else
 		{
 			playerInfo.Network.AssignOwnership(connection);
+			playerInfo.networkID = connection.Id;
 		}
 
 		if (rejoined)
@@ -113,7 +114,8 @@ public class NetworkManager : Component, Component.INetworkListener
 		if (!IsFullyValid(playerInfo))
 			return null;
 
-		playerInfo.steamId = connection.SteamId;
+		playerInfo.networkID = connection.Id;
+		playerInfo.steamID = connection.SteamId;
 		playerInfo.role = GMFSettings.instance.GetRoleFromID(connection.SteamId);
 		playerInfo.GameObject.Name = $"PlayerInfo ({connection.DisplayName})";
 		playerInfo.GameObject.Network.SetOrphanedMode(NetworkOrphaned.ClearOwner);
@@ -125,7 +127,7 @@ public class NetworkManager : Component, Component.INetworkListener
 	{
 		var possiblePlayerInfo = PlayerInfo.allInactive.FirstOrDefault(x =>
 		{
-			return IsFullyValid(x) && x.Network.Owner == null && x.steamId == connection.SteamId;
+			return IsFullyValid(x) && x.Network.Owner == null && x.steamID == connection.SteamId;
 		});
 
 		return possiblePlayerInfo;

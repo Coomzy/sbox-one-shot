@@ -4,7 +4,7 @@ using System;
 using System.Numerics;
 
 [Group("GMF")]
-public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
+public class Equipment : Component, IGameModeEvents
 {
 	[Group("Setup"), Property] public SkinnedModelRenderer model { get; set; }
 	[Group("Setup"), Property] public ProceduralAnimation procAnim { get; set; }
@@ -79,28 +79,6 @@ public class Equipment : Component, IGameModeEvents, Component.INetworkSpawn
 		GameObject.SetParent(instigator.body.thirdPersonEquipmentAttachPoint);
 		LocalPosition = Vector3.Zero;
 		LocalRotation = Quaternion.Identity;
-	}
-
-	public async virtual void OnNetworkSpawn(Connection connection)
-	{
-		//Log.Info($"Equipment::OnNetworkSpawn() PRE connection: {connection}");
-
-		await Task.Frame();
-
-		//Log.Info($"Equipment::OnNetworkSpawn() POST connection: {connection}");
-		/*if (IsProxy)
-		{			
-			return;
-		}
-
-		model.SceneObject.Flags.OverlayLayer = true;*/
-	}
-
-	protected override void OnUpdate()
-	{
-		//Vector3 targetPos = hasFireAltInputDown ? ironSights : hip;
-		//float adsSpeed = 200.0f;
-		//GameObject.Parent.LocalPosition = MathY.MoveTowards(GameObject.Parent.LocalPosition, targetPos, Time.Delta * adsSpeed);		
 	}
 
 	public virtual void FireStart()

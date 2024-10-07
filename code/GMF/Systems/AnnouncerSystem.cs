@@ -20,13 +20,11 @@ public class AnnouncerSystem : GameObjectSystem
 		Listen(Stage.FinishUpdate, 0, FinishUpdate, "Announcer.FinishUpdate");
 	}
 
-	[Authority]
 	public static void QueueSound(string soundName)
 	{
 		soundsToAnnounce.Add(soundName);
 	}
 
-	[Authority]
 	public static void QueueOverrideSound(string soundName)
 	{
 		soundsToAnnounce.Clear();
@@ -35,6 +33,18 @@ public class AnnouncerSystem : GameObjectSystem
 			soundHandle.Stop();
 		}
 		soundsToAnnounce.Add(soundName);
+	}
+
+	[Broadcast]
+	public static void BroadcastQueueSound(string soundName)
+	{
+		QueueSound(soundName);
+	}
+
+	[Broadcast]
+	public static void BroadcastQueueOverrideSound(string soundName)
+	{
+		QueueOverrideSound(soundName);
 	}
 
 	void FinishUpdate()
@@ -60,11 +70,10 @@ public class AnnouncerSystem : GameObjectSystem
 
 		var soundName = soundsToAnnounce[0];
 		soundsToAnnounce.RemoveAt(0);
-		BroadcastSound(soundName);
+		PlaySound(soundName);
 	}
 
-	[Broadcast]
-	static void BroadcastSound(string soundName)
+	static void PlaySound(string soundName)
 	{
 		var mixer = Mixer.FindMixerByName("Announcer");
 		soundHandle = Sound.Play(soundName, mixer);

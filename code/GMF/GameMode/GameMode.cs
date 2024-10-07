@@ -12,8 +12,8 @@ using badandbest.Sprays;
 public enum ModeState
 {
 	PreMatch,
-	WaitingForPlayers,
 	PreRound,
+	WaitingForPlayers,
 	ReadyPhase,
 	ActiveRound,
 	PostRound,
@@ -25,10 +25,10 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 {
 	public static GameMode instance { get; private set; }
 
-	[Group("Config - Delays"), Order(1), Property] public float initalPreMatchDelay { get; set; } = 5.0f;
+	[Group("Config - Delays"), Order(1), Property] public float initalPreMatchDelay { get; set; } = 2.0f;
 	[Group("Config - Delays"), Order(1), Property] public float preMatchDelay { get; set; } = 1.0f;
-	[Group("Config - Delays"), Order(1), Property] public float waitingForPlayersDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float preRoundDelay { get; set; } = 3.0f;
+	[Group("Config - Delays"), Order(1), Property] public float waitingForPlayersDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float readyPhaseDelay { get; set; } = 3.0f;
 	[Group("Config - Delays"), Order(1), Property] public float roundConditionMetDelay { get; set; } = 1.0f;
 	[Group("Config - Delays"), Order(1), Property] public float postRoundDelay { get; set; } = 3.0f;
@@ -41,8 +41,6 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Config"), Order(2), Property, HostSync] public bool oneLifeOnly { get; set; } = false;
 	[Group("Config"), Order(2), Property, HostSync] public float defaultRespawnTime { get; set; } = 3.0f;
 
-	public Dictionary<SpawnPoint, float> spawnPointToLastUsedTime = new Dictionary<SpawnPoint, float>();
-
 	[Group("Runtime"), Order(100), Property, HostSync] public int roundCount { get; private set; }
 	[Group("Runtime"), Order(100), Property, HostSync] public int matchCount { get; private set; }
 	[Group("Runtime"), Order(100), Property, HostSync, Change("OnRep_modeState")] public ModeState modeState { get; private set; }
@@ -53,7 +51,6 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Group("Runtime"), Order(100), Property] public TimeSince metPlayerReqTime { get; private set; }
 
 	[Group("Runtime"), Order(100), Property] public TimeSince? delayedRoundConditionMet { get; set; } = null;
-	[Group("Runtime"), Order(100), Property] public int preMatchSpawnIndex { get; set; } = 0;
 
 	[ConVar] public static bool debug_gamemode_state { get; set; }
 	[ConVar] public static bool debug_gamemode_connections { get; set; }
@@ -100,6 +97,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return;
 
 		stateTime = 0.0f;
+		PreMatchStart();
 	}
 
 	protected override void OnDestroy()
@@ -114,6 +112,10 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		{
 			Log.Info($"GameMode::OnPlayerConnected() player: {playerInfo?.displayName}");
 		}
+
+		playerInfo.SetSpectateMode(GetSpectateModeForModeState());
+
+		//Log.Info($"GameMode::OnPlayerConnected() modeState: {modeState} player: {playerInfo.spectateMode}");
 	}
 
 	public virtual void OnPlayerRejoined(PlayerInfo playerInfo)
@@ -122,6 +124,10 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		{
 			Log.Info($"GameMode::OnPlayerRejoined() player: {playerInfo?.displayName}");
 		}
+
+		playerInfo.SetSpectateMode(GetSpectateModeForModeState());
+
+		//Log.Info($"GameMode::OnPlayerRejoined() modeState: {modeState} player: {playerInfo.spectateMode}");
 	}
 
 	public virtual void OnPlayerDisconnected(PlayerInfo playerInfo)
@@ -143,17 +149,12 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	public virtual Character CreatePawn(PlayerInfo playerInfo, Vector3 spawnPos, Rotation spawnRot)
 	{
 		var pawnPrefab = GetPawnPrefabForPlayer(playerInfo);
-		var pawn = pawnPrefab.Clone(spawnPos, spawnRot).BreakPrefab().Components.Get<OSCharacter>();
+		var pawn = pawnPrefab.Clone(spawnPos, spawnRot).BreakPrefab().Components.Get<Character>();
 		pawn.GameObject.NetworkSpawn(playerInfo.Network.Owner);
 		playerInfo.Possess(pawn);
 		pawn.GameObject.Name = $"Pawn ({playerInfo.displayName})";
 
 		return pawn;
-	}
-
-	public virtual (Vector3 spawnPos, Rotation spawnRot) GetSpawnFor(PlayerInfo playerInfo)
-	{
-		return (Vector3.Zero, Rotation.Identity);
 	}
 
 	protected virtual GameObject GetPawnPrefabForPlayer(PlayerInfo playerInfo)
@@ -168,8 +169,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	protected virtual void PreMatchStart()
 	{
 		matchCount++;
-		preMatchSpawnIndex = 0;
-		roundCount = 0;
+		roundCount = 1;
 
 		IGameModeEvents.Post(x => x.MatchStart());
 	}
@@ -182,9 +182,25 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return;
 		}
 
+		SetModeState(ModeState.PreRound);
+	}
+
+	// Pre Round
+	protected virtual void PreRoundStart()
+	{
+		RoundCleanup();
+	}
+
+	protected virtual void PreRoundUpdate()
+	{
+		if (stateTime < preRoundDelay)
+		{
+			return;
+		}
+
 		if (HasMetRequiredPlayerCount())
 		{
-			SetModeState(ModeState.PreRound);
+			SetModeState(ModeState.ReadyPhase);
 		}
 		else
 		{
@@ -214,23 +230,6 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		SetModeState(ModeState.PreRound);
 	}
 
-	// Pre Round
-	protected virtual void PreRoundStart()
-	{
-		roundCount++;
-		RoundCleanup();
-	}
-
-	protected virtual void PreRoundUpdate()
-	{
-		if (stateTime < preRoundDelay)
-		{
-			return;
-		}
-
-		SetModeState(ModeState.ReadyPhase);
-	}
-
 	// Ready Phase
 	protected virtual void ReadyPhaseStart()
 	{
@@ -248,6 +247,12 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	protected virtual void ReadyPhaseUpdate()
 	{
+		if (!HasMetRequiredPlayerCount())
+		{
+			SetModeState(ModeState.WaitingForPlayers);	
+			return;
+		}
+
 		if (stateTime < readyPhaseDelay)
 		{
 			return;
@@ -286,7 +291,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	// Post Round
 	protected virtual void PostRoundStart()
 	{
-		AnnouncerSystem.QueueOverrideSound("announcer.round.over");
+		AnnouncerSystem.BroadcastQueueOverrideSound("announcer.round.over");
 		RoundOverClient();
 	}
 
@@ -297,20 +302,13 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			return;
 		}
 
-		if (HasMetRequiredPlayerCount())
-		{
-			SetModeState(ModeState.PreRound);
-		}
-		else
-		{
-			SetModeState(ModeState.WaitingForPlayers);
-		}
+		SetModeState(ModeState.PreRound);
 	}
 
 	// Post Match
 	protected virtual void PostMatchStart()
 	{
-		AnnouncerSystem.QueueOverrideSound("announcer.game.over");
+		AnnouncerSystem.BroadcastQueueOverrideSound("announcer.game.over");
 		RoundOverClient();
 		MatchOverClient();
 		CheckMatchWinners();
@@ -344,7 +342,6 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 
 	public virtual void TryRespawnPlayers()
 	{
-		// TODO: Make this way less shitty, it doesn't effect one shot though
 		foreach (var playerInfo in PlayerInfo.allActive)
 		{
 			if (!CanRespawn(playerInfo))
@@ -365,8 +362,41 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		if (!IsFullyValid(WorldInfo.instance?.spawnPointsGMF))
 			return null;
 
-		var randomSpawn = Game.Random.FromArray(WorldInfo.instance.spawnPointsGMF);
+		var weightedSpawns = new WeightedRandom<GMFSpawnPoint>();
+
+		foreach (var spawnPoint in WorldInfo.instance.spawnPointsGMF)
+		{
+			var rating = GetSpawnRatingForPlayer(spawnPoint, playerInfo);
+			weightedSpawns.Add(spawnPoint, rating);
+		}
+
+		var randomSpawn = weightedSpawns.Random();
 		return randomSpawn;
+	}
+
+	public virtual int GetSpawnRatingForPlayer(GMFSpawnPoint spawnPoint, PlayerInfo playerInfo)
+	{
+		if (!IsFullyValid(spawnPoint) || !spawnPoint.Enabled)
+			return 0;
+
+		var lowestDistanceFromSpawn = 99999.9f;
+		foreach (var checkingPlayerInfo in PlayerInfo.allAlive)
+		{
+			if (!IsFullyValid(checkingPlayerInfo?.character))
+				continue;
+
+			if (checkingPlayerInfo == playerInfo)
+				continue;
+
+			var distance = Vector3.DistanceBetween(spawnPoint.WorldPosition, checkingPlayerInfo.character.WorldPosition);
+
+			if (distance >= lowestDistanceFromSpawn)
+				continue;
+
+			lowestDistanceFromSpawn = distance;
+		}
+
+		return MathX.CeilToInt(lowestDistanceFromSpawn);
 	}
 
 	public virtual bool RoundEndCondition()
@@ -404,6 +434,7 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		}
 
 		CheckRoundWinners();
+		roundCount++;
 
 		if (roundCount < maxMatchRounds)
 		{
@@ -605,10 +636,32 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 		TeleportSpectatorsToStartingPoint();
 	}
 
+	public virtual SpectateMode GetSpectateModeForModeState()
+	{
+		switch (modeState)
+		{
+			case ModeState.PreMatch:
+			case ModeState.PreRound:
+			//case ModeState.WaitingForPlayers:
+			case ModeState.PostRound:
+			case ModeState.PostMatch:
+			case ModeState.PostMatchResults:
+				return SpectateMode.Viewpoint;
+
+			case ModeState.ActiveRound:
+			case ModeState.ReadyPhase:
+			case ModeState.WaitingForPlayers:
+				return SpectateMode.ThirdPerson;
+		}
+
+		return SpectateMode.Viewpoint;
+	}
+
 	[Broadcast]
 	public virtual void TeleportSpectatorsToStartingPoint()
 	{
-		Spectator.instance.SetMode(SpectateMode.Viewpoint);
+		PlayerInfo.local.SetSpectateMode(SpectateMode.Viewpoint);
+		//Spectator.instance.SetMode(SpectateMode.Viewpoint);
 		//Spectator.TeleportToStartingPoint();
 	}
 
@@ -642,7 +695,10 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 				break;
 			case ModeState.PreRound:
 				PreRoundStart();
-				break;
+				break; 
+			case ModeState.WaitingForPlayers:
+				WaitingForPlayersStart();
+				break; 
 			case ModeState.ReadyPhase:
 				ReadyPhaseStart();
 				break;
@@ -657,6 +713,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 				break;
 			case ModeState.PostMatchResults:
 				PostMatchResultsStart();
+				break;
+			default:
+				Log.Warning($"modeState '{modeState}' is missing a case statement in SetModeState()");
 				break;
 		}
 	}
@@ -686,11 +745,11 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 			case ModeState.PreMatch:
 				PreMatchUpdate();
 				break;
-			case ModeState.WaitingForPlayers:
-				WaitingForPlayersUpdate();
-				break;
 			case ModeState.PreRound:
 				PreRoundUpdate();
+				break;
+			case ModeState.WaitingForPlayers:
+				WaitingForPlayersUpdate();
 				break;
 			case ModeState.ReadyPhase:
 				ReadyPhaseUpdate();

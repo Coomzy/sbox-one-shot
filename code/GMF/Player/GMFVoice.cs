@@ -6,12 +6,18 @@ public class GMFVoice : Component
 {
 	[Group("Setup"), Property] public GMFVoiceProxy proxy { get; set; }
 	[Group("Runtime"), Property, Sync] public PlayerInfo owner { get; set; }
+	[Group("Runtime"), Property, Sync, Change("OnRep_worldSpacePlayback")] public bool worldSpacePlayback { get; set; }
 
 	[Group("Runtime"), Property] public List<Connection> excludedPlayers { get; set; } = new ();
 
 	protected override void OnAwake()
 	{
 		Assert.NotNull(proxy, "You need a proxy");
+	}
+
+	protected void OnRep_worldSpacePlayback()
+	{
+		proxy.WorldspacePlayback = worldSpacePlayback;
 	}
 
 	protected override void OnUpdate()
@@ -26,22 +32,23 @@ public class GMFVoice : Component
 
 		excludedPlayers.Clear();
 
-		if (owner.isDead)
+		if (GameMode.instance.modeState == ModeState.ActiveRound)
 		{
-			foreach (var playerInfo in PlayerInfo.allAlive)
+			if (owner.isDead)
 			{
-				// TODO: Still haven't verified this works on clients
-				excludedPlayers.Add(playerInfo.Network.Owner);
+				foreach (var playerInfo in PlayerInfo.allAlive)
+				{
+					// TODO: Still haven't verified this works on clients
+					excludedPlayers.Add(playerInfo.connection);
+					//Debuggin.ToScreen($"'{playerInfo.displayName}' owner: {playerInfo.Network.Owner}");
+				}
 			}
 		}
 	}
 
 	protected virtual void UpdateVoice()
 	{
-		Debuggin.ToScreen($"'{owner.displayName}' isDead: {owner.isDead}, isRecentlyDead: {owner.isRecentlyDead}");
-
-		proxy.WorldspacePlayback = !owner.isDead || owner.isRecentlyDead;
-
+		Debuggin.ToScreen($"'{owner?.displayName}' body: {owner?.character?.body}");
 		if (IsFullyValid(owner?.character?.body))
 		{
 			proxy.Renderer = owner.character.body.bodyRenderer;

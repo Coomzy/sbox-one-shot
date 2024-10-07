@@ -11,11 +11,11 @@
 		<div class="title" style="font-size: 100px;">Game Over</div>
 		@{
 			int count = 0;
-			@foreach (var osPlayerInfo in playersOrdered)
+			@foreach (var playerInfo in playersOrdered)
 			{
 				float pct = count / (float)entries.Length;
 				float fontSize = fontSizeRemap.Evaluate(pct);
-				var borderColor = PlayerToColour(osPlayerInfo);
+				var borderColor = PlayerToColour(playerInfo);
 
 				var position = "";
 				if (count < entries.Length)
@@ -35,7 +35,7 @@
 				slideTimeLerp = EasingY.OutBack(slideTimeLerp);
 				var posY = MathY.LerpUnclamped(1000.0f, 0.0f, slideTimeLerp);
 
-				<div class="entry" style="font-size: @fontSize; color: @borderColor; transform: translateY(@posY);">@position @osPlayerInfo?.displayName</div>
+				<div class="entry" style="font-size: @fontSize; color: @borderColor; transform: translateY(@posY);">@position @playerInfo?.displayName</div>
 
 				count++;
 			}

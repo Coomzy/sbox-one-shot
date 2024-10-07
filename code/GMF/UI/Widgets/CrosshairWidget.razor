@@ -332,6 +332,13 @@
 
 	[Property] public bool display { get; private set; }
 
+	protected override void OnAwake()
+	{
+		base.OnAwake();
+
+		DisableCrosshair();
+	}
+
 	public void EnableCrosshair()
 	{
 		display = true;

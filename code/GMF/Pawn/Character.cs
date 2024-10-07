@@ -64,8 +64,9 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 			GameObject.Tags.Add(Tag.CHARACTER);
 			GameObject.Tags.Remove(Tag.CHARACTER_REMOTE);
 
-			Spectator.instance.SetMode(SpectateMode.None);
+			PlayerInfo.local.SetSpectateMode(SpectateMode.None);
 			Spectator.Teleport(WorldPosition, WorldRotation);
+			PlayerInfo.local.voice.worldSpacePlayback = true;
 		}
 
 		TryAttachEquippedItem();
@@ -147,8 +148,10 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 			hitDirection = null;
 		}
 
+		Spectator.instance.spectateTarget = damageInfo.instigator;
 		Spectator.Teleport(cameraPoint, hitDirection);
-		Spectator.instance.SetMode(SpectateMode.CharacterDeath);
+		PlayerInfo.local.SetSpectateMode(SpectateMode.CharacterDeath);
+		PlayerInfo.local.voice.worldSpacePlayback = false;
 
 		DestroyRequest();
 	}
