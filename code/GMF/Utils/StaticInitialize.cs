@@ -10,10 +10,15 @@ public class StaticInitializeAttribute : Attribute
 	}
 }
 
-public class StaticInitializeSystem : GameObjectSystem
+public class StaticInitializeSystem : GameObjectSystem, ISceneStartup
 {
 	public StaticInitializeSystem(Scene scene) : base(scene)
 	{
+	}
+
+	void ISceneStartup.OnClientInitialize()
+	{
+		Log.Info($"OnClientInitialize() Game.IsPlaying: {Game.IsPlaying}");
 		// GameObjectSystem's load with the project
 		if (!Game.IsPlaying)
 		{

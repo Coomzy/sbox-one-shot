@@ -9,13 +9,13 @@
             this.Dirty();
             foreach (var playerInfo in PlayerInfo.allActive)
             {
-                if (!IsFullyValid(playerInfo))
+                if (!IsFullyValid(playerInfo?.voiceGlobal))
                     continue;
 
                 var totalShowTime = 0.35f;
                 var fullBeansTime = 0.1f;
 
-                var timeSinceLastVOIP = playerInfo.voice.proxy.LastPlayed;
+                var timeSinceLastVOIP = playerInfo.voiceGlobal.LastPlayed;
                 if (Application.IsEditor && voipTime.HasValue)
                 {
                     timeSinceLastVOIP = voipTime.Value;

@@ -4,6 +4,7 @@ using Sandbox.Diagnostics;
 using System;
 using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
+using static Sandbox.Voice;
 
 [Group("GMF")]
 public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
@@ -15,14 +16,12 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 	public static List<PlayerInfo> allAlive { get; private set; } = new List<PlayerInfo>();
 	public static List<PlayerInfo> allDead { get; private set; } = new List<PlayerInfo>();
 
-	[Group("Setup"), Order(-100), Property] public GameObject voicePrefab { get; set; }
-
 	[Property, HostSync] public Guid networkID { get; set; }
 	[Property, HostSync] public ulong steamID { get; set; }
 	[Property, HostSync, Sync] public string displayName { get; set; }
 	[Property, HostSync] public Role role { get; set; }
 	[Property, HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
-	[Property, Sync] public GMFVoice voice { get; set; }
+	[Property, Sync] public Voice voiceGlobal { get; set; }
 
 	[Property, HostSync, Sync] public Character character { get; set; }
 	[Property, HostSync, Sync, Change("OnRep_spectateMode")] public SpectateMode spectateMode { get; private set; } = SpectateMode.Viewpoint;
@@ -112,16 +111,9 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 			return;
 
 		local = this;
+
 		// TODO: This won't work if the spectator already thinks it's the same mode
 		Spectator.instance.SetMode(SpectateMode.Viewpoint, spectateMode);
-
-		if (!IsFullyValid(voicePrefab))
-			return;
-
-		var voiceInst = voicePrefab.Clone();
-		voice = voiceInst.GetComponent<GMFVoice>();
-		voice.owner = this;
-		voiceInst.NetworkSpawn(Connection.Local);
 	}
 
 	public virtual void OnNetworkSpawn(Connection connection)
@@ -185,6 +177,76 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 		character = null;
 		isDead = true;
 		deadTime = 0;
+	}
+
+	protected override void OnUpdate()
+	{
+		if (IsProxy)
+			return;
+
+		var activateMode = ActivateMode.Manual;
+		if (UserPrefs.voipMode == VOIPMode.PushToTalk)
+		{
+			activateMode = ActivateMode.PushToTalk;
+		}
+		else if (UserPrefs.voipMode == VOIPMode.Open)
+		{
+			activateMode = ActivateMode.AlwaysOn;
+		}
+
+		if (!IsFullyValid(GMFVoiceProximity.local))
+		{
+			if (IsFullyValid(GMFVoiceProximity.local))
+			{
+				GMFVoiceGlobal.local.Mode = activateMode;
+			}
+			return;
+		}
+
+		if (IsFullyValid(character?.body))
+		{
+			GMFVoiceProximity.local.Mode = activateMode;
+			GMFVoiceGlobal.local.Mode = ActivateMode.Manual;
+		}
+		else
+		{
+			GMFVoiceProximity.local.Mode = ActivateMode.Manual;
+			GMFVoiceGlobal.local.Mode = activateMode;
+		}
+	}
+
+	public virtual bool CanHearVoiceGlobal(PlayerInfo playerInfo)
+	{
+		if (IsFullyValid(playerInfo))
+			return false;
+
+		if (playerInfo.isLocal)
+			return false;
+
+		if (GameMode.instance.modeState != ModeState.ActiveRound)
+			return true;
+
+		if (isDead && !playerInfo.isDead)
+			return false;
+
+		return true;
+	}
+
+	public virtual bool CanHearVoiceProximity(PlayerInfo playerInfo)
+	{
+		if (IsFullyValid(playerInfo))
+			return false;
+
+		if (playerInfo.isLocal)
+			return false;
+
+		if (GameMode.instance.modeState != ModeState.ActiveRound)
+			return false;
+
+		if (isDead)
+			return false;
+
+		return true;
 	}
 
 	public virtual void DestroyPawn()
@@ -271,6 +333,30 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 	public virtual void SetSpectateMode(SpectateMode newSpectateMode)
 	{
 		spectateMode = newSpectateMode;
+	}
+
+	public static bool TryFromSteamID(ulong steamID, out PlayerInfo playerInfo) => TryFromSteamID<PlayerInfo>(steamID, out playerInfo);
+	public static bool TryFromSteamID<T>(ulong steamID, out T playerInfo) where T : PlayerInfo
+	{
+		playerInfo = FromSteamID<T>(steamID);
+		return IsFullyValid(playerInfo);
+	}
+
+	public static PlayerInfo FromSteamID(ulong steamID) => FromSteamID<PlayerInfo>(steamID);
+	public static T FromSteamID<T>(ulong steamID) where T : PlayerInfo
+	{
+		foreach (var playerInfo in all)
+		{
+			if (!IsFullyValid(playerInfo))
+				continue;
+
+			if (playerInfo.steamID != steamID)
+				continue;
+
+			return playerInfo as T;
+		}
+
+		return null;
 	}
 
 	public static bool TryFromConnection(Connection connection, out PlayerInfo playerInfo) => TryFromConnection<PlayerInfo>(connection, out playerInfo);

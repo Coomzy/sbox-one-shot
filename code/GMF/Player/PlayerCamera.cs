@@ -9,6 +9,9 @@ public class PlayerCamera : Component
 
 	[Group("Setup"), Property] CameraComponent camera { get; set; }
 
+	[Group("Runtime"), Property] public float? targetFOV { get; set; } = null;
+	[Group("Runtime"), Property] public float fovTransitionRate { get; set; } = 400.0f;
+
 	protected override void OnAwake()
 	{
 		instance = this;
@@ -16,7 +19,20 @@ public class PlayerCamera : Component
 
 	protected override void OnUpdate()
 	{
-		
+		// TODO: This could be better, if multiple things want to effect the FOV there isn't a good way to do that currently
+		var fovTarget = Preferences.FieldOfView;
+		var fovTargetRate = fovTransitionRate * 1.0f;
+
+		var equippedItem = PlayerInfo.local?.character?.equippedItem;
+		if (IsFullyValid(equippedItem))
+		{
+			equippedItem.IsRequestingFOVZoom(ref fovTarget, ref fovTargetRate);
+		}
+		cam.FieldOfView = MathY.MoveTowards(cam.FieldOfView, fovTarget, Time.Delta * fovTargetRate);
+		Debuggin.ToScreen($"Preferences.FieldOfView: {Preferences.FieldOfView}");
+		Debuggin.ToScreen($"cam.FieldOfView: {cam.FieldOfView}");
+		Debuggin.ToScreen($"fovTarget: {fovTarget}");
+		Debuggin.ToScreen($"fovTargetRate: {fovTargetRate}");
 	}
 
 	public Vector3 GetPointInFront(float distance)

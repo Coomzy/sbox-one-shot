@@ -76,7 +76,10 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 	async void PromptPayToWinGamePass()
 	{
 		if (GameSettings.instance.payToWinGamePass.Has())
+		{
+			IUIEvents.Post(x => x.AddSystemText($"You already own the game pass"));
 			return;
+		}
 
 		if (isPromptingPayToWin)
 			return;

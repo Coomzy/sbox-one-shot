@@ -12,6 +12,8 @@ public class DebugRagdoll : Component
 	[Group("Setup"), Order(-100), Property] public ModelCollider bodyCollider { get; set; }
 	[Group("Setup"), Order(-100), Property] public SkinnedModelRenderer bodyRenderer { get; set; }
 	[Group("Setup"), Order(-100), Property] public CitizenAnimationHelper thirdPersonAnimationHelper { get; set; }
+	[Group("Setup"), Order(-100), Property] public Rigidbody rigidbody { get; set; }
+	[Group("Setup"), Order(-100), Property] public FixedJoint fixedJoint { get; set; }
 
 	[Group("Config"), Order(0), Property, Range(0, 15)] public int impaledPhysicsBodyIndex { get; set; }
 	[Group("Config"), Order(0), Property] public bool isLocked { get; set; }
@@ -102,15 +104,38 @@ public class DebugRagdoll : Component
 		//impaledPhysicsBody.Position = MathY.MoveTowards(impaledPhysicsBody.Position, followToPos, Time.Delta * 100.0f);
 		//Log.Info($"delta.Length: {delta.Length}, impaledByHarpoonSpear.isInFlight: {impaledByHarpoonSpear.isInFlight}");
 
-		if (true) //delta.Length < 15.0f)// && !impaledByHarpoonSpear.isInFlight)
+		bool useOriginalMethod = false;
+		if (useOriginalMethod) //delta.Length < 15.0f)// && !impaledByHarpoonSpear.isInFlight)
 		{
 			impaledPhysicsBody.Velocity = delta * 1000.0f;
 			impaledPhysicsBody.Velocity = Vector3.Zero;
 			impaledPhysicsBody.AngularVelocity = MathY.MoveTowards(impaledPhysicsBody.AngularVelocity, Vector3.Zero, Time.Delta * 15.0f);
 			impaledPhysicsBody.AngularVelocity = Vector3.Zero;
 			impaledPhysicsBody.Position = followToPos;
+
+
+
 			//impaledPhysicsBody.Velocity = delta * 100.0f;
 			//impaledPhysicsBody.Position = MathY.MoveTowards(impaledPhysicsBody.Position, followToPos, Time.Delta * 1000.0f);
+		}
+		else
+		{
+			float smoothRate = 0.075f;
+			smoothRate = 0.0001f;
+
+			float smoothRateRot = 0.075f;
+			//smoothRateRot = 0.0001f;
+
+
+			var velocity = impaledPhysicsBody.Velocity;
+			Vector3.SmoothDamp(impaledPhysicsBody.Position, WorldPosition, ref velocity, smoothRate, Time.Delta);
+			impaledPhysicsBody.Velocity = velocity;
+
+			var angularVelocity = impaledPhysicsBody.AngularVelocity;
+			Rotation.SmoothDamp(impaledPhysicsBody.Rotation, WorldRotation, ref angularVelocity, smoothRateRot, Time.Delta);
+			impaledPhysicsBody.AngularVelocity = angularVelocity;
+
+			//impaledPhysicsBody.AngularVelocity = Vector3.Zero;
 		}
 	}
 

@@ -38,6 +38,8 @@ public class CharacterMovement : Component
 
 	[Group("Runtime"), Property] public Vector3 lastVelocity { get; set; }
 
+	[Group("Runtime"), Property] public float heighestSlideVel { get; set; } = 0.0f;
+
 	[ConVar] public static bool debug_character_movement { get; set; }
 	public static bool cheat_remove_slide_vel_cap { get; set; }
 
@@ -65,26 +67,30 @@ public class CharacterMovement : Component
 		isCrouching = false;
 	}
 
-	float heighestVel = 0.0f;
 	protected override void OnUpdate()
+	//public void Update()
 	{
+		if (IsProxy)
+			return;
+
 		if (debug_character_movement)
 		{
 			var vel = characterController.Velocity.WithZ(0).Length;
 			vel = characterController.Velocity.Length;
 			if (isSliding)
 			{
-				if (heighestVel < vel)
+				if (heighestSlideVel < vel)
 				{
-					heighestVel = vel;
+					heighestSlideVel = vel;
 				}
 			}
 			Debuggin.ToScreen($"characterController.Velocity: {vel}");
-			Debuggin.ToScreen($"heighestVel: {heighestVel}");
+			Debuggin.ToScreen($"heighestSlideVel: {heighestSlideVel}");
 		}
 	}
 
-	protected override void OnFixedUpdate()
+	//protected override void OnFixedUpdate()
+	public void Update()
 	{
 		if (IsProxy)
 			return;
@@ -114,6 +120,7 @@ public class CharacterMovement : Component
 		}
 
 		UpdateGrounding();
+		SmoothMoveBodyFromCrouchJumpOffset();
 		//GetMantleSpot(out var mantleEndPoint);
 		lastVelocity = characterController.Velocity;
 	}	
@@ -314,7 +321,7 @@ public class CharacterMovement : Component
 		return downCheckResult.Hit;
 	}
 
-	bool IsMetal(Surface surface)
+	public bool IsMetal(Surface surface)
 	{
 		if (surface.ResourceName == "metal" || surface.ResourceName == "metal.sheet" || surface.ResourceName == "metal.weapon")
 			return true;
@@ -344,7 +351,7 @@ public class CharacterMovement : Component
 		}
 	}
 
-	void MovementInput()
+	protected virtual void MovementInput()
 	{
 		if (characterController is null)
 			return;
@@ -390,9 +397,7 @@ public class CharacterMovement : Component
 
 		}
 
-		//
 		// Don't walk through other players, let them push you out of the way
-		//
 		var pushVelocity = PlayerPusher.GetPushVector(WorldPosition + Vector3.Up * 40.0f, Scene, GameObject);
 		if (!pushVelocity.IsNearlyZero())
 		{
@@ -417,7 +422,7 @@ public class CharacterMovement : Component
 		}
 	}
 
-	void UpdateGrounding()
+	protected virtual void UpdateGrounding()
 	{
 		bool wasGrounded = isGrounded;
 		isGrounded = characterController.IsOnGround;
@@ -434,25 +439,33 @@ public class CharacterMovement : Component
 		{
 			OnGroundedChange();
 		}
-
-		if (isGrounded)
-		{
-			//Log.Info($"owner: {owner}, owner.body: {owner?.body}");
-			//Log.Info($"owner: {owner}");
-			if (owner?.body == null)
-				return;
-			owner.body.heightOffset = MathY.MoveTowards(owner.body.heightOffset, 0.0f, Time.Delta * 100.0f);
-			owner.body.SetPosition(true);
-		}
 	}
 
-	void OnGroundedChange()
+	protected virtual void SmoothMoveBodyFromCrouchJumpOffset()
 	{
 		if (!isGrounded)
 			return;
 
+		if (!IsFullyValid(owner?.body))
+			return;
+
+		owner.body.heightOffset = MathY.MoveTowards(owner.body.heightOffset, 0.0f, Time.Delta * 100.0f);
+		owner.body.SetPosition(true);
+	}
+
+	protected virtual void OnGroundedChange()
+	{
+		if (!isGrounded)
+			return;
+
+		/*if (IsFullyValid(owner?.body))
+		{
+			owner.body.heightOffset = MathY.MoveTowards(owner.body.heightOffset, 0.0f, Time.Delta * 100.0f);
+			owner.body.SetPosition(true);
+		}*/
+
 		var verticalVel = MathF.Abs(lastVelocity.z);
-		Debuggin.ToScreen($"OnGroundedChange() verticalVel: {verticalVel}, config.minVelForGroundImpact: {config.minVelForGroundImpact}", 10.0f);
+		//Debuggin.ToScreen($"OnGroundedChange() verticalVel: {verticalVel}, config.minVelForGroundImpact: {config.minVelForGroundImpact}", 10.0f);
 		if (verticalVel < config.minVelForGroundImpact)
 			return;
 
@@ -478,7 +491,7 @@ public class CharacterMovement : Component
 		}
 	}
 
-	bool CanJump()
+	public virtual bool CanJump()
 	{
 		if (lastJump < config.jumpCooldown)
 			return false;
@@ -489,7 +502,7 @@ public class CharacterMovement : Component
 		return true;
 	}
 
-	bool CanUncrouch()
+	public virtual bool CanUncrouch()
 	{
 		if (!isCrouching) 
 			return true;
@@ -501,7 +514,7 @@ public class CharacterMovement : Component
 		return true;
 	}
 
-	void SlideInput()
+	protected virtual void SlideInput()
 	{
 		if (isSliding)
 		{
@@ -532,7 +545,7 @@ public class CharacterMovement : Component
 		slideStart = 0;
 	}
 
-	void CrouchingInput()
+	protected virtual void CrouchingInput()
 	{
 		wishCrouch = Input.Down(Inputs.duck) || Input.Down(Inputs.duck_alt);
 
@@ -558,14 +571,13 @@ public class CharacterMovement : Component
 				var originalPos = WorldPosition;
 				var moveDelta = Vector3.Up * config.duckHeight;
 				characterController.MoveTo(originalPos + moveDelta, false);
-				Transform.ClearInterpolation();
+				characterController.Transform.ClearInterpolation();
 				eyeHeight -= config.duckHeight;
 
 				owner.body.heightOffset = config.duckHeight;
 				owner.body.SetPosition(true);
 				//BroadcastBodyShift();
 			}
-
 
 			return;
 		}
@@ -597,8 +609,8 @@ public class CharacterMovement : Component
 				//characterController.WorldPosition = moveToPos;
 				characterController.MoveTo(moveToPos, true);
 				characterController.Transform.ClearInterpolation();
-				//eyeHeight += moveDist;
-				eyeHeight += config.duckHeight;
+				eyeHeight += moveDist;
+				//eyeHeight += config.duckHeight;
 
 				owner.body.heightOffset = 0.0f;
 				owner.body.SetPosition(true);
@@ -610,7 +622,7 @@ public class CharacterMovement : Component
 		}
 	}
 
-	public void Launch(Vector3 force)
+	public virtual void Launch(Vector3 force)
 	{
 		if (isSliding)
 		{

@@ -2,6 +2,7 @@
 using Sandbox;
 using System;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 [Group("GMF")]
 public class Equipment : Component, IGameModeEvents
@@ -18,9 +19,11 @@ public class Equipment : Component, IGameModeEvents
 
 	[Group("Config"), Property] public Vector3 hip { get; set; } = new Vector3(16.5f, -13.0f, -11.0f);
 	[Group("Config"), Property] public Vector3 ironSights { get; set; } = new Vector3(15.0f, 0.0f, -8.25f);
+	[Group("Config"), Property] public float zoomFOVScalar { get; set; } = 0.6f;
+	[Group("Config"), Property] public float zoomFOVRate { get; set; } = 400.0f;
 
 	[Group("Runtime"), Order(100), Property, Sync, Change("OnRep_instigator")] public Character instigator { get; set; }
-	[Group("Runtime"), Order(100), Property] public EquipmentProxy equipmentProxy { get; set; }
+	[Group("Runtime"), Order(100), Property, ReadOnly, JsonIgnore] public EquipmentProxy equipmentProxy { get; set; }
 
 	[Group("Runtime"), Property, ReadOnly] public bool hasFireInputDown { get; set; }
 	[Group("Runtime"), Property, ReadOnly] public TimeSince fireStartTime { get; set; }
@@ -170,7 +173,29 @@ public class Equipment : Component, IGameModeEvents
 	{
 		return false;
 	}
-	
+
+	public virtual bool IsRequestingFOVZoom(ref float targetFOV, ref float transitionRate)
+	{ 
+		if (!hasFireAltInputDown)
+			return false;
+
+		if (!IsFullyValid(instigator?.owner))
+			return false;
+
+		if (instigator.owner.isDead)
+			return false;
+
+		ApplyZoomFOV(ref targetFOV, ref transitionRate);
+
+		return true;
+	}
+
+	public virtual void ApplyZoomFOV(ref float targetFOV, ref float transitionRate)
+	{
+		targetFOV = Preferences.FieldOfView * zoomFOVScalar;
+		transitionRate = zoomFOVRate;
+	}
+
 	public virtual void Drop(Vector3 force)
 	{
 		Drop_Remote();

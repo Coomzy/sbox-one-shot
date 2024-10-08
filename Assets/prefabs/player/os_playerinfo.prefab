@@ -12,11 +12,11 @@
         "__type": "OSPlayerInfo",
         "__guid": "1d82eccc-349b-4fc3-af41-240183bf276e",
         "aliveTime": {
-          "Relative": 177.5135
+          "Relative": 8955.266
         },
         "clothing": {},
         "deadTime": {
-          "Relative": 177.5135
+          "Relative": 8955.266
         },
         "deaths": 0,
         "deathsRound": 0,
@@ -26,17 +26,38 @@
         "isPromptingPayToWin": false,
         "kills": 0,
         "killsRound": 0,
+        "networkID": "00000000-0000-0000-0000-000000000000",
         "rank": 0,
         "role": "None",
-        "steamId": 0,
-        "voice": null,
-        "voicePrefab": {
-          "_type": "gameobject",
-          "prefab": "prefabs/player/gmf voice.prefab"
+        "spectateMode": "Viewpoint",
+        "steamID": 0,
+        "voiceGlobal": {
+          "_type": "component",
+          "component_id": "9faa40fc-8b3b-47f5-87f3-7aa20ab402c7",
+          "go": "3e023e10-0d92-49f9-b58f-da5b81f35849",
+          "component_type": "GMFVoiceGlobal"
         },
         "wins": 0,
         "winsMatches": 0,
         "xp": 0
+      },
+      {
+        "__type": "GMFVoiceGlobal",
+        "__guid": "9faa40fc-8b3b-47f5-87f3-7aa20ab402c7",
+        "excludedPlayers": [],
+        "Loopback": false,
+        "Mode": "Manual",
+        "MorphScale": 3,
+        "MorphSmoothTime": 0.1,
+        "owner": {
+          "_type": "component",
+          "component_id": "1d82eccc-349b-4fc3-af41-240183bf276e",
+          "go": "3e023e10-0d92-49f9-b58f-da5b81f35849",
+          "component_type": "OSPlayerInfo"
+        },
+        "PushToTalkInput": "voice",
+        "Volume": 1,
+        "WorldspacePlayback": false
       }
     ],
     "Children": [],

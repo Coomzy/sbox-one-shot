@@ -23,9 +23,13 @@
           "prefab": "vfx/sparks.prefab"
         },
         "impaledCharacters": [],
+        "impalePoint": {
+          "_type": "gameobject",
+          "go": "b9409d98-b2e6-41ad-930a-99eb6f1bab50"
+        },
         "isInFlight": true,
         "startFlightTime": {
-          "Relative": 61.303345
+          "Relative": 10566.34
         },
         "startPos": "0,0,0",
         "usesGravity": true,
@@ -53,6 +57,13 @@
                 "CreateBoneObjects": false,
                 "Model": "equipment/harpoon/source/harpoon_low.vmdl",
                 "Morphs": {},
+                "Parameters": {
+                  "bools": {},
+                  "ints": {},
+                  "floats": {},
+                  "vectors": {},
+                  "rotations": {}
+                },
                 "RenderOptions": {
                   "GameLayer": true,
                   "OverlayLayer": false,
@@ -178,6 +189,13 @@
                     ]
                   }
                 ]
+              },
+              {
+                "__guid": "b9409d98-b2e6-41ad-930a-99eb6f1bab50",
+                "Flags": 0,
+                "Name": "Impale Point",
+                "Position": "1.62125,0,0",
+                "Enabled": true
               }
             ]
           }

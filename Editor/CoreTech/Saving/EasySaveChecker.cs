@@ -11,7 +11,7 @@ public static class EasySaveChecker
 	[Hotload]
 	public static void CheckEasySaves()
 	{
-		var types = GlobalGameNamespace.TypeLibrary.GetTypes<EasySaveNonGenericBase>();
+		/*var types = GlobalGameNamespace.TypeLibrary.GetTypes<typeof(EasySave<>)>();
 
 		List<Type> easySaveSubclasses = new List<Type>();
 		foreach (var type in types)
@@ -53,6 +53,6 @@ public static class EasySaveChecker
 
 				Log.Error($"{easySaveSubclass.Name} contains a field '{field.Name}' which will not be serialized by JSON. If this is intentional add the JsonIgnore attribute");
 			}
-		}
+		}*/
 	}
 }

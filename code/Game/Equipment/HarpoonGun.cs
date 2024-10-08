@@ -12,6 +12,9 @@ public class HarpoonGunConfig : GameResource
 	[Group("Reload"), Order(-1), Property] public Curve reloadXAxisCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f), new Curve.Frame(1.0f, 1.0f));
 	[Group("Reload"), Order(-1), Property] public Curve reloadYAxisCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f), new Curve.Frame(1.0f, 1.0f));
 	[Group("Reload"), Order(-1), Property] public Curve reloadZAxisCurve { get; set; } = new Curve(new Curve.Frame(0.0f, 0.0f), new Curve.Frame(1.0f, 1.0f));
+
+	[Group("ADS"), Order(-1), Property] public float adsFOVScalar { get; set; } = 0.6f;
+	[Group("ADS"), Order(-1), Property] public float adsRate { get; set; } = 400.0f;
 }
 
 [Group("GMF")]
@@ -159,6 +162,12 @@ public class HarpoonGun : Equipment
 		handle.SpacialBlend = 1.0f;
 	}
 
+	public override void ApplyZoomFOV(ref float targetFOV, ref float transitionRate)
+	{
+		targetFOV *= config.adsFOVScalar;
+		transitionRate = config.adsRate;
+	}
+
 	public async void Reload()
 	{
 		if (isReloading)
@@ -242,5 +251,16 @@ public class HarpoonGun : Equipment
 		{
 			proxy.SetState(newValue);
 		}
+	}
+
+	protected override void Drop_Remote()
+	{
+		base.Drop_Remote();
+
+		gunModel.RenderOptions.Overlay = false;
+		spearModel.RenderOptions.Overlay = false;
+
+		gunModel.Enabled = false;
+		spearModel.Enabled = false;
 	}
 }

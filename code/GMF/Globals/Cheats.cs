@@ -93,7 +93,7 @@ public class CheatAttribute : Attribute
 public static partial class Cheats
 {
 	[Cheat(CheatFlags.Broadcast), ConCmd]
-	public static void timescale(float timescale = 1.0f)
+	public static void slomo(float timescale = 1.0f)
 	{
 		if (Game.ActiveScene == null)
 			return;
@@ -104,13 +104,13 @@ public static partial class Cheats
 	[Cheat(role = Role.None), ConCmd]
 	public static void suicide()
 	{
-		if (!IsFullyValid(PlayerInfo.local.character))
+		if (!IsFullyValid(PlayerInfo.local?.character?.body))
 			return;
 
 		DamageInfo damageInfo = new DamageInfo();
 		damageInfo.instigator = PlayerInfo.local;
-		damageInfo.damageCauser = PlayerInfo.local.character.equippedItem;
-		PlayerInfo.local.character.Die(damageInfo);
+		damageInfo.damageCauser = null;
+		PlayerInfo.local.character.body.TakeDamage(damageInfo);
 	}
 
 	[Cheat, ConCmd]
@@ -155,12 +155,6 @@ public static partial class Cheats
 		}
 	}
 
-	[Cheat(role = Role.None), ConCmd("enable_voip")]
-	public static void enable_voip(bool enabled = false)
-	{
-		PlayerInfo.local.voice.Enabled = enabled;
-	}
-
 	[Cheat(role = Role.Developer), ConCmd]
 	public static void unlock_achievement(string achievementName)
 	{
@@ -177,30 +171,21 @@ public static partial class Cheats
 	}
 
 	[Cheat, ConCmd(Help = "use dump_players for SteamIDs and Role: None, Tester, Privileged, Moderator, Administrator, Developer")]
-	public static void set_player_role(ulong steamId, Role newRole)
+	public static void set_player_role(ulong steamID, Role newRole)
 	{
-		PlayerInfo targetPlayer = null;
-		foreach (var player in PlayerInfo.all)
+		if (!PlayerInfo.TryFromSteamID(steamID, out var playerInfo))
 		{
-			if (player.steamID != steamId)
-				continue;
-
-			targetPlayer = player;
-			break;
-		}
-
-		if (!IsFullyValid(targetPlayer))
-		{
-			Log.Info($"steamID: {steamId}, newRole: {newRole}");
+			Log.Info($"Failed to find player with steamID: {steamID}");
 			return;
 		}
 
-		using (Rpc.FilterInclude(c => c.SteamId == steamId))
+		using (Rpc.FilterInclude(c => c.SteamId == steamID))
 		{
 			set_player_role_local(newRole);
 		}
 	}
 
+	[Broadcast]
 	static void set_player_role_local(Role newRole)
 	{
 		PlayerInfo.local.role = newRole;
@@ -213,16 +198,31 @@ public static partial class Cheats
 		CharacterMovement.cheat_remove_slide_vel_cap = remove;
 	}
 
-	[Cheat(role = Role.None), ConCmd]
-	public static void kill(ulong steamId)
+	[Cheat, ConCmd]
+	public static void reset_character_move_vel()
 	{
-		if (!IsFullyValid(PlayerInfo.local.character))
+		if (!IsFullyValid(PlayerInfo.local?.character?.movement))
+			return;
+
+		PlayerInfo.local.character.movement.heighestSlideVel = 0;
+	}
+
+	[Cheat(role = Role.None), ConCmd]
+	public static void kill(ulong steamID)
+	{
+		if (!PlayerInfo.TryFromSteamID(steamID, out var playerInfo))
+		{
+			Log.Info($"Failed to find player with steamID: {steamID}");
+			return;
+		}
+
+		if (!IsFullyValid(playerInfo?.character?.body))
 			return;
 
 		DamageInfo damageInfo = new DamageInfo();
-		damageInfo.instigator = PlayerInfo.local;
-		damageInfo.damageCauser = PlayerInfo.local.character.equippedItem;
-		PlayerInfo.local.character.Die(damageInfo);
+		damageInfo.instigator = playerInfo;
+		damageInfo.damageCauser = playerInfo.character.equippedItem;
+		playerInfo.character.body.TakeDamage(damageInfo);
 	}
 
 	[Cheat, ConCmd(Help = "SpectateMode: None, Viewpoint, CharacterDeath, ThirdPerson, FreeCam")]

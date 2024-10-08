@@ -11,6 +11,7 @@ using static Sandbox.Material;
 [Group("OS")]
 public class HarpoonSpear : Projectile
 {
+	[Group("Setup"), Property] public GameObject impalePoint { get; set; }
 	[Group("Setup"), Property] public HarpoonSpearFlare flare { get; set; }
 	[Group("Runtime"), Property] public List<GameObject> impaledCharacters { get; set; } = new();	
 
@@ -79,6 +80,7 @@ public class HarpoonSpear : Projectile
 		damageInfo.instigator = instigator?.instigator?.owner;
 		damageInfo.damageCauser = this;
 		damageInfo.hitBodyIndex = GetClosestSafeIndex(characterBody.bodyPhysics, result.Body.GroupIndex);
+		//damageInfo.hitBodyIndex = result.Body.GroupIndex;
 		damageInfo.hitVelocity = Transform.World.Forward * 100.0f;
 		characterBody.TakeDamage(damageInfo);
 
@@ -128,7 +130,7 @@ public class HarpoonSpear : Projectile
 	}
 
 	// Any other hit bones turn terry into stretch armstrong
-	public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
+	/*public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
 	{
 		if (index == Bones.Terry.spine_0 || index == Bones.Terry.spine_2 || index == Bones.Terry.head)
 		{
@@ -155,5 +157,22 @@ public class HarpoonSpear : Projectile
 		}
 
 		return Bones.Terry.head;
+	}*/
+
+	public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
+	{
+		switch (index)
+		{
+			case Bones.Terry.hand_L:
+				return Bones.Terry.arm_lower_L;
+			case Bones.Terry.hand_R:
+				return Bones.Terry.arm_lower_R;
+			case Bones.Terry.ankle_L:
+				return Bones.Terry.leg_lower_L;
+			case Bones.Terry.ankle_R:
+				return Bones.Terry.leg_lower_R;
+		}
+
+		return index;
 	}
 }

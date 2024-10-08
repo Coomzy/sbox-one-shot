@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Numerics;
 using static Sandbox.ModelRenderer;
 
+// TODO: I'm seriously considering moving more of this onto the body, that might make it harder to make characters share a body though
 [Group("GMF")]
 public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 {
@@ -18,12 +19,17 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 	[Group("Setup"), Property] public CapsuleCollider capsuleCollider { get; set; }
 	[Group("Setup"), Property] public GameObject playerBodyPrefab { get; set; }
 
+	[Group("Setup"), Property] public GameObject eyeHolder { get; set; }
+	[Group("Setup"), Property] public GameObject firstPersonArmsHolder { get; set; }
+	[Group("Setup"), Property] public GameObject gunHolder { get; set; }
+
 	[Group("Runtime"), Order(100), Property, ReadOnly, Sync, Change("OnRep_body")] public CharacterBody body { get; set; }
 	[Group("Runtime"), Order(100), Property, ReadOnly, Sync, Change("OnRep_equippedItem")] public Equipment equippedItem { get; set; }
 	[Group("Runtime"), Order(100), Property, ReadOnly, Sync] public bool isDead { get; set; }
 
 	[Group("Runtime"), Order(100), Property, ReadOnly, Sync] public Angles eyeAngles { get; set; }
 	[Group("Runtime"), Order(100), Property, ReadOnly] public bool keepCharacterBody { get; set; }
+	[Group("Runtime"), Property] public float jumpShrinkAmount { get; private set; } = 0.0f;
 
 	public virtual void OnRep_body(CharacterBody oldValue, CharacterBody newValue)
 	{
@@ -47,9 +53,7 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 
 	protected override void OnAwake()
 	{
-		base.OnAwake();
-
-		//Slomo();
+		eyeAngles = WorldRotation.Angles().WithRoll(0).WithPitch(0);
 	}
 
 	protected override void OnStart()
@@ -58,27 +62,51 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		{
 			GameObject.Tags.Add(Tag.CHARACTER_REMOTE);
 			GameObject.Tags.Remove(Tag.CHARACTER);
-		}
-		else
-		{
-			GameObject.Tags.Add(Tag.CHARACTER);
-			GameObject.Tags.Remove(Tag.CHARACTER_REMOTE);
-
-			PlayerInfo.local.SetSpectateMode(SpectateMode.None);
-			Spectator.Teleport(WorldPosition, WorldRotation);
-			PlayerInfo.local.voice.worldSpacePlayback = true;
+			return;
 		}
 
+		GameObject.Tags.Add(Tag.CHARACTER);
+		GameObject.Tags.Remove(Tag.CHARACTER_REMOTE);
+
+		PlayerInfo.local.SetSpectateMode(SpectateMode.None);
+		Spectator.Teleport(WorldPosition, WorldRotation);
+
+		SpawnBody();
+
+		SpawnLoadout();
 		TryAttachEquippedItem();
+
+		IUIEvents.Post(x => x.EnableCrosshair());
 	}
 
-	async void Slomo()
+	protected virtual void SpawnBody()
 	{
-		Scene.TimeScale = 0.05f;
+		var playerBodyInst = playerBodyPrefab.Clone();
+		body = playerBodyInst.Components.Get<CharacterBody>();
+		body.owner = this;
+		body.GameObject.Name = $"Body ({owner?.displayName})";
+		playerBodyInst.NetworkSpawn(GameObject.Network.Owner);
+	}
 
-		await Task.DelayRealtimeSeconds(3.0f);
+	// TODO: Some kind of inventory system?
+	protected virtual void SpawnLoadout()
+	{
 
-		Scene.TimeScale = 1.0f;
+	}
+
+	protected Equipment SpawnEquipment(GameObject prefab)
+	{
+		var equipmentInst = prefab.Clone();
+		//harpoonGunInst.NetworkInterpolation = false;
+		var equipment = equipmentInst.Components.Get<Equipment>();
+		equipment.instigator = this;
+		equipmentInst.NetworkSpawn(GameObject.Network.Owner);
+
+		equipmentInst.SetParent(gunHolder);
+		equipmentInst.LocalPosition = Vector3.Zero;
+		equipmentInst.LocalRotation = Quaternion.Identity;
+
+		return equipment;
 	}
 
 	public virtual void OnPossess(PlayerInfo playerInfo)
@@ -102,12 +130,127 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		if (IsProxy)
 			return;
 
-		float killZ = WorldInfo.instance != null ? WorldInfo.instance.killZ : -500.0f;
+		MouseInput();
+		WorldRotation = new Angles(0, eyeAngles.yaw, 0);
+		FireInput();
 
+		movement.Update();
+
+		UpdateCamera();
+
+		float killZ = IsFullyValid(WorldInfo.instance) ? WorldInfo.instance.killZ : -500.0f;
 		if (GameObject.WorldPosition.z <= killZ)
 		{
 			FellOutOfWorld();
 		}
+	}
+
+	protected virtual void FireInput()
+	{
+		if (GameMode.instance.modeState == ModeState.ReadyPhase)
+			return;
+
+		if (!IsFullyValid(equippedItem))
+			return;
+
+		if (Input.Pressed(Inputs.attack1))
+		{
+			equippedItem.FireStart();
+		}
+
+		if (Input.Released(Inputs.attack1))
+		{
+			equippedItem.FireEnd();
+		}
+
+		if (Input.Pressed(Inputs.attack2))
+		{
+			equippedItem.FireAltStart();
+		}
+
+		if (Input.Released(Inputs.attack2))
+		{
+			equippedItem.FireAltEnd();
+		}
+	}
+
+	protected virtual void MouseInput()
+	{
+		var e = eyeAngles;
+		e += Input.AnalogLook / PlayerCamera.GetScaledSensitivity();
+		e.pitch = e.pitch.Clamp(-90, 90);
+		e.roll = 0.0f;
+		eyeAngles = e;
+	}
+
+	public virtual void UpdateCamera()
+	{
+		if (PlayerInfo.local.spectateMode != SpectateMode.None)
+		{
+			return;
+		}
+
+		var camera = PlayerCamera.cam;
+		if (camera == null || !camera.IsValid) return;
+
+		var targetEyeHeight = movement.config.eyeHeight;
+
+		if (movement.isSliding)
+		{
+			targetEyeHeight = movement.config.eyeHeightSliding;
+		}
+		else if (movement.isCrouching)
+		{
+			targetEyeHeight = movement.config.eyeHeightCrouching;
+		}
+
+		var previousHeight = movement.eyeHeight;
+		var heightTarget = movement.isCrouching ? movement.config.crouchHeight : movement.config.characterHeight;
+		//characterController.Height = heightTarget;
+		var heightDelta = heightTarget - previousHeight;
+
+		var previousEyeHeight = movement.eyeHeight;
+		movement.eyeHeight = movement.eyeHeight.LerpTo(targetEyeHeight, RealTime.Delta * 10.0f);
+		float eyeHeightDelta = previousEyeHeight - movement.eyeHeight;
+
+		if (!movement.characterController.IsOnGround && heightDelta != 0.0f)
+		{
+			if (movement.isCrouching)
+			{
+				jumpShrinkAmount += heightDelta;
+				//Log.Info($"heightDelta: {heightDelta}");
+				//characterController.MoveTo(WorldPosition += Vector3.Up * heightDelta, false);
+				//Transform.ClearInterpolation();
+				//characterMovement.eyeHeight -= eyeHeightDelta;
+			}
+			else
+			{
+				jumpShrinkAmount -= heightDelta;
+				//characterController.MoveTo(WorldPosition -= Vector3.Up * heightDelta, false);
+				//Transform.ClearInterpolation();
+				//characterMovement.eyeHeight += eyeHeightDelta;
+			}
+		}
+
+		var targetCameraPos = WorldPosition + new Vector3(0, 0, movement.eyeHeight);
+
+		// smooth view z, so when going up and down stairs or ducking, it's smooth af
+		if (movement.lastUngrounded > 0.2f)
+		{
+			targetCameraPos.z = camera.WorldPosition.z.LerpTo(targetCameraPos.z, RealTime.Delta * 25.0f);
+		}
+
+		if (eyeHolder != null && eyeHolder.IsValid)
+		{
+			eyeHolder.WorldPosition = targetCameraPos;
+			eyeHolder.WorldRotation = eyeAngles;
+		}
+
+		camera.WorldPosition = targetCameraPos;
+		camera.WorldRotation = eyeAngles;
+
+		firstPersonArmsHolder.WorldPosition = PlayerCamera.cam.WorldPosition;
+		firstPersonArmsHolder.WorldRotation = PlayerCamera.cam.WorldRotation;
 	}
 
 	public virtual void TakeDamage(DamageInfo damageInfo)
@@ -138,6 +281,7 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		}
 		body.Die(damageInfo);
 		owner.OnDie();
+		IUIEvents.Post(x => x.DisableCrosshair());
 
 		var hitVelocity = damageInfo.hitVelocity.Normal;
 		var cameraPoint = PlayerCamera.cam.WorldPosition - (hitVelocity * 150.0f);
@@ -151,7 +295,6 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		Spectator.instance.spectateTarget = damageInfo.instigator;
 		Spectator.Teleport(cameraPoint, hitDirection);
 		PlayerInfo.local.SetSpectateMode(SpectateMode.CharacterDeath);
-		PlayerInfo.local.voice.worldSpacePlayback = false;
 
 		DestroyRequest();
 	}
@@ -192,6 +335,8 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 			base.OnDestroy();
 			return;
 		}
+
+		IUIEvents.Post(x => x.DisableCrosshair());
 
 		if (IsFullyValid(body))
 		{

@@ -16,7 +16,7 @@
         {
             <div class="content tabs-container">
                 <div class="tabs-group">
-                    @foreach (var tab in tabs)
+                    @foreach (var tab in UserPrefs.tabs)
                     {
                         if (tab == null)
                             continue;
@@ -25,6 +25,12 @@
                             @tab.tabName
                         </div>
                     }
+                    <div class="button red" onclick="@(() => Game.Overlay.ShowBinds())">
+                        Controls
+                    </div>
+                    <div class="button red" onclick="@(() => Game.Overlay.ShowSettingsModal())">
+                        Settings
+                    </div>
                 </div>
             </div>
             <div class="content tab-content" CanDragScroll="false">
@@ -83,8 +89,10 @@
             </div>
         }
         <div class="menu buttons">
-            <div class="button red" onclick="@(() => ButtonClose())">
-                Close
+            <div class="menu buttons close">
+                <div class="button red" onclick="@(() => ButtonClose())">
+                    Close
+                </div>
             </div>
         </div>
     </div>
@@ -93,7 +101,7 @@
 @code
 {
     public static string GetToggleColor(bool isOff, bool value)
-    {
+    {        
         if (isOff)
         {
             return value ? "gray" : "red";
@@ -101,27 +109,15 @@
         return value ? "green" : "gray";
     }
 
-
-    public List<UITab> tabs { get; set; } = new List<UITab>();
     public UITab activeTab { get; set; }
 
     protected override void OnAwake()
     {
         base.OnAwake();
 
-        var sortedValues = EasySaveNonGenericBase.typeToInst.Values.OrderBy(v => (v.uiTab != null) ? v.uiTab.order : 99999).ToList();
-
-        foreach (var sortedValue in sortedValues)
+        if (UserPrefs.tabs != null && UserPrefs.tabs.Any())
         {
-            if (sortedValue == null)
-                continue;
-
-            tabs.Add(sortedValue.uiTab);
-        }
-
-        if (tabs != null && tabs.Count() > 0)
-        {
-            activeTab = tabs[0];
+            activeTab = UserPrefs.tabs[0];
         }
     }
 
@@ -157,7 +153,6 @@
 
     protected override void OnDisabled()
     {
-        EasySaveNonGenericBase.SaveAll();
         Mouse.Visible = wasMouseVisible;
     }
 
