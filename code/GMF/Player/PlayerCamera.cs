@@ -12,6 +12,8 @@ public class PlayerCamera : Component
 	[Group("Runtime"), Property] public float? targetFOV { get; set; } = null;
 	[Group("Runtime"), Property] public float fovTransitionRate { get; set; } = 400.0f;
 
+	[ConVar] public static bool debug_camera { get; set; }
+
 	protected override void OnAwake()
 	{
 		instance = this;
@@ -21,18 +23,26 @@ public class PlayerCamera : Component
 	{
 		// TODO: This could be better, if multiple things want to effect the FOV there isn't a good way to do that currently
 		var fovTarget = Preferences.FieldOfView;
-		var fovTargetRate = fovTransitionRate * 1.0f;
+		var fovTargetRate = fovTransitionRate;
 
 		var equippedItem = PlayerInfo.local?.character?.equippedItem;
 		if (IsFullyValid(equippedItem))
 		{
-			equippedItem.IsRequestingFOVZoom(ref fovTarget, ref fovTargetRate);
+			if (equippedItem.IsRequestingFOVZoom(out var newFovTarget, out var newFovTargetRate))
+			{
+				fovTarget = newFovTarget;
+				fovTargetRate = newFovTargetRate;
+			}
 		}
 		cam.FieldOfView = MathY.MoveTowards(cam.FieldOfView, fovTarget, Time.Delta * fovTargetRate);
-		Debuggin.ToScreen($"Preferences.FieldOfView: {Preferences.FieldOfView}");
-		Debuggin.ToScreen($"cam.FieldOfView: {cam.FieldOfView}");
-		Debuggin.ToScreen($"fovTarget: {fovTarget}");
-		Debuggin.ToScreen($"fovTargetRate: {fovTargetRate}");
+
+		if (debug_camera)
+		{
+			Debuggin.ToScreen($"Preferences.FieldOfView: {Preferences.FieldOfView}");
+			Debuggin.ToScreen($"cam.FieldOfView: {cam.FieldOfView}");
+			Debuggin.ToScreen($"fovTarget: {fovTarget}");
+			Debuggin.ToScreen($"fovTargetRate: {fovTargetRate}");
+		}
 	}
 
 	public Vector3 GetPointInFront(float distance)
@@ -49,14 +59,9 @@ public class PlayerCamera : Component
 
 	public static float GetScaledSensitivity()
 	{
-		//return 1.0f;
 		var scaledSensitivity = CalculateZoomedSensitivity(Preferences.Sensitivity, Preferences.FieldOfView, cam.FieldOfView);
 		var sensitivityDelta = Preferences.Sensitivity - scaledSensitivity;
 		sensitivityDelta = scaledSensitivity / Preferences.Sensitivity;
-		/*Debuggin.ToScreen($"Preferences.Sensitivity: {Preferences.Sensitivity}");
-		Debuggin.ToScreen($"scaledSensitivity: {scaledSensitivity}");
-		Debuggin.ToScreen($"sensitivityDelta: {sensitivityDelta}");*/
-		//sensitivityDelta = 1.0f - sensitivityDelta;
 		return sensitivityDelta;
 	}
 
@@ -68,11 +73,11 @@ public class PlayerCamera : Component
 		return baseSensitivity * MathF.Tan(baseFOVRadians) / MathF.Tan(zoomedFOVRadians);
 	}
 
+	// TODO: Make this a property in MathY
 	public static float DegreesToRadians(float degrees)
 	{
 		return degrees * (float)(Math.PI / 180.0);
 	}
-
 
 	public override void Reset()
 	{

@@ -26,20 +26,18 @@ public class OSCharacterBody : CharacterBody
 		bodyPhysics.MotionEnabled = true;
 		bodyRenderer.UseAnimGraph = false;
 
-		//var followToPos = impaledByHarpoonSpear.GameObject.Transform.World.Position - (impaledByHarpoonSpear.GameObject.Transform.World.Forward * 30.0f);
 		var followToPos = impaledByHarpoonSpear.impalePoint.WorldPosition;
-
 		if (impaledPhysicsBodyIndex == Bones.Terry.spine_0)
 		{
 			followToPos += Vector3.Up * 10.0f;
 		}
 
-		/*impaledPhysicsBody.Velocity = Vector3.Zero;
+		impaledPhysicsBody.Velocity = Vector3.Zero;
 		impaledPhysicsBody.AngularVelocity = MathY.MoveTowards(impaledPhysicsBody.AngularVelocity, Vector3.Zero, Time.Delta * 15.0f);
 		impaledPhysicsBody.AngularVelocity = Vector3.Zero;
-		impaledPhysicsBody.Position = followToPos;*/
+		impaledPhysicsBody.Position = followToPos;
 
-		float smoothRate = 0.075f;
+		/*float smoothRate = 0.075f;
 		//smoothRate = 0.0001f;
 		//smoothRate = 0.005f;
 		smoothRate = 0.025f;
@@ -71,7 +69,7 @@ public class OSCharacterBody : CharacterBody
 		targetRot = Rotation.Identity;
 		Rotation.SmoothDamp(impaledPhysicsBody.Rotation, targetRot, ref angularVelocity, smoothRateRot, Time.Delta);
 		impaledPhysicsBody.AngularVelocity = angularVelocity;
-		//impaledPhysicsBody.AngularVelocity = Vector3.Zero;
+		//impaledPhysicsBody.AngularVelocity = Vector3.Zero;*/
 	}
 
 	public override void Die(DamageInfo damageInfo)

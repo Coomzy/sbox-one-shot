@@ -16,12 +16,14 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 	public static List<PlayerInfo> allAlive { get; private set; } = new List<PlayerInfo>();
 	public static List<PlayerInfo> allDead { get; private set; } = new List<PlayerInfo>();
 
+	[Group("Setup"), Order(-100), Property] public GameObject voicePrefab { get; set; }
+
 	[Property, HostSync] public Guid networkID { get; set; }
 	[Property, HostSync] public ulong steamID { get; set; }
 	[Property, HostSync, Sync] public string displayName { get; set; }
 	[Property, HostSync] public Role role { get; set; }
 	[Property, HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
-	[Property, Sync] public Voice voiceGlobal { get; set; }
+	[Property, Sync] public GMFVoice voice { get; set; }
 
 	[Property, HostSync, Sync] public Character character { get; set; }
 	[Property, HostSync, Sync, Change("OnRep_spectateMode")] public SpectateMode spectateMode { get; private set; } = SpectateMode.Viewpoint;
@@ -112,6 +114,14 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 
 		local = this;
 
+		Assert.True(IsFullyValid(voicePrefab));
+
+		var voiceInst = voicePrefab.Clone();
+		voiceInst.Name = $"Voice ({displayName})";
+		voice = voiceInst.GetComponent<GMFVoice>();
+		voice.owner = this;
+		voiceInst.NetworkSpawn(Network.Owner);
+
 		// TODO: This won't work if the spectator already thinks it's the same mode
 		Spectator.instance.SetMode(SpectateMode.Viewpoint, spectateMode);
 	}
@@ -181,10 +191,15 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 
 	protected override void OnUpdate()
 	{
+		if (IsFullyValid(voice))
+		{
+			voice.Update();
+		}
+
 		if (IsProxy)
 			return;
 
-		var activateMode = ActivateMode.Manual;
+		/*var activateMode = ActivateMode.Manual;
 		if (UserPrefs.voipMode == VOIPMode.PushToTalk)
 		{
 			activateMode = ActivateMode.PushToTalk;
@@ -212,19 +227,19 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 		{
 			GMFVoiceProximity.local.Mode = ActivateMode.Manual;
 			GMFVoiceGlobal.local.Mode = activateMode;
-		}
+		}*/
 	}
 
 	public virtual bool CanHearVoiceGlobal(PlayerInfo playerInfo)
 	{
-		if (IsFullyValid(playerInfo))
+		if (!IsFullyValid(playerInfo))
 			return false;
 
 		if (playerInfo.isLocal)
 			return false;
 
-		if (GameMode.instance.modeState != ModeState.ActiveRound)
-			return true;
+		/*if (GameMode.instance.modeState != ModeState.ActiveRound)
+			return true;*/
 
 		if (isDead && !playerInfo.isDead)
 			return false;
@@ -234,7 +249,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 
 	public virtual bool CanHearVoiceProximity(PlayerInfo playerInfo)
 	{
-		if (IsFullyValid(playerInfo))
+		if (!IsFullyValid(playerInfo))
 			return false;
 
 		if (playerInfo.isLocal)

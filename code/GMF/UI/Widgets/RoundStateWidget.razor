@@ -48,11 +48,24 @@
 {
 	[Property] public int lastCountdownNumber { get; set; } = -1;
 
-	public bool isActiveRound => IsFullyValid(GameMode.instance) && GameMode.instance.modeState == ModeState.ActiveRound;
+	public bool isActiveRound
+	{
+		get 
+		{
+			if (!IsFullyValid(GameMode.instance))
+				return false;
+
+			if (GameMode.instance.modeState != ModeState.ActiveRound &&
+				GameMode.instance.modeState != ModeState.PostRound)
+				return false;
+
+			return true;
+		}
+	}
 
 	string GetGameState()
 	{
-		if (GameMode.instance == null)
+		if (!IsFullyValid(GameMode.instance))
 		{
 			return "";
 		}

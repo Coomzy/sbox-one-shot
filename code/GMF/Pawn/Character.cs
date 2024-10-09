@@ -147,18 +147,17 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 
 	protected virtual void FireInput()
 	{
-		if (GameMode.instance.modeState == ModeState.ReadyPhase)
+		if (!IsFullyValid(GameMode.instance, equippedItem))
 			return;
 
-		if (!IsFullyValid(equippedItem))
+		if (GameMode.instance.modeState == ModeState.ReadyPhase)
 			return;
 
 		if (Input.Pressed(Inputs.attack1))
 		{
 			equippedItem.FireStart();
 		}
-
-		if (Input.Released(Inputs.attack1))
+		else if (Input.Released(Inputs.attack1))
 		{
 			equippedItem.FireEnd();
 		}
@@ -167,8 +166,7 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		{
 			equippedItem.FireAltStart();
 		}
-
-		if (Input.Released(Inputs.attack2))
+		else if (Input.Released(Inputs.attack2))
 		{
 			equippedItem.FireAltEnd();
 		}
@@ -191,7 +189,8 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 		}
 
 		var camera = PlayerCamera.cam;
-		if (camera == null || !camera.IsValid) return;
+		if (!IsFullyValid(camera))
+			return;
 
 		var targetEyeHeight = movement.config.eyeHeight;
 
@@ -275,7 +274,8 @@ public class Character : Component, IGameModeEvents//, Component.INetworkSpawn
 
 		isDead = true;
 		keepCharacterBody = true;
-		if (equippedItem != null)
+
+		if (IsFullyValid(equippedItem))
 		{
 			equippedItem.Drop(Vector3.Zero);
 		}

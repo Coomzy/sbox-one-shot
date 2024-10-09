@@ -29,6 +29,7 @@ public class OptionsScreenSystem : GameObjectSystem
 		}
 		else
 		{
+			UserPrefs.BuildUI();
 			var optionsScreenGO = Game.ActiveScene.CreateObject();
 			optionsScreenGO.Name = "Options Screen";
 			var screenPanel = optionsScreenGO.Components.Create<ScreenPanel>();

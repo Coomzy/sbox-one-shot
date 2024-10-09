@@ -29,7 +29,7 @@
         },
         "isInFlight": true,
         "startFlightTime": {
-          "Relative": 10566.34
+          "Relative": 798.5545
         },
         "startPos": "0,0,0",
         "usesGravity": true,
@@ -194,7 +194,7 @@
                 "__guid": "b9409d98-b2e6-41ad-930a-99eb6f1bab50",
                 "Flags": 0,
                 "Name": "Impale Point",
-                "Position": "1.62125,0,0",
+                "Position": "4.017982,0,0",
                 "Enabled": true
               }
             ]

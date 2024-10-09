@@ -202,14 +202,14 @@ public class ProceduralAnimation : Component
 		var maxInputRange = 3.5f;
 		var inputSmoothRate = 5.0f;
 		var smoothRate = 70.0f;
-		var deltaTime = MathY.Min(Time.Delta, 60.0f / 1.0f);
+		var deltaTime = MathY.Min(Time.Delta, 1.0f / 90.0f);
 
 		var input = Input.AnalogLook * inputScalar;
 		input.yaw = MathY.Min(input.yaw, maxInputRange);
 		input.pitch = MathY.Min(input.pitch, maxInputRange);
 
-		lastAnglesInput = Angles.Lerp(lastAnglesInput, input, Time.Delta * inputSmoothRate);
-		lastAngles = Angles.Lerp(lastAngles, lastAnglesInput, Time.Delta * smoothRate);
+		lastAnglesInput = Angles.Lerp(lastAnglesInput, input, deltaTime * inputSmoothRate);
+		lastAngles = Angles.Lerp(lastAngles, lastAnglesInput, deltaTime * smoothRate);
 
 		return lastAngles;
 	}

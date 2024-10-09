@@ -9,13 +9,13 @@
             this.Dirty();
             foreach (var playerInfo in PlayerInfo.allActive)
             {
-                if (!IsFullyValid(playerInfo?.voiceGlobal))
+                if (!IsFullyValid(playerInfo?.voice))
                     continue;
 
                 var totalShowTime = 0.35f;
                 var fullBeansTime = 0.1f;
 
-                var timeSinceLastVOIP = playerInfo.voiceGlobal.LastPlayed;
+                var timeSinceLastVOIP = playerInfo.voice.LastPlayed;
                 if (Application.IsEditor && voipTime.HasValue)
                 {
                     timeSinceLastVOIP = voipTime.Value;
@@ -27,19 +27,6 @@
                     <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
                     <div class="name">@playerInfo.displayName</div>
                 </div>
-
-                <!--<div class="row" style="opacity: @alpha">
-                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
-                    <div class="name">Timmy ssssssss</div>
-                </div>
-                <div class="row" style="opacity: @alpha">
-                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
-                    <div class="name">Timmysssssss</div>
-                </div>
-                <div class="row" style="opacity: @alpha">
-                    <div class="avatar" style="background-image: url(avatar:@playerInfo.steamID);"></div>
-                    <div class="name">Timmyssssssss</div>
-                </div>-->
             }
         }
 

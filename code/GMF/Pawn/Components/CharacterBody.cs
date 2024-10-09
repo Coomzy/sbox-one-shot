@@ -13,7 +13,6 @@ public class CharacterBody : Component, IGameModeEvents
 	[Group("Setup"), Order(-100), Property] public ModelCollider bodyCollider { get; set; }
 	[Group("Setup"), Order(-100), Property] public SkinnedModelRenderer bodyRenderer { get; set; }
 	[Group("Setup"), Order(-100), Property] public CitizenAnimationHelper thirdPersonAnimationHelper { get; set; }
-	[Group("Setup"), Order(-100), Property] public Voice voice { get; set; }
 	[Group("Setup"), Order(-100), Property] public GameObject voipSocket { get; set; }
 	[Group("Setup"), Order(-100), Property] public GameObject thirdPersonEquipmentAttachPoint { get; set; }
 

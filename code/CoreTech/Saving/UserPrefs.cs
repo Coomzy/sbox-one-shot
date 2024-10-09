@@ -12,9 +12,9 @@ public static /*partial*/ class UserPrefs
 	public static List<UITab> tabs { get; set; } = new();
 
 	// Audio
-	[ConVar, Change] public static float announcer_volume { get; set; } = 0.8f;
+	[ConVar(Saved = true), Change] public static float announcer_volume { get; set; } = 0.8f;
 
-	[ConVar] public static VOIPMode voipMode { get; set; } = VOIPMode.PushToTalk;
+	[ConVar(Saved = true)] public static VOIPMode voipMode { get; set; } = VOIPMode.PushToTalk;
 
 	[StaticInitialize]
 	static void Onannouncer_volumeChanged()
@@ -27,7 +27,7 @@ public static /*partial*/ class UserPrefs
 	}
 
 	[StaticInitialize(10)]
-	static void BuildUI()
+	public static void BuildUI()
 	{
 		tabs = DefaultOptions();
 	}

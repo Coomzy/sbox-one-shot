@@ -174,8 +174,10 @@ public class Equipment : Component, IGameModeEvents
 		return false;
 	}
 
-	public virtual bool IsRequestingFOVZoom(ref float targetFOV, ref float transitionRate)
-	{ 
+	public virtual bool IsRequestingFOVZoom(out float targetFOV, out float transitionRate)
+	{
+		ApplyZoomFOV(out targetFOV, out transitionRate);
+
 		if (!hasFireAltInputDown)
 			return false;
 
@@ -185,12 +187,11 @@ public class Equipment : Component, IGameModeEvents
 		if (instigator.owner.isDead)
 			return false;
 
-		ApplyZoomFOV(ref targetFOV, ref transitionRate);
 
 		return true;
 	}
 
-	public virtual void ApplyZoomFOV(ref float targetFOV, ref float transitionRate)
+	public virtual void ApplyZoomFOV(out float targetFOV, out float transitionRate)
 	{
 		targetFOV = Preferences.FieldOfView * zoomFOVScalar;
 		transitionRate = zoomFOVRate;

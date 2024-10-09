@@ -19,10 +19,6 @@ public class Projectile : Component, IGameModeEvents, Component.INetworkSpawn
 	[Group("Runtime"), Property, ReadOnly, Sync] public TimeSince startFlightTime { get; set; }
 	[Group("Runtime"), Property, ReadOnly, Sync] public Vector3 startPos { get; set; }
 
-	[ConVar] public static bool spear_uses_gravity { get; set; } = true;
-	[ConVar] public static float spear_coyote_time { get; set; } = 0.15f;
-	[ConVar] public static float spear_gravity_rate { get; set; } = 35.0f;
-
 	public virtual void SpawnSource(Vector3 source)
 	{
 		startPos = WorldPosition;
@@ -146,6 +142,7 @@ public class Projectile : Component, IGameModeEvents, Component.INetworkSpawn
 
 	public virtual SceneTrace PlayerHitTrace(Vector3 start, Vector3 end)
 	{
+		// TODO: This radius is massive but is needed for One Shot
 		var height = 5.0f;
 		var radius = 15.0f;
 
@@ -162,8 +159,8 @@ public class Projectile : Component, IGameModeEvents, Component.INetworkSpawn
 	{ 
 		if (!IsFullyValid(impactEffect))
 		{
-			//Log.Warning($"Missing Impact Effects on '{GameObject}'");
-			//return;
+			Log.Warning($"Missing Impact Effects on '{GameObject}'");
+			return;
 		}
 		var inst = impactEffect.Clone(hitPoint, hitNormal.EulerAngles.ToRotation());
 		//impactEffect

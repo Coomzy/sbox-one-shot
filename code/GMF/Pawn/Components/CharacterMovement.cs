@@ -3,8 +3,6 @@ using Sandbox;
 using Sandbox.ModelEditor;
 using Sandbox.Utility;
 using System;
-using System.ComponentModel.DataAnnotations;
-using static Sandbox.VertexLayout;
 
 [Group("GMF")]
 public class CharacterMovement : Component
@@ -43,10 +41,15 @@ public class CharacterMovement : Component
 	[ConVar] public static bool debug_character_movement { get; set; }
 	public static bool cheat_remove_slide_vel_cap { get; set; }
 
-	float CurrentMoveSpeed
+	float currentMoveSpeed
 	{
 		get
 		{
+			if (!isGrounded)
+			{
+				return config.airMoveSpeed;	
+			}
+
 			if (isCrouching) return config.crouchMoveSpeed;
 			if (Input.Down(Inputs.run)) return config.sprintMoveSpeed;
 			if (Input.Down(Inputs.walk)) return config.walkMoveSpeed;
@@ -374,12 +377,11 @@ public class CharacterMovement : Component
 			wishVelocity = new Angles(0, owner.WorldRotation.Yaw(), 0).ToRotation() * wishVelocity;
 			wishVelocity = wishVelocity.WithZ(0);
 			wishVelocity = wishVelocity.ClampLength(1);
-			wishVelocity *= CurrentMoveSpeed;
+			wishVelocity *= currentMoveSpeed;
 
 			if (!cc.IsOnGround)
 			{
-				wishVelocity = wishVelocity.ClampLength(50);
-				//wishVelocity = wishVelocity.ClampLength(75);
+				wishVelocity = wishVelocity.ClampLength(config.airVelClamp);
 			}
 		}
 

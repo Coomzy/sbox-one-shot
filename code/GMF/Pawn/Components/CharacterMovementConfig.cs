@@ -9,6 +9,9 @@ public class CharacterMovementConfig : GameResource
 	[Group("Speed"), Property] public float walkMoveSpeed { get; set; } = 100.0f;
 	[Group("Speed"), Property] public float runMoveSpeed { get; set; } = 190.0f;
 	[Group("Speed"), Property] public float sprintMoveSpeed { get; set; } = 320.0f;
+	[Group("Speed"), Property] public float airMoveSpeed { get; set; } = 150.0f;
+
+	[Group("Speed"), Property] public float airVelClamp { get; set; } = 150.0f;
 
 	[Group("Ducking"), Property] public float characterHeight { get; set; } = 64.0f;
 	[Group("Ducking"), Property] public float crouchHeight { get; set; } = 36.0f;

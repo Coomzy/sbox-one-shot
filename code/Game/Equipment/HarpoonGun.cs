@@ -107,7 +107,7 @@ public class HarpoonGun : Equipment
 			if (projectile != null)
 			{
 				projectile.instigator = this;
-				projectile.velocity = projectile.WorldTransform.Forward * 2500.0f;
+				projectile.velocity = projectile.WorldTransform.Forward * HarpoonSpear.spear_start_vel;
 			}
 
 			spearInst.NetworkSpawn(GameObject.Network.Owner);
@@ -162,9 +162,9 @@ public class HarpoonGun : Equipment
 		handle.SpacialBlend = 1.0f;
 	}
 
-	public override void ApplyZoomFOV(ref float targetFOV, ref float transitionRate)
+	public override void ApplyZoomFOV(out float targetFOV, out float transitionRate)
 	{
-		targetFOV *= config.adsFOVScalar;
+		targetFOV = Preferences.FieldOfView * config.adsFOVScalar;
 		transitionRate = config.adsRate;
 	}
 

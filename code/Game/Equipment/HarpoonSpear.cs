@@ -13,7 +13,12 @@ public class HarpoonSpear : Projectile
 {
 	[Group("Setup"), Property] public GameObject impalePoint { get; set; }
 	[Group("Setup"), Property] public HarpoonSpearFlare flare { get; set; }
-	[Group("Runtime"), Property] public List<GameObject> impaledCharacters { get; set; } = new();	
+	[Group("Runtime"), Property] public List<GameObject> impaledCharacters { get; set; } = new();
+
+	[ConVar] public static bool spear_uses_gravity { get; set; } = true;
+	[ConVar] public static float spear_coyote_time { get; set; } = 0.0f;
+	[ConVar] public static float spear_gravity_rate { get; set; } = 250.0f;
+	[ConVar] public static float spear_start_vel { get; set; } = 4000.0f;
 
 	protected override void GetImpactPosition(ref Vector3 nextMovePos, SceneTraceResult traceResult)
 	{
@@ -31,6 +36,18 @@ public class HarpoonSpear : Projectile
 	public void Disable()
 	{
 		flare.Enabled = false;
+	}
+
+	public override void DoMoveStep(Vector3? moveToOverride = null, bool allowGravity = true)
+	{
+		if (IsFullyValid(PlayerInfo.local) && PlayerInfo.local.role != Role.None)
+		{
+			usesGravity = spear_uses_gravity;
+			coyoteTime = spear_coyote_time;
+			gravityRate = spear_gravity_rate;
+		}
+
+		base.DoMoveStep(moveToOverride, allowGravity);
 	}
 
 	public override SceneTrace MoveStepTrace(Vector3 start, Vector3 end)
@@ -129,8 +146,15 @@ public class HarpoonSpear : Projectile
 		IUIEvents.Post(x => x.OnDamagedEnemy());
 	}
 
+	public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
+	{
+		return GetClosestSafeIndex_Fixed(bodyPhysics, index);
+		//return GetClosestSafeIndex_NoHands(bodyPhysics, index);
+		//return index;
+	}
+
 	// Any other hit bones turn terry into stretch armstrong
-	/*public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
+	public int GetClosestSafeIndex_Fixed(ModelPhysics bodyPhysics, int index)
 	{
 		if (index == Bones.Terry.spine_0 || index == Bones.Terry.spine_2 || index == Bones.Terry.head)
 		{
@@ -157,9 +181,9 @@ public class HarpoonSpear : Projectile
 		}
 
 		return Bones.Terry.head;
-	}*/
+	}
 
-	public int GetClosestSafeIndex(ModelPhysics bodyPhysics, int index)
+	public int GetClosestSafeIndex_NoHands(ModelPhysics bodyPhysics, int index)
 	{
 		switch (index)
 		{
