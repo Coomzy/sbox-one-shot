@@ -11,6 +11,9 @@ public static /*partial*/ class UserPrefs
 {
 	public static List<UITab> tabs { get; set; } = new();
 
+	// UI
+	[ConVar(Saved = true)] public static bool show_speedometer { get; set; } = false;
+
 	// Audio
 	[ConVar(Saved = true), Change] public static float announcer_volume { get; set; } = 0.8f;
 
@@ -37,6 +40,12 @@ public static /*partial*/ class UserPrefs
 		var tabs = new List<UITab>();
 
 		// Tab Name - UI
+		var uiTab = new UITab("UI", 1);
+
+		var widgetsToggles = uiTab.AddGroup("Widgets");
+		widgetsToggles.AddToggle("Show Speedometer", () => show_speedometer, (value) => show_speedometer = value);
+
+		// Tab Name - Audio
 		var audioTab = new UITab("Audio", 2);
 
 		// Add Group Toggles
@@ -51,6 +60,7 @@ public static /*partial*/ class UserPrefs
 		var groupVOIP = audioTab.AddGroup("VOIP");
 		groupVOIP.AddCycler("VOIP Mode", () => voipMode, (value) => voipMode = value);
 
+		tabs.Add(uiTab);
 		tabs.Add(audioTab);
 
 		return tabs;

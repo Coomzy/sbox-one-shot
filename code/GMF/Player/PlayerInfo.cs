@@ -21,7 +21,7 @@ public class PlayerInfo : Component, Component.INetworkSpawn, IGameModeEvents
 	[Property, HostSync] public Guid networkID { get; set; }
 	[Property, HostSync] public ulong steamID { get; set; }
 	[Property, HostSync, Sync] public string displayName { get; set; }
-	[Property, HostSync] public Role role { get; set; }
+	[Property, HostSync, Sync] public Role role { get; set; }
 	[Property, HostSync, Sync] public NetDictionary<int, float?> clothing { get; set; } = new();
 	[Property, Sync] public GMFVoice voice { get; set; }
 

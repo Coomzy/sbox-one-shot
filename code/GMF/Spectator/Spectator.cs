@@ -323,7 +323,7 @@ public class Spectator : Component
 		SetSpectateTargetIndex(newTarget);
 	}
 
-	/*public virtual void NextSpectateTarget()
+	public virtual void NextSpectateTarget()
 	{
 		var currentIndex = PlayerInfo.allAlive.IndexOf(spectateTarget);
 		currentIndex++;
@@ -347,9 +347,9 @@ public class Spectator : Component
 			return;
 
 		SetSpectateTargetIndex(newTarget);
-	}*/
+	}
 
-	public virtual void NextSpectateTarget()
+	/*public virtual void NextSpectateTarget(bool reverseOrder = false)
 	{
 		var currentIndex = PlayerInfo.allAlive.IndexOf(spectateTarget);
 		int playerCount = PlayerInfo.allAlive.Count;
@@ -357,7 +357,15 @@ public class Spectator : Component
 
 		for (int i = 0; i < playerCount; i++)
 		{
-			currentIndex = (currentIndex + 1) % playerCount;
+			if (reverseOrder)
+			{
+				currentIndex++;
+			}
+			else
+			{
+				currentIndex--;
+			}
+			currentIndex = currentIndex % playerCount;
 
 			if (!PlayerInfo.allAlive.ContainsIndex(currentIndex))
 				continue;
@@ -372,7 +380,7 @@ public class Spectator : Component
 			return;
 
 		SetSpectateTargetIndex(newTarget);
-	}
+	}*/
 
 	public virtual bool IsSpectateTargetValid(PlayerInfo playerInfo)
 	{

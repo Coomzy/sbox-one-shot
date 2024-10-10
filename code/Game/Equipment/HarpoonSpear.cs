@@ -92,6 +92,16 @@ public class HarpoonSpear : Projectile
 			return;
 		}
 
+		if (!IsFullyValid(characterBody.owner?.owner))
+		{ 
+			return;
+		}
+
+		if (characterBody.owner.owner.isDead)
+		{
+			return;
+		}
+
 		//Log.Info($"collision.Other.Body: {collision.Other.Body}");
 		DamageInfo damageInfo = new DamageInfo();
 		damageInfo.instigator = instigator?.instigator?.owner;

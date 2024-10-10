@@ -1,0 +1,39 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.Utility;
+@using Sandbox.Audio;
+@using System;
+@inherits PanelComponent
+
+<root>
+	@if (!UserPrefs.show_speedometer )
+		return;
+
+	@if (speed < 0.0f)
+		return;
+
+	<div class="title">@speed m/s</div>
+</root>
+
+@code
+{
+	public float speed { get; set; } = 420.0f;
+
+	protected override void OnUpdate()
+	{
+		if (!IsFullyValid(PlayerInfo.local?.character?.movement))
+		{
+			speed = -1.0f;
+			return;			
+		}
+
+		var velocity = PlayerInfo.local.character.movement.characterController.Velocity;
+		var velocitySpeed = velocity.WithZ(0).Length * MathY.inchToMeter;
+		//speed = MathY.Lerp(speed, velocitySpeed, Time.Delta * 10.0f).CeilToInt();
+		speed = MathF.Round(velocitySpeed, 1);//.CeilToInt();
+
+		this.Dirty();
+	}
+
+	protected override int BuildHash() => System.HashCode.Combine(RealTime.Now.CeilToInt() + this.GetDirty());
+}

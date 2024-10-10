@@ -230,4 +230,31 @@ public static partial class Cheats
 	{
 		PlayerInfo.local.SetSpectateMode(spectateMode);
 	}
+
+	[Cheat(role = Role.None), ConCmd]
+	public static void dump_scene()
+	{
+		List<string> hierarchyLines = new List<string>();
+
+		foreach (var rootGameObject in Game.ActiveScene.Children)
+		{
+			PrintGameObjectHierarchy(hierarchyLines, rootGameObject, 0);
+		}
+
+		string timestamp = DateTime.UtcNow.ToString("yy_MM_dd-HH_mm_ss");
+		string directory = $"logs/scene_dumps/";
+		string outputPath = $"{directory}{timestamp}.txt";
+		FileSystem.Data.CreateDirectory(directory);
+		FileSystem.Data.WriteAllText(outputPath, string.Join("\n", hierarchyLines));
+	}
+
+	static void PrintGameObjectHierarchy(List<string> lines, GameObject obj, int level)
+	{
+		lines.Add(new string(' ', level * 4) + "- " + $"{obj.Name} [Owner = {obj.Network.Owner?.DisplayName}] [NetworkMode = {obj.NetworkMode}] [IsProxy = {obj.IsProxy}]");
+
+		foreach (var child in obj.Children)
+		{
+			PrintGameObjectHierarchy(lines, child, level + 1);
+		}
+	}
 }

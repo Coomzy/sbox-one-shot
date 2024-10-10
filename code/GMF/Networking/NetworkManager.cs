@@ -101,6 +101,11 @@ public class NetworkManager : Component, Component.INetworkListener
 		{
 			Log.Info($"You are now host, player '{previousHost.DisplayName}' disconnected");
 		}
+
+		// TODO: Host migration fails hard, the round doesn't end, people's clothes disappear...
+		// This seems like the lesser evil
+		Log.Info($"Host Migration failed, leaving game");
+		Game.Disconnect();
 		//PlayerInfo.local.OnBecameHost(PlayerInfo.FromConnection(previousHost));
 	}
 

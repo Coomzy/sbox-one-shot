@@ -660,6 +660,9 @@ public class GameMode : Component, Component.INetworkListener, IHotloadManaged
 	[Broadcast]
 	public virtual void TeleportSpectatorsToStartingPoint()
 	{
+		if (!IsFullyValid(PlayerInfo.local))
+			return;
+
 		PlayerInfo.local.SetSpectateMode(SpectateMode.Viewpoint);
 		//Spectator.instance.SetMode(SpectateMode.Viewpoint);
 		//Spectator.TeleportToStartingPoint();

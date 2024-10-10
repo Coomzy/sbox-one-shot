@@ -124,13 +124,13 @@
 	{
 		if ( IsProxy ) return;
 
-        BroadcastSystemText($"{channel.DisplayName} has joined the game");
+        AddSystemText($"{channel.DisplayName} has joined the game");
     }
 
 	void Component.INetworkListener.OnDisconnected( Connection channel )
 	{
 		if ( IsProxy ) return;
 
-        BroadcastSystemText($"{channel.DisplayName} has left the game");
+        AddSystemText($"{channel.DisplayName} has left the game");
     }
 }

@@ -1,4 +1,7 @@
 
+using Sandbox;
+using static Sandbox.VertexLayout;
+
 [Group("GMF")]
 public class PlayerFootsteps : Component
 {
@@ -24,6 +27,9 @@ public class PlayerFootsteps : Component
 
 	void OnEvent( SceneModel.FootstepEvent e )
 	{
+		if (IsProxy)
+			return;
+
 		if ( timeSinceStep < 0.2f )
 			return;
 
@@ -42,7 +48,14 @@ public class PlayerFootsteps : Component
 		var sound = e.FootId == 0 ? tr.Surface.Sounds.FootLeft : tr.Surface.Sounds.FootRight;
 		if ( sound is null ) return;
 
-		var handle = Sound.Play( sound, tr.HitPosition + tr.Normal * 5 );
-		handle.Volume *= e.Volume;
+		var position = tr.HitPosition + tr.Normal * 5;
+		BroadcastFootstep(sound, position, e.Volume);
+	}
+
+	[Broadcast]
+	void BroadcastFootstep(string sound, Vector3 position, float volume)
+	{
+		var handle = Sound.Play(sound, position);
+		handle.Volume *= volume;
 	}
 }

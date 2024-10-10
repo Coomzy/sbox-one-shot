@@ -70,7 +70,7 @@
           "matchCount": 0,
           "maxMatchRounds": 10,
           "metPlayerReqTime": {
-            "Relative": 899.25714
+            "Relative": 5622.958
           },
           "modeState": "PreMatch",
           "oneLifeOnly": true,
@@ -86,7 +86,7 @@
           "roundCount": 0,
           "roundTime": 180,
           "stateTime": {
-            "Relative": 899.25714
+            "Relative": 5622.958
           },
           "waitingForPlayersDelay": 3
         }
@@ -121,7 +121,7 @@
               "__guid": "8e74dcca-05fb-4c33-ad8e-8c51b419e8d7",
               "shownDuration": 3,
               "shownTime": {
-                "Relative": 899.25714
+                "Relative": 5622.958
               }
             },
             {
@@ -144,12 +144,16 @@
               "__guid": "509f1266-a6bf-4624-9303-c79366b15b77",
               "shownDuration": 0.1,
               "shownTime": {
-                "Relative": 899.25714
+                "Relative": 5622.958
               }
             },
             {
               "__type": "MedalsWidget",
               "__guid": "c5395c13-2448-4ed2-8c3c-cc900337a5cf"
+            },
+            {
+              "__type": "SpeedometerWidget",
+              "__guid": "15decf19-7794-46e5-8908-e3362f36c4b8"
             }
           ]
         },
@@ -212,7 +216,7 @@
               "__guid": "aaabdd9e-e67d-44c1-912c-9dd0f2eb3c1c",
               "shownDuration": 0.1,
               "shownTime": {
-                "Relative": 899.25714
+                "Relative": 5622.958
               }
             },
             {
@@ -304,7 +308,7 @@
           "__guid": "7f718536-4ca9-432c-a0fc-35720a8af5a0",
           "shownDuration": 3,
           "shownTime": {
-            "Relative": 899.25714
+            "Relative": 5622.958
           }
         },
         {
@@ -339,7 +343,7 @@
           "__guid": "5708bd07-d3df-49b0-9311-3f90e0c20de9",
           "shownDuration": 0.1,
           "shownTime": {
-            "Relative": 899.25714
+            "Relative": 5622.958
           }
         },
         {

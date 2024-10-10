@@ -28,7 +28,7 @@
         "inactiveColor": "1,0,0,1",
         "isActive": true,
         "lastPickup": {
-          "Relative": 13320.615
+          "Relative": 12.710278
         },
         "visualHolder": {
           "_type": "gameobject",
@@ -40,7 +40,7 @@
         "__guid": "e813c1c6-02bd-46a5-9b59-e2d7cd4ba0d7",
         "Center": "0,0,0",
         "IsTrigger": true,
-        "Scale": "50,50,50",
+        "Scale": "85,85,85",
         "Static": false
       }
     ],
