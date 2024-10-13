@@ -110,6 +110,11 @@ public class HarpoonGun : Equipment
 				projectile.velocity = projectile.WorldTransform.Forward * HarpoonSpear.spear_start_vel;
 			}
 
+			if (projectile is HarpoonSpear spear)
+			{
+				spear.ownerSpeedOnFire = instigator.movement.horizontalSpeed;
+			}
+
 			spearInst.NetworkSpawn(GameObject.Network.Owner);
 
 			if (projectile != null)

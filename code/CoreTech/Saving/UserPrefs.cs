@@ -11,6 +11,9 @@ public static /*partial*/ class UserPrefs
 {
 	public static List<UITab> tabs { get; set; } = new();
 
+	// gameplay
+	[ConVar(Saved = true)] public static bool auto_sprint { get; set; } = true;
+
 	// UI
 	[ConVar(Saved = true)] public static bool show_speedometer { get; set; } = false;
 
@@ -39,6 +42,12 @@ public static /*partial*/ class UserPrefs
 	{
 		var tabs = new List<UITab>();
 
+		// Tab Name - Gameplay
+		var gameplayTab = new UITab("Gameplay", 0);
+
+		var movementToggles = gameplayTab.AddGroup("Movement");
+		movementToggles.AddToggle("Auto Sprint", () => auto_sprint, (value) => auto_sprint = value);
+
 		// Tab Name - UI
 		var uiTab = new UITab("UI", 1);
 
@@ -60,6 +69,7 @@ public static /*partial*/ class UserPrefs
 		var groupVOIP = audioTab.AddGroup("VOIP");
 		groupVOIP.AddCycler("VOIP Mode", () => voipMode, (value) => voipMode = value);
 
+		tabs.Add(gameplayTab);
 		tabs.Add(uiTab);
 		tabs.Add(audioTab);
 

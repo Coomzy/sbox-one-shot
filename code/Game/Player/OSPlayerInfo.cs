@@ -10,6 +10,9 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 
 	[Group("Runtime"), Property] public bool isPromptingPayToWin { get; set; }
 
+	[Group("Runtime"), Property] public int multiKillStreak { get; set; }
+	[Group("Runtime"), Property] public TimeSince timeSinceLastKill { get; set; } = 9999.9f;
+
 	protected override void OnStart()
 	{
 		base.OnStart();
@@ -107,6 +110,14 @@ public class OSPlayerInfo : PlayerInfo, Component.INetworkSpawn
 		base.OnScoreKill_Client();		
 
 		GainXP(GameSettings.instance.xpPerKill);
+
+		if (timeSinceLastKill > 4)
+		{
+			multiKillStreak = 0;
+		}
+		multiKillStreak++;
+		Stat.ProcessMultiKill(multiKillStreak);
+		timeSinceLastKill = 0;
 	}
 
 	public override void OnScoreRoundWin_Client()

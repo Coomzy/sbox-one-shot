@@ -14,6 +14,7 @@ public class HarpoonSpear : Projectile
 	[Group("Setup"), Property] public GameObject impalePoint { get; set; }
 	[Group("Setup"), Property] public HarpoonSpearFlare flare { get; set; }
 	[Group("Runtime"), Property] public List<GameObject> impaledCharacters { get; set; } = new();
+	[Group("Runtime"), Property] public float ownerSpeedOnFire { get; set; }
 
 	[ConVar] public static bool spear_uses_gravity { get; set; } = true;
 	[ConVar] public static float spear_coyote_time { get; set; } = 0.0f;
@@ -124,7 +125,9 @@ public class HarpoonSpear : Projectile
 			harpoonGun.Reload();
 			PlayerInfo.local.OnScoreKill();
 
-			var killer = PlayerInfo.local?.displayName;
+			var speed = MathF.Round(ownerSpeedOnFire, 1);//.CeilToInt();
+			//var killer = $"{PlayerInfo.local?.displayName} {speed}m/s";
+			var killer = $"{PlayerInfo.local?.displayName}";
 			var victim = $"{characterBody.owner?.owner?.displayName} {distance.ToString("F2")}m";
 			var message = "----->";
 			IUIEvents.Post(x => x.AddKillFeedEntry(killer, victim, message));
@@ -152,7 +155,6 @@ public class HarpoonSpear : Projectile
 			Achievements.Unlock(Achievement.DOUBLE_PENETRATION);
 		}
 
-		Stat.ProcessMultiKill(impaledCharacters.Count);
 		IUIEvents.Post(x => x.OnDamagedEnemy());
 	}
 

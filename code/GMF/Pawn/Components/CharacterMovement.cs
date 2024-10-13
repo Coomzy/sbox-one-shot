@@ -36,6 +36,8 @@ public class CharacterMovement : Component
 
 	[Group("Runtime"), Property] public Vector3 lastVelocity { get; set; }
 
+	[Group("Runtime"), Property] public float horizontalSpeed => characterController.Velocity.WithZ(0).Length * MathY.inchToMeter;
+
 	[Group("Runtime"), Property] public float heighestSlideVel { get; set; } = 0.0f;
 
 	[ConVar] public static bool debug_character_movement { get; set; }
@@ -50,11 +52,18 @@ public class CharacterMovement : Component
 				return config.airMoveSpeed;	
 			}
 
-			if (isCrouching) return config.crouchMoveSpeed;
-			if (Input.Down(Inputs.run)) return config.sprintMoveSpeed;
-			if (Input.Down(Inputs.walk)) return config.walkMoveSpeed;
+			if (isCrouching) 
+				return config.crouchMoveSpeed;
 
-			return config.runMoveSpeed;
+			if (Input.Down(Inputs.run))
+			{
+				return UserPrefs.auto_sprint ? config.runMoveSpeed : config.sprintMoveSpeed;
+			}
+
+			if (Input.Down(Inputs.walk)) 
+				return config.walkMoveSpeed;
+
+			return UserPrefs.auto_sprint ? config.sprintMoveSpeed : config.runMoveSpeed;
 		}
 	}
 
@@ -160,15 +169,20 @@ public class CharacterMovement : Component
 			isSliding = false;
 		}
 
+		var wasOnGround = characterController.IsOnGround;
+		//characterController.IsOnGround = false;
 		characterController.Move();
+		characterController.IsOnGround = wasOnGround;
 
 		if (curSlideVelocity.Length <= config.slideMinVelocity)
 		{
+			//Debuggin.ToScreen($"Stopped sliding because of Vel: {curSlideVelocity.Length}", 10.0f);
 			isSliding = false;
 		}
 
 		if (!characterController.IsOnGround && lastGrounded > config.jumpCoyoteTime)
 		{
+			//Debuggin.ToScreen($"Stopped sliding because of not grounded: {lastGrounded}", 10.0f);
 			isSliding = false;
 		}
 	}

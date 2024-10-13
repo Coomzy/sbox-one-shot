@@ -27,8 +27,7 @@
 			return;			
 		}
 
-		var velocity = PlayerInfo.local.character.movement.characterController.Velocity;
-		var velocitySpeed = velocity.WithZ(0).Length * MathY.inchToMeter;
+		var velocitySpeed = PlayerInfo.local.character.movement.horizontalSpeed;
 		//speed = MathY.Lerp(speed, velocitySpeed, Time.Delta * 10.0f).CeilToInt();
 		speed = MathF.Round(velocitySpeed, 1);//.CeilToInt();
 

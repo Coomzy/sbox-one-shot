@@ -5,7 +5,7 @@ using Sandbox;
 
 public static partial class Cheats
 {
-	[Cheat(role = Role.None), ConCmd("reload_gun")]
+	[Cheat(role = Role.Developer), ConCmd("reload_gun")]
 	public static void Reload_Gun(bool enabled = false)
 	{
 		var gun = PlayerInfo.local?.character?.equippedItem as HarpoonGun;
